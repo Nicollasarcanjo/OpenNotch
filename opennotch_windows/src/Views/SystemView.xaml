@@ -2,31 +2,47 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:l="clr-namespace:OpenNotch">
+    <!-- Mesmos anéis da aba Sistema na versão macOS. -->
     <UniformGrid Rows="1" VerticalAlignment="Center">
-        <StackPanel Margin="8,0">
-            <TextBlock Text="CPU" FontSize="11" Foreground="{StaticResource Dim}" />
-            <TextBlock Text="{Binding CpuText}" FontSize="26" FontWeight="SemiBold" />
-            <ProgressBar Style="{StaticResource Bar}" Value="{Binding Cpu, Mode=OneWay}" Foreground="#0A84FF" />
+        <StackPanel HorizontalAlignment="Center">
+            <Grid Width="62" Height="62">
+                <l:RingGauge Value="{Binding Cpu}" Stroke="#0A84FF" />
+                <TextBlock Text="{Binding CpuText}" FontSize="13" FontWeight="SemiBold" HorizontalAlignment="Center"
+                           VerticalAlignment="Center" />
+            </Grid>
+            <TextBlock Text="CPU" FontSize="11" FontWeight="Medium" HorizontalAlignment="Center" Margin="0,6,0,0" />
         </StackPanel>
-        <StackPanel Margin="8,0">
-            <TextBlock Text="RAM" FontSize="11" Foreground="{StaticResource Dim}" />
-            <TextBlock Text="{Binding MemoryPercent}" FontSize="26" FontWeight="SemiBold" />
-            <ProgressBar Style="{StaticResource Bar}" Value="{Binding Memory, Mode=OneWay}" Foreground="#BF5AF2" />
-            <TextBlock Text="{Binding MemoryText}" FontSize="10" Foreground="{StaticResource Dim}" Margin="0,4,0,0" />
+        <StackPanel HorizontalAlignment="Center">
+            <Grid Width="62" Height="62">
+                <l:RingGauge Value="{Binding Memory}" Stroke="#BF5AF2" />
+                <TextBlock Text="{Binding MemoryPercent}" FontSize="13" FontWeight="SemiBold" HorizontalAlignment="Center"
+                           VerticalAlignment="Center" />
+            </Grid>
+            <TextBlock Text="RAM" FontSize="11" FontWeight="Medium" HorizontalAlignment="Center" Margin="0,6,0,0" />
+            <TextBlock Text="{Binding MemoryText}" FontSize="10" Foreground="{StaticResource Dim}"
+                       HorizontalAlignment="Center" />
         </StackPanel>
-        <StackPanel Margin="8,0">
-            <TextBlock Text="{l:T 'Disco'}" FontSize="11" Foreground="{StaticResource Dim}" />
-            <TextBlock Text="{Binding DiskPercent}" FontSize="26" FontWeight="SemiBold" />
-            <ProgressBar Style="{StaticResource Bar}" Value="{Binding Disk, Mode=OneWay}" Foreground="#FF9F0A" />
-            <TextBlock Text="{Binding DiskText}" FontSize="10" Foreground="{StaticResource Dim}" Margin="0,4,0,0" />
+        <StackPanel HorizontalAlignment="Center">
+            <Grid Width="62" Height="62">
+                <l:RingGauge Value="{Binding Disk}" Stroke="#FF9F0A" />
+                <TextBlock Text="{Binding DiskPercent}" FontSize="13" FontWeight="SemiBold" HorizontalAlignment="Center"
+                           VerticalAlignment="Center" />
+            </Grid>
+            <TextBlock Text="{l:T 'Disco'}" FontSize="11" FontWeight="Medium" HorizontalAlignment="Center" Margin="0,6,0,0" />
+            <TextBlock Text="{Binding DiskText}" FontSize="10" Foreground="{StaticResource Dim}"
+                       HorizontalAlignment="Center" />
         </StackPanel>
-        <StackPanel Margin="8,0" Visibility="{Binding HasBattery, Converter={StaticResource Visible}}">
-            <TextBlock Text="{Binding BatteryTitle}" FontSize="11" Foreground="{StaticResource Dim}" />
-            <TextBlock Text="{Binding BatteryText}" FontSize="26" FontWeight="SemiBold" />
-            <ProgressBar Style="{StaticResource Bar}" Value="{Binding BatteryValue, Mode=OneWay}" />
+        <StackPanel HorizontalAlignment="Center" Visibility="{Binding HasBattery, Converter={StaticResource Visible}}">
+            <Grid Width="62" Height="62">
+                <l:RingGauge Value="{Binding BatteryValue}" Stroke="#34C759" />
+                <TextBlock Text="{Binding BatteryText}" FontSize="13" FontWeight="SemiBold" HorizontalAlignment="Center"
+                           VerticalAlignment="Center" />
+            </Grid>
+            <TextBlock Text="{Binding BatteryTitle}" FontSize="11" FontWeight="Medium" HorizontalAlignment="Center"
+                       Margin="0,6,0,0" />
         </StackPanel>
-        <StackPanel Margin="8,0">
-            <TextBlock Text="{l:T 'Rede'}" FontSize="11" Foreground="{StaticResource Dim}" />
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+            <TextBlock Text="{l:T 'Rede'}" FontSize="11" FontWeight="Medium" Foreground="{StaticResource Dim}" />
             <TextBlock Text="{Binding DownText}" Margin="0,8,0,4" />
             <TextBlock Text="{Binding UpText}" />
         </StackPanel>

@@ -56,6 +56,8 @@ public partial class App : Application
         CreateTrayIcon();
         Rebuild();
 
+        if (!Settings.Current.OnboardingDone) new OnboardingWindow().Show();
+
         if (Settings.Current.UpdateAutoCheck)
         {
             var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(8) };

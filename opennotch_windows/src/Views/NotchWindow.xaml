@@ -3,37 +3,225 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent" Topmost="True"
         ShowInTaskbar="False" ResizeMode="NoResize" ShowActivated="False"
-        Width="680" Height="240" AllowDrop="True" Title="OpenNotch">
-    <!-- A janela é maior que o notch e transparente; só a "casca" preta recebe o mouse. -->
-    <Border x:Name="Shell" Background="Black" CornerRadius="0,0,12,12" HorizontalAlignment="Center"
-            VerticalAlignment="Top" Width="190" Height="26" ClipToBounds="True"
-            TextElement.Foreground="White" TextElement.FontSize="12">
-        <Grid>
-            <Grid x:Name="ClosedView">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <Image x:Name="EarArtwork" Width="18" Height="18" HorizontalAlignment="Left" Margin="12,0,0,0"
-                       Stretch="UniformToFill" />
-                <TextBlock x:Name="EarText" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center"
-                           Margin="0,0,12,0" FontSize="11" FontWeight="SemiBold" Foreground="#FF9F0A" />
+        Width="700" Height="250" AllowDrop="True" Title="OpenNotch">
+    <Window.Resources>
+        <!-- Aparência escura dos controles dentro do notch, para ficar igual à versão macOS.
+             Fica aqui (e não em App.xaml) para não afetar a janela de configurações. -->
+
+        <!-- Barra de rolagem fina, sem setas -->
+        <Style x:Key="ScrollThumb" TargetType="Thumb">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Thumb">
+                        <Border x:Name="Body" CornerRadius="2.5" Background="#38FFFFFF" />
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Body" Property="Background" Value="#70FFFFFF" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="ScrollPage" TargetType="RepeatButton">
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RepeatButton">
+                        <Border Background="Transparent" />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="ScrollBar">
+            <Setter Property="Width" Value="5" />
+            <Setter Property="MinWidth" Value="5" />
+            <Setter Property="Margin" Value="3,0,0,0" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ScrollBar">
+                        <Track x:Name="PART_Track" IsDirectionReversed="True">
+                            <Track.DecreaseRepeatButton>
+                                <RepeatButton Style="{StaticResource ScrollPage}" Command="ScrollBar.PageUpCommand" />
+                            </Track.DecreaseRepeatButton>
+                            <Track.IncreaseRepeatButton>
+                                <RepeatButton Style="{StaticResource ScrollPage}" Command="ScrollBar.PageDownCommand" />
+                            </Track.IncreaseRepeatButton>
+                            <Track.Thumb>
+                                <Thumb Style="{StaticResource ScrollThumb}" />
+                            </Track.Thumb>
+                        </Track>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="Orientation" Value="Horizontal">
+                    <Setter Property="Width" Value="Auto" />
+                    <Setter Property="MinWidth" Value="0" />
+                    <Setter Property="Height" Value="5" />
+                    <Setter Property="MinHeight" Value="5" />
+                    <Setter Property="Margin" Value="0,3,0,0" />
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ScrollBar">
+                                <Track x:Name="PART_Track">
+                                    <Track.DecreaseRepeatButton>
+                                        <RepeatButton Style="{StaticResource ScrollPage}" Command="ScrollBar.PageLeftCommand" />
+                                    </Track.DecreaseRepeatButton>
+                                    <Track.IncreaseRepeatButton>
+                                        <RepeatButton Style="{StaticResource ScrollPage}" Command="ScrollBar.PageRightCommand" />
+                                    </Track.IncreaseRepeatButton>
+                                    <Track.Thumb>
+                                        <Thumb Style="{StaticResource ScrollThumb}" />
+                                    </Track.Thumb>
+                                </Track>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Controle deslizante: trilho fino, parte preenchida em azul e botão redondo branco -->
+        <Style x:Key="SliderFill" TargetType="RepeatButton">
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RepeatButton">
+                        <Border Background="Transparent">
+                            <Border Height="4" CornerRadius="2" Background="#0A84FF" VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="SliderRest" TargetType="RepeatButton">
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RepeatButton">
+                        <Border Background="Transparent" />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="SliderThumb" TargetType="Thumb">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Thumb">
+                        <Ellipse Width="14" Height="14" Fill="White" />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="Slider">
+            <Setter Property="Height" Value="18" />
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="IsMoveToPointEnabled" Value="True" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Slider">
+                        <Grid Background="Transparent">
+                            <Border Height="4" CornerRadius="2" Background="#33FFFFFF" VerticalAlignment="Center" />
+                            <Track x:Name="PART_Track">
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Style="{StaticResource SliderFill}" Command="Slider.DecreaseLarge" />
+                                </Track.DecreaseRepeatButton>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Style="{StaticResource SliderRest}" Command="Slider.IncreaseLarge" />
+                                </Track.IncreaseRepeatButton>
+                                <Track.Thumb>
+                                    <Thumb Style="{StaticResource SliderThumb}" />
+                                </Track.Thumb>
+                            </Track>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Dicas e menus escuros -->
+        <Style TargetType="ToolTip">
+            <Setter Property="Background" Value="#F01C1C1E" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="BorderBrush" Value="#33FFFFFF" />
+            <Setter Property="Padding" Value="8,4" />
+            <Setter Property="FontSize" Value="11" />
+        </Style>
+        <Style TargetType="ContextMenu">
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ContextMenu">
+                        <Border Background="#F51C1C1E" BorderBrush="#33FFFFFF" BorderThickness="1" CornerRadius="8"
+                                Padding="4">
+                            <StackPanel IsItemsHost="True" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="MenuItem">
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="MenuItem">
+                        <Border x:Name="Back" CornerRadius="5" Padding="10,5" Background="Transparent">
+                            <ContentPresenter ContentSource="Header" RecognizesAccessKey="True" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsHighlighted" Value="True">
+                                <Setter TargetName="Back" Property="Background" Value="#0A84FF" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <!-- A janela é maior que o notch e transparente. "Root" junta a faixa sensível ao mouse
+         (quase invisível, no topo) e a casca preta: passar o mouse em qualquer uma abre o painel. -->
+    <Grid x:Name="Root" HorizontalAlignment="Center" VerticalAlignment="Top">
+        <Border x:Name="HoverZone" Width="260" Height="7" VerticalAlignment="Top" Background="#01000000" />
+        <Border x:Name="Shell" Background="Black" CornerRadius="0,0,4,4" HorizontalAlignment="Center"
+                VerticalAlignment="Top" Width="150" Height="4" ClipToBounds="True" Opacity="0.6"
+                TextElement.Foreground="White" TextElement.FontSize="12"
+                TextElement.FontFamily="Segoe UI Variable Text, Segoe UI">
+            <Grid>
+                <Grid x:Name="ClosedView" Visibility="Collapsed">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Image x:Name="EarArtwork" Width="18" Height="18" HorizontalAlignment="Left" Margin="12,0,0,0"
+                           Stretch="UniformToFill" />
+                    <TextBlock x:Name="EarText" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center"
+                               Margin="0,0,12,0" FontSize="11" FontWeight="SemiBold" Foreground="#FF9F0A" />
+                </Grid>
+                <!-- Tamanho fixo e centralizado: enquanto a casca cresce, o conteúdo "se revela" do centro. -->
+                <Grid x:Name="OpenView" Visibility="Collapsed" Width="640" Height="224" Opacity="0"
+                      HorizontalAlignment="Center" VerticalAlignment="Top">
+                    <Grid.RenderTransform>
+                        <TranslateTransform x:Name="OpenShift" Y="-8" />
+                    </Grid.RenderTransform>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="38" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <DockPanel Margin="14,6,14,0" LastChildFill="False">
+                        <StackPanel x:Name="TabBar" Orientation="Horizontal" DockPanel.Dock="Left" />
+                        <Button x:Name="GearButton" DockPanel.Dock="Right" Style="{StaticResource Flat}" Click="OnGear">
+                            <TextBlock Style="{StaticResource Glyph}" Text="&#xE713;" FontSize="14" />
+                        </Button>
+                        <TextBlock x:Name="TabTitle" DockPanel.Dock="Right" VerticalAlignment="Center" Margin="0,0,8,0"
+                                   Foreground="{StaticResource Dim}" FontSize="11" />
+                    </DockPanel>
+                    <ContentControl x:Name="TabContent" Grid.Row="1" Margin="20,4,20,14" Focusable="False" />
+                </Grid>
             </Grid>
-            <Grid x:Name="OpenView" Visibility="Collapsed" Width="640" Height="224">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="36" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                <DockPanel Margin="14,4,14,0" LastChildFill="False">
-                    <StackPanel x:Name="TabBar" Orientation="Horizontal" DockPanel.Dock="Left" />
-                    <Button x:Name="GearButton" DockPanel.Dock="Right" Style="{StaticResource Flat}" Click="OnGear">
-                        <TextBlock Style="{StaticResource Glyph}" Text="&#xE713;" FontSize="14" />
-                    </Button>
-                    <TextBlock x:Name="TabTitle" DockPanel.Dock="Right" VerticalAlignment="Center" Margin="0,0,8,0"
-                               Foreground="{StaticResource Dim}" FontSize="11" />
-                </DockPanel>
-                <ContentControl x:Name="TabContent" Grid.Row="1" Margin="20,6,20,14" Focusable="False" />
-            </Grid>
-        </Grid>
-    </Border>
+        </Border>
+    </Grid>
 </Window>

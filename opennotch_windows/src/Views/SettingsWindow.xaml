@@ -19,6 +19,9 @@
             <GroupBox Header="{l:T 'Geral'}">
                 <StackPanel>
                     <CheckBox Content="{l:T 'Abrir ao passar o mouse'}" IsChecked="{Binding HoverOpens}" />
+                    <CheckBox Content="{l:T 'Mostrar indicadores com o notch fechado'}" IsChecked="{Binding ShowClosedIndicators}" />
+                    <TextBlock Text="{l:T 'Desligado, o notch fica minimizado no topo da tela e só aparece ao passar o mouse.'}"
+                               Foreground="Gray" FontSize="11" TextWrapping="Wrap" Margin="20,0,0,4" />
                     <CheckBox Content="{l:T 'Mostrar em todos os monitores'}" IsChecked="{Binding DisplayAllScreens}" />
                     <CheckBox Content="{l:T 'Ativar atalhos do OpenNotch'}" IsChecked="{Binding HotkeysEnabled}" />
                     <TextBlock Text="{l:T 'Ctrl + Alt + N abre o notch, V abre Textos e S abre Captura de tela.'}"

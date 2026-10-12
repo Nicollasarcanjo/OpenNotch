@@ -48,9 +48,20 @@
         <Style x:Key="Bar" TargetType="ProgressBar">
             <Setter Property="Height" Value="4" />
             <Setter Property="Maximum" Value="1" />
-            <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Background" Value="#22FFFFFF" />
             <Setter Property="Foreground" Value="#34C759" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ProgressBar">
+                        <Grid>
+                            <Border x:Name="PART_Track" CornerRadius="2" Background="{TemplateBinding Background}" />
+                            <Border x:Name="PART_Indicator" CornerRadius="2" Background="{TemplateBinding Foreground}"
+                                    HorizontalAlignment="Left" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
         <Style x:Key="Input" TargetType="TextBox">
             <Setter Property="Background" Value="#14FFFFFF" />

@@ -348,3 +348,11 @@
 "Ctrl + Alt + N abre o notch, V abre Textos e S abre Captura de tela." = "Ctrl + Alt + N opens the notch, V opens Texts and S opens Screen Capture.";
 "Configurações importadas." = "Settings imported.";
 "Os apps com áudio aparecem aqui, cada um com o seu volume." = "Apps with audio show up here, each with its own volume.";
+"Mostrar indicadores com o notch fechado" = "Show indicators on the closed notch";
+"Desligado, o notch fica minimizado no topo da tela e só aparece ao passar o mouse." = "When off, the notch stays minimized at the top of the screen and only shows up on hover.";
+"Passe o mouse no centro do topo da tela para abrir o painel." = "Hover over the center of the top of the screen to open the panel.";
+"Permissões" = "Permissions";
+"No Windows o OpenNotch não precisa de nenhuma permissão especial: música, volume por app, prints e a lista de apps já funcionam. Nada é enviado para fora do computador." = "On Windows, OpenNotch needs no special permission: music, per-app volume, screenshots and the app list already work. Nothing is sent off your computer.";
+"Como você quer usar" = "How you want to use it";
+"• Ctrl + Alt + N abre e fecha o notch pelo teclado." = "• Ctrl + Alt + N opens and closes the notch from the keyboard.";
+"• O ícone do OpenNotch fica na área de notificação, perto do relógio." = "• The OpenNotch icon lives in the notification area, near the clock.";

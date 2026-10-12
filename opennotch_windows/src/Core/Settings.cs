@@ -26,12 +26,17 @@ public sealed class Settings : Observable
     // Geral
     private bool _hoverOpens = true;
     public bool HoverOpens { get => _hoverOpens; set => Change(ref _hoverOpens, value); }
-    private double _hoverDelay = 0.12;
+    // Um pouco mais que no macOS: no Windows o topo da tela é muito usado (abas, botões de janela),
+    // e a espera evita abrir o notch sem querer.
+    private double _hoverDelay = 0.2;
     public double HoverDelay { get => _hoverDelay; set => Change(ref _hoverDelay, value); }
     private double _closeDelay = 0.35;
     public double CloseDelay { get => _closeDelay; set => Change(ref _closeDelay, value); }
     private bool _displayAllScreens = true;
     public bool DisplayAllScreens { get => _displayAllScreens; set => Change(ref _displayAllScreens, value); }
+    private bool _showClosedIndicators;
+    /// <summary>Só no Windows: fechado, o notch mostra música/timer/agentes em vez de ficar minimizado.</summary>
+    public bool ShowClosedIndicators { get => _showClosedIndicators; set => Change(ref _showClosedIndicators, value); }
     private bool _hotkeysEnabled = true;
     public bool HotkeysEnabled { get => _hotkeysEnabled; set => Change(ref _hotkeysEnabled, value); }
     private string _language = "";

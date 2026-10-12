@@ -39,7 +39,7 @@ Não deixe uma versão "para depois" sem registrar. A tabela é a fonte da verda
 |---|---|---|---|
 | Painel no topo, abre ao passar o mouse | Sim | Sim | |
 | Um painel por monitor | Sim | Sim | |
-| Indicadores com o painel fechado | Sim | Sim | No Windows são mais simples (capa e um texto) |
+| Indicadores com o painel fechado | Sim | Opcional | No Windows o padrão é ficar minimizado (um risco no topo), porque lá não há notch físico e a barra ocuparia espaço; a opção "Mostrar indicadores com o notch fechado" liga os indicadores |
 | Música: mostrar e controlar | Sim | Sim | macOS: Spotify, Apple Music e extensão de navegador. Windows: controles de mídia do sistema, que já cobrem os navegadores |
 | Extensão de navegador | Sim | Não precisa | |
 | Agentes de IA: Claude Code e Codex | Sim | Sim | Mesma leitura de arquivos |
@@ -66,7 +66,7 @@ Não deixe uma versão "para depois" sem registrar. A tabela é a fonte da verda
 | Português e inglês | Sim | Sim | Mesma tabela de frases |
 | Exportar e importar configurações | Sim | Sim | Os arquivos não são intercambiáveis entre sistemas |
 | Aviso de versão nova | Sim | Sim | |
-| Boas-vindas com permissões | Sim | Não precisa | O Windows não pede essas permissões |
+| Boas-vindas na primeira execução | Sim | Sim | macOS pede as permissões; Windows explica que não há permissões e mostra as escolhas iniciais |
 | Abrir ao iniciar o sistema | Sim | Sim | Ligado por padrão na primeira execução; o usuário pode desligar |
 
 ### Estado de verificação
@@ -114,6 +114,9 @@ As duas versões seguem o mesmo desenho, com nomes equivalentes. Ao procurar ond
 - Sem dependências externas. Se uma for realmente necessária, justifique no PR.
 
 ### Boas práticas em C# (Windows)
+
+- **A aparência segue a versão macOS.** Dentro do notch, nada de controles com cara de Windows clássico: barras de rolagem, controles deslizantes, menus e dicas têm estilo próprio, definido em `NotchWindow.xaml`. Controle novo dentro do notch precisa de estilo escuro equivalente ao do macOS.
+- Animações com duração e curva explícitas; abrir usa um leve efeito de mola, fechar é mais curto. Não troque de estado sem transição.
 
 - WPF com telas em XAML e código de tela mínimo: o `.xaml.cs` só trata eventos e repassa para o objeto de lógica.
 - Os objetos de lógica herdam de `Observable` e ficam em `Services.Instance`. As telas usam `DataContext` e `Binding`.
