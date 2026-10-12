@@ -1,0 +1,39 @@
+<Window x:Class="OpenNotch.NotchWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent" Topmost="True"
+        ShowInTaskbar="False" ResizeMode="NoResize" ShowActivated="False"
+        Width="680" Height="240" AllowDrop="True" Title="OpenNotch">
+    <!-- A janela é maior que o notch e transparente; só a "casca" preta recebe o mouse. -->
+    <Border x:Name="Shell" Background="Black" CornerRadius="0,0,12,12" HorizontalAlignment="Center"
+            VerticalAlignment="Top" Width="190" Height="26" ClipToBounds="True"
+            TextElement.Foreground="White" TextElement.FontSize="12">
+        <Grid>
+            <Grid x:Name="ClosedView">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Image x:Name="EarArtwork" Width="18" Height="18" HorizontalAlignment="Left" Margin="12,0,0,0"
+                       Stretch="UniformToFill" />
+                <TextBlock x:Name="EarText" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center"
+                           Margin="0,0,12,0" FontSize="11" FontWeight="SemiBold" Foreground="#FF9F0A" />
+            </Grid>
+            <Grid x:Name="OpenView" Visibility="Collapsed" Width="640" Height="224">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="36" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <DockPanel Margin="14,4,14,0" LastChildFill="False">
+                    <StackPanel x:Name="TabBar" Orientation="Horizontal" DockPanel.Dock="Left" />
+                    <Button x:Name="GearButton" DockPanel.Dock="Right" Style="{StaticResource Flat}" Click="OnGear">
+                        <TextBlock Style="{StaticResource Glyph}" Text="&#xE713;" FontSize="14" />
+                    </Button>
+                    <TextBlock x:Name="TabTitle" DockPanel.Dock="Right" VerticalAlignment="Center" Margin="0,0,8,0"
+                               Foreground="{StaticResource Dim}" FontSize="11" />
+                </DockPanel>
+                <ContentControl x:Name="TabContent" Grid.Row="1" Margin="20,6,20,14" Focusable="False" />
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

@@ -1,0 +1,66 @@
+<UserControl x:Class="OpenNotch.AgentsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="clr-namespace:OpenNotch">
+    <DockPanel>
+        <Border x:Name="Banner" DockPanel.Dock="Top" Background="#2934C759" CornerRadius="8" Padding="10,6"
+                Margin="0,0,0,6" Visibility="Collapsed">
+            <TextBlock x:Name="BannerText" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+        </Border>
+        <Grid>
+            <StackPanel x:Name="Empty" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock Text="{l:T 'Nenhum agente rodando'}" FontSize="14" FontWeight="SemiBold"
+                           HorizontalAlignment="Center" />
+                <TextBlock Text="{l:T 'Sessões do Claude Code e do Codex aparecem aqui.'}"
+                           Foreground="{StaticResource Dim}" HorizontalAlignment="Center" />
+            </StackPanel>
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <ItemsControl ItemsSource="{Binding Providers}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Margin="0,0,0,8">
+                                <DockPanel Margin="0,0,0,3">
+                                    <TextBlock Text="{Binding LimitsText}" DockPanel.Dock="Right" FontSize="10"
+                                               Foreground="{StaticResource Dim}" VerticalAlignment="Center" />
+                                    <TextBlock Text="{Binding Name}" FontSize="11" FontWeight="SemiBold" />
+                                </DockPanel>
+                                <ItemsControl ItemsSource="{Binding Sessions}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Background="{StaticResource Card}" CornerRadius="7" Padding="9,5"
+                                                    Margin="0,0,0,3">
+                                                <DockPanel>
+                                                    <TextBlock DockPanel.Dock="Right" Text="{Binding StateText}" Width="78"
+                                                               TextAlignment="Right" FontSize="10" x:Name="State"
+                                                               Foreground="{StaticResource Dim}" VerticalAlignment="Center" />
+                                                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal"
+                                                                Visibility="{Binding HasUsage, Converter={StaticResource Visible}}">
+                                                        <ProgressBar Style="{StaticResource Bar}" Width="46"
+                                                                     Value="{Binding UsageValue, Mode=OneWay}" />
+                                                        <TextBlock Text="{Binding UsageText}" Width="32" FontSize="10"
+                                                                   TextAlignment="Right" VerticalAlignment="Center" />
+                                                    </StackPanel>
+                                                    <TextBlock VerticalAlignment="Center" TextTrimming="CharacterEllipsis">
+                                                        <Run Text="{Binding Title, Mode=OneWay}" FontWeight="Medium" />
+                                                        <Run Text="  " />
+                                                        <Run Text="{Binding Project, Mode=OneWay}" FontSize="10"
+                                                             Foreground="{StaticResource Dim}" />
+                                                    </TextBlock>
+                                                </DockPanel>
+                                            </Border>
+                                            <DataTemplate.Triggers>
+                                                <DataTrigger Binding="{Binding Working}" Value="True">
+                                                    <Setter TargetName="State" Property="Foreground" Value="#FF9F0A" />
+                                                </DataTrigger>
+                                            </DataTemplate.Triggers>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Grid>
+    </DockPanel>
+</UserControl>

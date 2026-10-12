@@ -1,0 +1,107 @@
+<UserControl x:Class="OpenNotch.AppsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="clr-namespace:OpenNotch">
+    <DockPanel>
+        <Grid DockPanel.Dock="Top" Margin="9,0,9,3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="58" />
+                <ColumnDefinition Width="58" />
+                <ColumnDefinition Width="58" />
+                <ColumnDefinition Width="30" />
+            </Grid.ColumnDefinitions>
+            <Button Style="{StaticResource Flat}" Padding="0" HorizontalAlignment="Left" Tag="name" Click="OnSort"
+                    Content="App" FontSize="10" />
+            <Button Grid.Column="1" Style="{StaticResource Flat}" Padding="0" HorizontalAlignment="Right" Tag="cpu"
+                    Click="OnSort" Content="CPU" FontSize="10" />
+            <Button Grid.Column="2" Style="{StaticResource Flat}" Padding="0" HorizontalAlignment="Right" Tag="gpu"
+                    Click="OnSort" Content="GPU" FontSize="10" />
+            <Button Grid.Column="3" Style="{StaticResource Flat}" Padding="0" HorizontalAlignment="Right" Tag="memory"
+                    Click="OnSort" Content="RAM" FontSize="10" />
+        </Grid>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <ItemsControl ItemsSource="{Binding Apps}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Background="{StaticResource Card}" CornerRadius="7" Margin="0,0,0,3">
+                            <Border.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="{l:T 'Fechar'}" Click="OnQuit" />
+                                    <MenuItem Header="{l:T 'Forçar encerramento'}" Click="OnForceQuit" />
+                                </ContextMenu>
+                            </Border.ContextMenu>
+                            <StackPanel>
+                                <Grid Margin="9,5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="58" />
+                                        <ColumnDefinition Width="58" />
+                                        <ColumnDefinition Width="58" />
+                                        <ColumnDefinition Width="30" />
+                                    </Grid.ColumnDefinitions>
+                                    <!-- Clicar na linha abre ou fecha a lista de processos do app. -->
+                                    <Button Style="{StaticResource Flat}" Padding="0" HorizontalContentAlignment="Left"
+                                            HorizontalAlignment="Stretch" Click="OnToggle">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Source="{Binding Icon}" Width="18" Height="18" Margin="0,0,7,0" />
+                                            <TextBlock Text="{Binding Name}" FontWeight="Medium" VerticalAlignment="Center"
+                                                       MaxWidth="250" TextTrimming="CharacterEllipsis" />
+                                            <Border Background="#24FFFFFF" CornerRadius="8" Padding="5,0" Margin="7,0,0,0"
+                                                    VerticalAlignment="Center"
+                                                    Visibility="{Binding HasChildren, Converter={StaticResource Visible}}">
+                                                <TextBlock Text="{Binding Count}" FontSize="9" FontWeight="SemiBold" />
+                                            </Border>
+                                        </StackPanel>
+                                    </Button>
+                                    <TextBlock Grid.Column="1" Text="{Binding CpuText}" TextAlignment="Right"
+                                               VerticalAlignment="Center" FontSize="11" />
+                                    <TextBlock Grid.Column="2" Text="{Binding GpuText}" TextAlignment="Right"
+                                               VerticalAlignment="Center" FontSize="11" />
+                                    <TextBlock Grid.Column="3" Text="{Binding MemoryText}" TextAlignment="Right"
+                                               VerticalAlignment="Center" FontSize="11" ToolTip="{Binding MemoryTooltip}" />
+                                    <Button Grid.Column="4" Style="{StaticResource Flat}" Padding="4,2"
+                                            HorizontalAlignment="Right" Click="OnQuit" ToolTip="{l:T 'Fechar o app inteiro'}">
+                                        <TextBlock Style="{StaticResource Glyph}" Text="&#xE711;" FontSize="10" />
+                                    </Button>
+                                </Grid>
+                                <ItemsControl ItemsSource="{Binding Processes}"
+                                              Visibility="{Binding Expanded, Converter={StaticResource Visible}}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Margin="9,2">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="58" />
+                                                    <ColumnDefinition Width="58" />
+                                                    <ColumnDefinition Width="58" />
+                                                    <ColumnDefinition Width="30" />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Margin="32,0,0,0" FontSize="11" Foreground="{StaticResource Dim}">
+                                                    <Run Text="{Binding Name, Mode=OneWay}" />
+                                                    <Run Text="{Binding Pid, Mode=OneWay, StringFormat=' ({0})'}" />
+                                                </TextBlock>
+                                                <TextBlock Grid.Column="1" Text="{Binding CpuText}" TextAlignment="Right"
+                                                           FontSize="10" Foreground="{StaticResource Dim}" />
+                                                <TextBlock Grid.Column="2" Text="{Binding GpuText}" TextAlignment="Right"
+                                                           FontSize="10" Foreground="{StaticResource Dim}" />
+                                                <TextBlock Grid.Column="3" Text="{Binding MemoryText}" TextAlignment="Right"
+                                                           FontSize="10" Foreground="{StaticResource Dim}" />
+                                                <Button Grid.Column="4" Style="{StaticResource Flat}" Padding="4,1"
+                                                        HorizontalAlignment="Right" Click="OnKill"
+                                                        ToolTip="{l:T 'Encerrar só este processo'}">
+                                                    <TextBlock Style="{StaticResource Glyph}" Text="&#xE711;" FontSize="8"
+                                                               Foreground="{StaticResource Dim}" />
+                                                </Button>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </DockPanel>
+</UserControl>

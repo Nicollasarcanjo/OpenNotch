@@ -4,3 +4,6 @@ build/
 *.xcuserstate
 xcuserdata/
 DerivedData/
+opennotch_windows/bin/
+opennotch_windows/obj/
+opennotch_windows/out/

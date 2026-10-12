@@ -323,3 +323,14 @@
 "• A engrenagem dentro do notch abre as configurações, onde tudo pode ser ligado ou desligado." = "• The gear inside the notch opens Settings, where everything can be turned on or off.";
 "• Solte arquivos no notch para guardar na bandeja; solte um app para criar um atalho." = "• Drop files on the notch to keep them in the tray; drop an app to create a shortcut.";
 "• ⌃⌥N abre e fecha o notch pelo teclado." = "• ⌃⌥N opens and closes the notch from the keyboard.";
+
+/* Usadas só na versão Windows */
+"Dê play em qualquer player ou no navegador." = "Press play in any player or in the browser.";
+"Sessões do Claude Code e do Codex aparecem aqui." = "Claude Code and Codex sessions show up here.";
+"Fechar o app inteiro" = "Quit the whole app";
+"Encerrar só este processo" = "End only this process";
+"Seus últimos prints aparecem aqui." = "Your latest screenshots show up here.";
+"Duração" = "Duration";
+"Abrir ao iniciar o Windows" = "Open at Windows startup";
+"Ctrl + Alt + N abre o notch, V abre Textos e S abre Captura de tela." = "Ctrl + Alt + N opens the notch, V opens Texts and S opens Screen Capture.";
+"Configurações importadas." = "Settings imported.";

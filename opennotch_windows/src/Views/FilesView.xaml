@@ -1,0 +1,83 @@
+<UserControl x:Class="OpenNotch.FilesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="clr-namespace:OpenNotch">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition x:Name="TrayColumn" Width="*" />
+            <ColumnDefinition Width="14" />
+            <ColumnDefinition x:Name="DownloadsColumn" Width="250" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Bandeja -->
+        <DockPanel x:Name="TrayPanel">
+            <Button DockPanel.Dock="Bottom" Style="{StaticResource Flat}" HorizontalAlignment="Right" Padding="4,0"
+                    Click="OnClearTray" Content="{l:T 'Limpar bandeja'}" FontSize="10" x:Name="ClearTray" />
+            <Grid>
+                <StackPanel x:Name="TrayEmpty" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <TextBlock Text="{l:T 'Solte arquivos aqui'}" FontSize="14" FontWeight="SemiBold"
+                               HorizontalAlignment="Center" />
+                    <TextBlock Text="{l:T 'Eles ficam guardados para você arrastar para outro lugar depois.'}"
+                               Foreground="{StaticResource Dim}" TextWrapping="Wrap" TextAlignment="Center" />
+                </StackPanel>
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                    <ItemsControl ItemsSource="{Binding Items}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Width="84" Height="100" CornerRadius="10" Background="{StaticResource Card}"
+                                        Margin="0,0,8,0" Cursor="Hand" ToolTip="{Binding Path}"
+                                        MouseMove="OnDragOut" MouseLeftButtonDown="OnFileDown">
+                                    <Border.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="{l:T 'Abrir'}" Click="OnOpenFile" />
+                                            <MenuItem Header="{l:T 'Remover da bandeja'}" Click="OnRemoveFile" />
+                                        </ContextMenu>
+                                    </Border.ContextMenu>
+                                    <StackPanel VerticalAlignment="Center">
+                                        <Image Source="{Binding Icon}" Width="44" Height="44" />
+                                        <TextBlock Text="{Binding Name}" FontSize="10" TextAlignment="Center" Margin="4,6,4,0"
+                                                   TextTrimming="CharacterEllipsis" />
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+        </DockPanel>
+
+        <!-- Downloads -->
+        <DockPanel x:Name="DownloadsPanel" Grid.Column="2">
+            <DockPanel DockPanel.Dock="Top" LastChildFill="False" Margin="0,0,0,4">
+                <TextBlock Text="Downloads" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center" />
+                <Button DockPanel.Dock="Right" Style="{StaticResource Flat}" Padding="4,0" Click="OnClearDownloads"
+                        Content="{l:T 'Limpar'}" FontSize="10" />
+            </DockPanel>
+            <Grid>
+                <TextBlock x:Name="DownloadsEmpty" Text="{l:T 'Nenhum download em andamento'}"
+                           Foreground="{StaticResource Dim}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <ItemsControl x:Name="DownloadItems">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Style="{StaticResource Chip}" Padding="9,6" Margin="0,0,0,4"
+                                        HorizontalContentAlignment="Stretch" Click="OnReveal">
+                                    <DockPanel>
+                                        <TextBlock DockPanel.Dock="Right" Text="{Binding Detail}" FontSize="10"
+                                                   Foreground="{StaticResource Dim}" Margin="6,0,0,0" />
+                                        <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                                    </DockPanel>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+        </DockPanel>
+    </Grid>
+</UserControl>

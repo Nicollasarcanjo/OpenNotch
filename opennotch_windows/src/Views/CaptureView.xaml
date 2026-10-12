@@ -1,0 +1,41 @@
+<UserControl x:Class="OpenNotch.CaptureView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="clr-namespace:OpenNotch">
+    <DockPanel>
+        <DockPanel DockPanel.Dock="Top" LastChildFill="False" Margin="0,0,0,8">
+            <Button Style="{StaticResource Chip}" Click="OnFull" Margin="0,0,8,0" Content="{l:T 'Tela toda'}" />
+            <Button Style="{StaticResource Chip}" Click="OnRegion" Content="{l:T 'Área'}" />
+            <Button DockPanel.Dock="Right" Style="{StaticResource Flat}" Click="OnFolder"
+                    ToolTip="{l:T 'Abrir a pasta das capturas'}">
+                <TextBlock Style="{StaticResource Glyph}" Text="&#xE8B7;" />
+            </Button>
+        </DockPanel>
+        <Grid>
+            <TextBlock x:Name="Empty" Text="{l:T 'Seus últimos prints aparecem aqui.'}" Foreground="{StaticResource Dim}"
+                       HorizontalAlignment="Center" VerticalAlignment="Center" />
+            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                <ItemsControl ItemsSource="{Binding Items}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <!-- Clique copia; clique com o botão direito abre no app padrão. -->
+                            <Border Width="150" Height="96" CornerRadius="9" Margin="0,0,8,0" Cursor="Hand"
+                                    Background="{StaticResource Card}" BorderBrush="#1FFFFFFF" BorderThickness="1"
+                                    MouseLeftButtonUp="OnCopy" MouseRightButtonUp="OnOpen" ToolTip="{Binding Name}">
+                                <Border.Clip>
+                                    <RectangleGeometry Rect="0,0,150,96" RadiusX="9" RadiusY="9" />
+                                </Border.Clip>
+                                <Image Source="{Binding Thumbnail}" Stretch="UniformToFill" />
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Grid>
+    </DockPanel>
+</UserControl>

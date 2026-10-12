@@ -2,7 +2,9 @@
 
 <img src="Resources/AppIcon.png" width="128" alt="Ícone do OpenNotch">
 
-Um app gratuito para macOS que transforma o notch do MacBook em um painel útil: música, agentes de IA, apps abertos, captura de tela, anotações e mais. Sem anúncios e sem recursos bloqueados.
+Um app gratuito que transforma o topo da tela em um painel útil: música, agentes de IA, apps abertos, captura de tela, anotações e mais. Sem anúncios e sem recursos bloqueados.
+
+Existe para **macOS** (sobre o notch do MacBook) e para **Windows** (uma barra no centro do topo da tela).
 
 <img src="docs/screenshots/home.png" width="820" alt="OpenNotch aberto na tela inicial, com o player de música e atalhos de apps">
 
@@ -16,13 +18,40 @@ Disponível em português e inglês.
 
 ## Baixar
 
-Pegue o **OpenNotch.zip** da [versão mais recente](https://github.com/Nicollasarcanjo/OpenNotch/releases/latest), descompacte e arraste o app para a pasta Aplicativos. Funciona em Macs com Apple Silicon e Intel.
+Os dois apps ficam na [versão mais recente](https://github.com/Nicollasarcanjo/OpenNotch/releases/latest):
 
-Como o app ainda não é notarizado pela Apple, o macOS bloqueia a primeira abertura. Para liberar, abra **Ajustes do Sistema › Privacidade e Segurança**, role até o aviso sobre o OpenNotch e clique em **Abrir Mesmo Assim**. Pelo Terminal:
+| Sistema | Arquivo |
+|---|---|
+| macOS 14 ou mais recente (Apple Silicon e Intel) | `OpenNotch-macOS.zip` |
+| Windows 10 ou 11 (64 bits) | `OpenNotch-Windows.zip` |
+
+**macOS:** descompacte e arraste o app para a pasta Aplicativos. Como ele ainda não é notarizado pela Apple, o macOS bloqueia a primeira abertura. Para liberar, abra **Ajustes do Sistema › Privacidade e Segurança**, role até o aviso sobre o OpenNotch e clique em **Abrir Mesmo Assim**. Pelo Terminal:
 
 ```bash
 xattr -dr com.apple.quarantine /Applications/OpenNotch.app
 ```
+
+**Windows:** extraia o `OpenNotch.exe` para uma pasta sua e dê dois cliques; não precisa instalar nada. Como ele ainda não tem assinatura digital, o Windows mostra "O Windows protegeu o computador" na primeira vez: clique em **Mais informações** e em **Executar assim mesmo**.
+
+## macOS e Windows
+
+As funcionalidades e as imagens abaixo descrevem a versão macOS, que é a mais completa. A versão Windows é a primeira, tem a mesma estrutura e a maior parte dos módulos:
+
+| Recurso | macOS | Windows |
+|---|---|---|
+| Música (mostrar e controlar) | Sim | Sim, incluindo navegadores, sem extensão |
+| Agentes de IA (Claude Code e Codex) | Sim | Sim |
+| Apps abertos com CPU, GPU e memória | Sim | Sim |
+| Print de tela toda e de área | Sim | Sim |
+| Gravação de tela e anotação de prints | Sim | Ainda não |
+| Anotações, textos copiados e busca | Sim | Sim |
+| Bandeja de arquivos | Sim | Sim |
+| Downloads | Sim | Sim, sem porcentagem |
+| Timers e monitor do sistema | Sim | Sim |
+| Tela inicial personalizável e calendário | Sim | Ainda não |
+| Vários monitores, atalhos, idiomas, exportar configurações | Sim | Sim |
+
+A versão Windows foi escrita e compilada, mas ainda **não foi testada num Windows de verdade** por quem a escreveu. Se algo não funcionar, abra uma issue.
 
 ## Funcionalidades
 
@@ -147,12 +176,15 @@ Também há:
 
 | Versão | O que mudou |
 |---|---|
+| 0.3.0 | Primeira versão para Windows; a release passa a ter um arquivo por sistema |
 | 0.2.1 | Ícone de anotar mais legível, ajuste visual nas configurações e imagens no README |
 | 0.2.0 | Downloads, anotação de prints, vários monitores, boas-vindas, inglês, exportar/importar configurações e aviso de atualização |
 
 Todas as versões ficam em [Releases](https://github.com/Nicollasarcanjo/OpenNotch/releases).
 
 ## Como compilar
+
+### macOS
 
 Requisitos: macOS 14 ou mais recente e Xcode (ou as Command Line Tools) com Swift 5.9+.
 
@@ -162,7 +194,25 @@ Requisitos: macOS 14 ou mais recente e Xcode (ou as Command Line Tools) com Swif
 
 O script compila em modo release e monta `build/OpenNotch.app`. Se houver um certificado "Apple Development" no Keychain, o app é assinado com ele; assim o macOS mantém as permissões entre uma compilação e outra. Sem certificado, a assinatura é ad hoc e as permissões são pedidas de novo a cada compilação.
 
-Para publicar uma versão, atualize o arquivo `VERSION` e envie uma tag (`git tag v0.2.1 && git push origin v0.2.1`). O GitHub Actions compila, empacota e cria a release com o `OpenNotch.zip`. O texto da release vem de `.github/release-notes.md`.
+### Windows
+
+Requisitos: [SDK do .NET 10](https://dotnet.microsoft.com/download). O código fica em `opennotch_windows/`.
+
+```bash
+dotnet run --project opennotch_windows/OpenNotch.Windows.csproj
+```
+
+Para gerar o executável único, como o da release:
+
+```bash
+dotnet publish opennotch_windows/OpenNotch.Windows.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o out
+```
+
+Dá para compilar a versão Windows a partir do macOS ou do Linux (só não para executar).
+
+### Publicar
+
+Para publicar uma versão, atualize o arquivo `VERSION` e envie uma tag (`git tag v0.3.0 && git push origin v0.3.0`). O GitHub Actions compila as duas versões e cria a release com `OpenNotch-macOS.zip` e `OpenNotch-Windows.zip`. O texto da release vem de `.github/release-notes.md`.
 
 Para uma versão notarizada (que abre em qualquer Mac sem aviso), é preciso uma conta paga do Apple Developer Program; o passo a passo está em `Scripts/notarize.sh`.
 
@@ -205,9 +255,14 @@ O macOS pede cada uma na primeira vez que o recurso é usado:
 - O indicador de volume e brilho aparece junto com o aviso padrão do macOS, sem substituí-lo.
 - Widgets do macOS não podem ser embutidos; os blocos da tela inicial são do próprio app.
 - A extensão do navegador ainda não suporta Safari nem Firefox, e é instalada manualmente.
+- A versão Windows ainda não tem gravação de tela, anotação de prints, tela inicial personalizável nem calendário, e ainda não foi testada num Windows de verdade.
 - O app ainda não é notarizado; por isso o macOS pede a liberação manual na primeira abertura.
 - A atualização não é automática: o app avisa e a instalação é manual.
 - A gravação de tela pega só o monitor principal.
+
+## Contribuir
+
+As regras do projeto estão em [AGENTS.md](AGENTS.md): arquitetura das duas versões, boas práticas de Swift e C#, como abrir um pull request e a tabela de paridade. A regra principal é que uma funcionalidade nova entra no macOS e no Windows no mesmo pull request.
 
 ## Estrutura do projeto
 
@@ -224,7 +279,11 @@ Sources/OpenNotch/
   Localization.swift                função de tradução (as frases em inglês ficam em Resources/en.lproj)
   ProcScan.swift, RegionSelector.swift
   Modules/                          um arquivo por funcionalidade
-Extension/                          extensão do navegador
+opennotch_windows/                  versão Windows (C# + WPF)
+  src/Core/                         preferências, tradução, atalhos e chamadas ao Windows
+  src/Modules/                      lógica de cada funcionalidade
+  src/Views/                        janela do notch, abas e configurações
+Extension/                          extensão do navegador (usada pela versão macOS)
 Scripts/                            ícone, imagens do README e notarização
 docs/screenshots/                   imagens do README
 ```

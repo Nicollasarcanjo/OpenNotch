@@ -1,0 +1,33 @@
+<UserControl x:Class="OpenNotch.TimersView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="clr-namespace:OpenNotch">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="200" />
+        </Grid.ColumnDefinitions>
+        <StackPanel VerticalAlignment="Center">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button x:Name="ModePomodoro" Style="{StaticResource Chip}" Margin="0,0,4,0" Click="OnMode" Tag="Pomodoro"
+                        Content="Pomodoro" />
+                <Button x:Name="ModeCountdown" Style="{StaticResource Chip}" Margin="0,0,4,0" Click="OnMode" Tag="Countdown"
+                        Content="{l:T 'Contagem'}" />
+                <Button x:Name="ModeStopwatch" Style="{StaticResource Chip}" Click="OnMode" Tag="Stopwatch"
+                        Content="{l:T 'Cronômetro'}" />
+            </StackPanel>
+            <TextBlock Text="{Binding Display}" FontSize="50" FontWeight="SemiBold" HorizontalAlignment="Center"
+                       Margin="0,4,0,0" />
+            <TextBlock Text="{Binding PhaseText}" Foreground="{StaticResource Dim}" HorizontalAlignment="Center" />
+        </StackPanel>
+        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="12,0,0,0">
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                <Button Style="{StaticResource Chip}" Click="OnToggle" MinWidth="86" Content="{Binding ToggleText}" />
+                <Button Style="{StaticResource Chip}" Click="OnRestart" Margin="8,0,0,0" ToolTip="{l:T 'Zerar'}">
+                    <TextBlock Style="{StaticResource Glyph}" Text="&#xE72C;" />
+                </Button>
+            </StackPanel>
+            <StackPanel x:Name="Durations" />
+        </StackPanel>
+    </Grid>
+</UserControl>

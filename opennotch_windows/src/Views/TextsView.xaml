@@ -1,0 +1,88 @@
+<UserControl x:Class="OpenNotch.TextsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="clr-namespace:OpenNotch">
+    <DockPanel>
+        <TextBox x:Name="Search" DockPanel.Dock="Top" Style="{StaticResource Input}" Margin="0,0,0,6"
+                 TextChanged="OnSearch" ToolTip="{l:T 'Buscar nas anotações e nos textos copiados'}" />
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition x:Name="NotesColumn" Width="*" />
+                <ColumnDefinition Width="14" />
+                <ColumnDefinition x:Name="CopiedColumn" Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Anotações: lista, ou o editor quando uma está aberta -->
+            <DockPanel x:Name="NotesPanel">
+                <DockPanel DockPanel.Dock="Top" LastChildFill="False" Margin="0,0,0,4">
+                    <TextBlock x:Name="NotesTitle" Text="{l:T 'Anotações'}" FontSize="11" FontWeight="SemiBold"
+                               VerticalAlignment="Center" />
+                    <Button x:Name="AddButton" DockPanel.Dock="Right" Style="{StaticResource Chip}" Padding="6,2"
+                            Click="OnAdd" ToolTip="{l:T 'Nova anotação'}">
+                        <TextBlock Style="{StaticResource Glyph}" Text="&#xE710;" FontSize="10" />
+                    </Button>
+                    <Button x:Name="DoneButton" DockPanel.Dock="Right" Style="{StaticResource Chip}" Padding="6,2"
+                            Click="OnDone" Visibility="Collapsed" ToolTip="{l:T 'Concluir'}">
+                        <TextBlock Style="{StaticResource Glyph}" Text="&#xE8FB;" FontSize="10" />
+                    </Button>
+                    <Button x:Name="DeleteButton" DockPanel.Dock="Right" Style="{StaticResource Chip}" Padding="6,2"
+                            Margin="0,0,4,0" Click="OnDelete" Visibility="Collapsed" ToolTip="{l:T 'Apagar anotação'}">
+                        <TextBlock Style="{StaticResource Glyph}" Text="&#xE74D;" FontSize="10" />
+                    </Button>
+                </DockPanel>
+                <Grid>
+                    <ScrollViewer x:Name="NotesList" VerticalScrollBarVisibility="Auto">
+                        <ItemsControl x:Name="NotesItems">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Style="{StaticResource Chip}" Padding="9,6" Margin="0,0,0,4"
+                                            HorizontalContentAlignment="Stretch" Click="OnOpenNote">
+                                        <DockPanel>
+                                            <TextBlock DockPanel.Dock="Right" Text="{Binding DateText}" FontSize="10"
+                                                       Foreground="{StaticResource Faint}" />
+                                            <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" />
+                                        </DockPanel>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                    <TextBox x:Name="Editor" Style="{StaticResource Input}" AcceptsReturn="True" TextWrapping="Wrap"
+                             VerticalScrollBarVisibility="Auto" Visibility="Collapsed" TextChanged="OnEdit" />
+                </Grid>
+            </DockPanel>
+
+            <!-- Textos copiados -->
+            <DockPanel x:Name="CopiedPanel" Grid.Column="2">
+                <DockPanel DockPanel.Dock="Top" LastChildFill="False" Margin="0,0,0,4">
+                    <TextBlock Text="{l:T 'Textos copiados'}" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center" />
+                    <Button DockPanel.Dock="Right" Style="{StaticResource Flat}" Padding="4,0" Click="OnClear"
+                            Content="{l:T 'Limpar'}" FontSize="10" />
+                </DockPanel>
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <ItemsControl x:Name="CopiedItems">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Style="{StaticResource Chip}" Padding="9,6" Margin="0,0,0,4"
+                                        HorizontalContentAlignment="Stretch" Click="OnCopy"
+                                        ToolTip="{l:T 'Clique para copiar de novo'}">
+                                    <Button.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="{l:T 'Salvar como anotação'}" Click="OnSaveAsNote" />
+                                            <MenuItem Header="{l:T 'Remover do histórico'}" Click="OnRemoveCopied" />
+                                        </ContextMenu>
+                                    </Button.ContextMenu>
+                                    <DockPanel>
+                                        <TextBlock DockPanel.Dock="Right" Text="{Binding Time}" FontSize="10"
+                                                   Foreground="{StaticResource Faint}" />
+                                        <TextBlock Text="{Binding Preview}" TextTrimming="CharacterEllipsis" />
+                                    </DockPanel>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </DockPanel>
+        </Grid>
+    </DockPanel>
+</UserControl>

@@ -1,0 +1,32 @@
+# Confere que as duas versões compilam e que a tabela de tradução do Windows está em dia.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: swift build -c release
+
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+      - run: dotnet build opennotch_windows/OpenNotch.Windows.csproj -c Release
+
+  traducoes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: A tabela do Windows deve ser a gerada a partir da do macOS
+        run: |
+          python3 Scripts/sync-strings.py
+          git diff --exit-code -- opennotch_windows/src/Core/Strings.en.cs

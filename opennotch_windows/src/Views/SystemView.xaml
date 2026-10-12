@@ -1,0 +1,34 @@
+<UserControl x:Class="OpenNotch.SystemView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="clr-namespace:OpenNotch">
+    <UniformGrid Rows="1" VerticalAlignment="Center">
+        <StackPanel Margin="8,0">
+            <TextBlock Text="CPU" FontSize="11" Foreground="{StaticResource Dim}" />
+            <TextBlock Text="{Binding CpuText}" FontSize="26" FontWeight="SemiBold" />
+            <ProgressBar Style="{StaticResource Bar}" Value="{Binding Cpu, Mode=OneWay}" Foreground="#0A84FF" />
+        </StackPanel>
+        <StackPanel Margin="8,0">
+            <TextBlock Text="RAM" FontSize="11" Foreground="{StaticResource Dim}" />
+            <TextBlock Text="{Binding MemoryPercent}" FontSize="26" FontWeight="SemiBold" />
+            <ProgressBar Style="{StaticResource Bar}" Value="{Binding Memory, Mode=OneWay}" Foreground="#BF5AF2" />
+            <TextBlock Text="{Binding MemoryText}" FontSize="10" Foreground="{StaticResource Dim}" Margin="0,4,0,0" />
+        </StackPanel>
+        <StackPanel Margin="8,0">
+            <TextBlock Text="{l:T 'Disco'}" FontSize="11" Foreground="{StaticResource Dim}" />
+            <TextBlock Text="{Binding DiskPercent}" FontSize="26" FontWeight="SemiBold" />
+            <ProgressBar Style="{StaticResource Bar}" Value="{Binding Disk, Mode=OneWay}" Foreground="#FF9F0A" />
+            <TextBlock Text="{Binding DiskText}" FontSize="10" Foreground="{StaticResource Dim}" Margin="0,4,0,0" />
+        </StackPanel>
+        <StackPanel Margin="8,0" Visibility="{Binding HasBattery, Converter={StaticResource Visible}}">
+            <TextBlock Text="{Binding BatteryTitle}" FontSize="11" Foreground="{StaticResource Dim}" />
+            <TextBlock Text="{Binding BatteryText}" FontSize="26" FontWeight="SemiBold" />
+            <ProgressBar Style="{StaticResource Bar}" Value="{Binding BatteryValue, Mode=OneWay}" />
+        </StackPanel>
+        <StackPanel Margin="8,0">
+            <TextBlock Text="{l:T 'Rede'}" FontSize="11" Foreground="{StaticResource Dim}" />
+            <TextBlock Text="{Binding DownText}" Margin="0,8,0,4" />
+            <TextBlock Text="{Binding UpText}" />
+        </StackPanel>
+    </UniformGrid>
+</UserControl>
