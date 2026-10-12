@@ -156,3 +156,9 @@ Sources/OpenNotch/
 Extension/                          extensão do navegador
 Scripts/                            gerador do ícone
 ```
+
+## Licença
+
+O OpenNotch é distribuído sob a [PolyForm Noncommercial License 1.0.0](LICENSE.md).
+
+Em resumo: você pode usar, estudar, modificar e redistribuir o app e o código livremente, desde que **não seja para fins comerciais**. Não é permitido vender o app, cobrar pelo acesso a ele nem usá-lo para obter lucro. O texto da licença é o que vale; este resumo não o substitui.
