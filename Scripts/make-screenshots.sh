@@ -17,7 +17,7 @@ shot() {  # shot <nome> [aba]
 }
 
 shot fechado
-for tab in home agents apps capture texts tray timers system; do shot "$tab" "$tab"; done
+for tab in home agents apps mixer capture texts tray timers system; do shot "$tab" "$tab"; done
 
 OPENNOTCH_DEMO=1 OPENNOTCH_SETTINGS_SNAPSHOT="$TMP" "$BIN" -AppleLanguages "(pt-BR)" 2>/dev/null
 cp "$TMP/settings-modules.png" "$OUT/configuracoes.png"

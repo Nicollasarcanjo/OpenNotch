@@ -1,7 +1,7 @@
 import SwiftUI
 
 enum NotchTab: String, CaseIterable, Identifiable {
-    case home, agents, apps, capture, texts, tray, timers, system
+    case home, agents, apps, mixer, capture, texts, tray, timers, system
 
     var id: String { rawValue }
 
@@ -11,6 +11,7 @@ enum NotchTab: String, CaseIterable, Identifiable {
         case .agents: return "sparkles"
         case .apps: return "square.stack.3d.up.fill"
         case .capture: return "camera.viewfinder"
+        case .mixer: return "slider.horizontal.3"
         case .tray: return "tray.full.fill"
         case .timers: return "timer"
         case .texts: return "text.quote"
@@ -24,6 +25,7 @@ enum NotchTab: String, CaseIterable, Identifiable {
         case .agents: return "Agentes de IA"
         case .apps: return "Apps abertos"
         case .capture: return "Captura de tela"
+        case .mixer: return "Volume por app"
         case .tray: return "Arquivos"
         case .timers: return "Timers"
         case .texts: return "Textos"
@@ -38,6 +40,7 @@ enum NotchTab: String, CaseIterable, Identifiable {
         case .agents: return prefs.bool(.modAgents)
         case .apps: return prefs.bool(.modApps)
         case .capture: return prefs.bool(.modCapture)
+        case .mixer: return prefs.bool(.modMixer)
         case .tray: return prefs.bool(.modTray) || prefs.bool(.modDownloads)
         case .timers: return prefs.bool(.modTimers)
         case .texts: return prefs.bool(.modClipboard) || prefs.bool(.modNotes)

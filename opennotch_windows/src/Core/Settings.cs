@@ -38,6 +38,8 @@ public sealed class Settings : Observable
     public string Language { get => _language; set => Change(ref _language, value); }
     private bool _updateAutoCheck = true;
     public bool UpdateAutoCheck { get => _updateAutoCheck; set => Change(ref _updateAutoCheck, value); }
+    private bool _startupConfigured;
+    public bool StartupConfigured { get => _startupConfigured; set => Change(ref _startupConfigured, value); }
     private bool _onboardingDone;
     public bool OnboardingDone { get => _onboardingDone; set => Change(ref _onboardingDone, value); }
 
@@ -48,6 +50,8 @@ public sealed class Settings : Observable
     public bool ModAgents { get => _modAgents; set => Change(ref _modAgents, value); }
     private bool _modApps = true;
     public bool ModApps { get => _modApps; set => Change(ref _modApps, value); }
+    private bool _modMixer = true;
+    public bool ModMixer { get => _modMixer; set => Change(ref _modMixer, value); }
     private bool _modCapture = true;
     public bool ModCapture { get => _modCapture; set => Change(ref _modCapture, value); }
     private bool _modNotes = true;
@@ -88,6 +92,8 @@ public sealed class Settings : Observable
     public bool CaptureAutoCopy { get => _captureAutoCopy; set => Change(ref _captureAutoCopy, value); }
     private bool _captureShowAfter = true;
     public bool CaptureShowAfter { get => _captureShowAfter; set => Change(ref _captureShowAfter, value); }
+    private bool _captureShowNotch;
+    public bool CaptureShowNotch { get => _captureShowNotch; set => Change(ref _captureShowNotch, value); }
     private int _captureGalleryCount = 12;
     public int CaptureGalleryCount { get => _captureGalleryCount; set => Change(ref _captureGalleryCount, value); }
 
@@ -154,7 +160,7 @@ public sealed class Settings : Observable
         _loading = true;
         foreach (var property in typeof(Settings).GetProperties())
         {
-            if (!property.CanWrite || property.Name == nameof(OnboardingDone)) continue;
+            if (!property.CanWrite || property.Name is nameof(OnboardingDone) or nameof(StartupConfigured)) continue;
             property.SetValue(this, property.GetValue(other));
         }
         _loading = false;

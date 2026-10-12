@@ -46,9 +46,12 @@ Não deixe uma versão "para depois" sem registrar. A tabela é a fonte da verda
 | Agentes de IA: Antigravity e ferramentas personalizadas | Sim | Não | A fazer |
 | Aviso quando um agente termina | Sim | Sim | |
 | Apps abertos com CPU, GPU e memória | Sim | Sim | Agrupamento: macOS por app responsável; Windows por nome do executável |
+| Volume por app | Sim | Sim | macOS: process taps do CoreAudio (14.2+). Windows: sessões de áudio do sistema |
+| Volume por aba do navegador | Sim | Não | Depende da extensão, que o Windows ainda não usa |
 | Print de tela toda e de área | Sim | Sim | |
 | Gravação de tela | Sim | Não | A fazer (Windows.Graphics.Capture) |
 | Anotar print | Sim | Não | A fazer |
+| Opção de aparecer ou não em capturas de tela | Sim | Sim | Padrão: não aparece. Windows usa SetWindowDisplayAffinity |
 | Galeria com os prints do sistema | Sim | Sim | Windows: pasta Imagens\Screenshots |
 | Anotações, histórico de copiados e busca | Sim | Sim | |
 | Bandeja de arquivos | Sim | Sim | |
@@ -64,7 +67,7 @@ Não deixe uma versão "para depois" sem registrar. A tabela é a fonte da verda
 | Exportar e importar configurações | Sim | Sim | Os arquivos não são intercambiáveis entre sistemas |
 | Aviso de versão nova | Sim | Sim | |
 | Boas-vindas com permissões | Sim | Não precisa | O Windows não pede essas permissões |
-| Abrir ao iniciar o sistema | Sim | Sim | |
+| Abrir ao iniciar o sistema | Sim | Sim | Ligado por padrão na primeira execução; o usuário pode desligar |
 
 ### Estado de verificação
 

@@ -227,6 +227,7 @@ struct NotchOpenView: View {
         case .agents: AgentsView()
         case .apps: AppsView()
         case .capture: CaptureView()
+        case .mixer: MixerView()
         case .tray:
             HStack(spacing: 14) {
                 if prefs.bool(.modTray) {

@@ -52,6 +52,7 @@ public partial class App : Application
         Settings.Current.PropertyChanged += OnSettingsChanged;
         SystemEvents.DisplaySettingsChanged += (_, _) => Dispatcher.BeginInvoke(Rebuild);
 
+        EnableStartupOnce();
         CreateTrayIcon();
         Rebuild();
 
@@ -60,6 +61,25 @@ public partial class App : Application
             var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(8) };
             timer.Tick += async (_, _) => { timer.Stop(); await _services.Updater.Check(); };
             timer.Start();
+        }
+    }
+
+    /// <summary>
+    /// O OpenNotch vem configurado para abrir junto com o Windows. Isso é feito uma única vez:
+    /// se o usuário desligar depois nas configurações, a escolha dele é respeitada.
+    /// </summary>
+    private static void EnableStartupOnce()
+    {
+        if (Settings.Current.StartupConfigured) return;
+        Settings.Current.StartupConfigured = true;
+        try
+        {
+            using var key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", writable: true);
+            if (key != null && Environment.ProcessPath is { } path) key.SetValue("OpenNotch", $"\"{path}\"");
+        }
+        catch
+        {
+            // sem acesso ao registro: o app só não abre sozinho
         }
     }
 

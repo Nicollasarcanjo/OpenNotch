@@ -45,6 +45,8 @@ As funcionalidades e as imagens abaixo descrevem a versão macOS, que é a mais 
 | Print de tela toda e de área | Sim | Sim |
 | Gravação de tela e anotação de prints | Sim | Ainda não |
 | Anotações, textos copiados e busca | Sim | Sim |
+| Volume por app | Sim | Sim |
+| Volume por aba do navegador | Sim, com a extensão | Ainda não |
 | Bandeja de arquivos | Sim | Sim |
 | Downloads | Sim | Sim, sem porcentagem |
 | Timers e monitor do sistema | Sim | Sim |
@@ -104,6 +106,19 @@ Um gerenciador de tarefas no notch:
 - Fecha o app inteiro com um clique; "Forçar encerramento" fica no clique com dois dedos.
 - Na lista expandida dá para encerrar um processo só.
 
+### Volume por app e por aba
+
+<img src="docs/screenshots/mixer.png" width="720" alt="Aba de volume com um controle para cada app e cada aba do navegador">
+
+Um controle de volume para cada app que está tocando som, sem mexer no volume geral do sistema:
+
+- Aparecem os apps com áudio no momento (e os que estão com o volume alterado).
+- Arraste o controle para baixar ou aumentar só aquele app; o alto-falante silencia e devolve o som.
+- Abas do navegador aparecem separadas, cada uma com o seu volume (precisa da extensão do OpenNotch).
+- Com o volume em 100%, o OpenNotch não toca no áudio do app. Abaixo disso, ele passa a reproduzir o som do app com o volume escolhido; por isso o macOS pede a permissão de gravação de áudio do sistema. Nada é gravado.
+
+Requer macOS 14.2 ou mais recente.
+
 ### Captura de tela
 
 <img src="docs/screenshots/capture.png" width="720" alt="Aba de captura com os botões de print e gravação e a galeria das últimas capturas">
@@ -113,7 +128,7 @@ Um gerenciador de tarefas no notch:
 - Os prints e gravações feitos pelos atalhos do macOS (⇧⌘3, ⇧⌘4, ⇧⌘5) também aparecem aqui.
 - Galeria com as últimas capturas: um clique copia, clique com dois dedos abre no app padrão.
 - Anotar um print: seta, retângulo, texto e borrar. O resultado é salvo como cópia e já vai copiado.
-- O notch não aparece nas capturas.
+- Por padrão o OpenNotch não aparece em prints nem gravações, mesmo aberto. Para printar ou gravar o próprio painel, ligue "Mostrar o OpenNotch em prints e gravações" em Configurações › Captura de tela.
 
 ### Textos
 
@@ -167,6 +182,7 @@ Abertas pela engrenagem dentro do notch ou pelo ícone da barra de menus. Cada m
 
 Também há:
 
+- Abrir junto com o sistema: vem ligado. Na primeira execução o app se registra para iniciar com o Mac (ou com o Windows); dá para desligar em Configurações › Geral.
 - Tela de boas-vindas, que explica cada permissão e deixa liberar na hora.
 - Idioma: igual ao do sistema, português ou inglês.
 - Exportar e importar as configurações em um arquivo.
@@ -176,6 +192,7 @@ Também há:
 
 | Versão | O que mudou |
 |---|---|
+| 0.4.0 | Volume por app e por aba, opção de aparecer em capturas, e o app passa a abrir junto com o sistema por padrão |
 | 0.3.0 | Primeira versão para Windows; a release passa a ter um arquivo por sistema |
 | 0.2.1 | Ícone de anotar mais legível, ajuste visual nas configurações e imagens no README |
 | 0.2.0 | Downloads, anotação de prints, vários monitores, boas-vindas, inglês, exportar/importar configurações e aviso de atualização |
@@ -212,7 +229,7 @@ Dá para compilar a versão Windows a partir do macOS ou do Linux (só não para
 
 ### Publicar
 
-Para publicar uma versão, atualize o arquivo `VERSION` e envie uma tag (`git tag v0.3.0 && git push origin v0.3.0`). O GitHub Actions compila as duas versões e cria a release com `OpenNotch-macOS.zip` e `OpenNotch-Windows.zip`. O texto da release vem de `.github/release-notes.md`.
+Para publicar uma versão, atualize o arquivo `VERSION` e envie uma tag (`git tag v0.4.0 && git push origin v0.4.0`). O GitHub Actions compila as duas versões e cria a release com `OpenNotch-macOS.zip` e `OpenNotch-Windows.zip`. O texto da release vem de `.github/release-notes.md`.
 
 Para uma versão notarizada (que abre em qualquer Mac sem aviso), é preciso uma conta paga do Apple Developer Program; o passo a passo está em `Scripts/notarize.sh`.
 
@@ -235,7 +252,7 @@ O macOS pede cada uma na primeira vez que o recurso é usado:
 | Permissão | Para quê |
 |---|---|
 | Automação (Spotify, Music) | Controlar a reprodução e ler a capa |
-| Gravação de Tela | Prints e gravações |
+| Gravação de Tela e Áudio do Sistema | Prints, gravações e volume por app |
 | Calendários | Mostrar os eventos de hoje |
 | Arquivos da Mesa | Ler os prints feitos pelos atalhos do macOS |
 | Pasta Downloads | Mostrar o progresso dos downloads |
@@ -259,6 +276,8 @@ O macOS pede cada uma na primeira vez que o recurso é usado:
 - O app ainda não é notarizado; por isso o macOS pede a liberação manual na primeira abertura.
 - A atualização não é automática: o app avisa e a instalação é manual.
 - A gravação de tela pega só o monitor principal.
+- O volume por app, no macOS, mostra só o que está tocando naquele momento, e um app com o volume alterado volta a 100% quando o OpenNotch é fechado.
+- O volume por aba só funciona nos navegadores com a extensão instalada; depois de atualizar o OpenNotch, baixe e recarregue a extensão.
 
 ## Contribuir
 

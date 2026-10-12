@@ -32,6 +32,7 @@ cat > "$APP/Contents/Info.plist" <<'PLIST'
     <key>CFBundleLocalizations</key><array><string>pt-BR</string><string>en</string></array>
     <key>LSMinimumSystemVersion</key><string>14.0</string>
     <key>LSUIElement</key><true/>
+    <key>NSAudioCaptureUsageDescription</key><string>O OpenNotch precisa disso para ajustar o volume de cada app separadamente. O áudio não é gravado.</string>
     <key>NSAppleEventsUsageDescription</key><string>O OpenNotch usa Apple Events para ler e controlar a música do Spotify e do Apple Music.</string>
     <key>NSCalendarsFullAccessUsageDescription</key><string>O OpenNotch mostra os eventos de hoje do seu calendário.</string>
 </dict>

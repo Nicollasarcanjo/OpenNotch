@@ -23,6 +23,7 @@ final class Services {
     let hud = HUDMonitor()
     let downloads = DownloadsMonitor()
     let updater = Updater()
+    lazy var mixer = AudioMixer(bridge: music.bridge)
 }
 
 /// O notch de uma tela: a janela e o estado aberto/fechado dela.
@@ -42,8 +43,7 @@ final class ScreenNotch {
         panel.isFloatingPanel = true
         panel.hidesOnDeactivate = false
         panel.level = .mainMenu + 3
-        // O notch não aparece nos prints nem nas gravações de tela.
-        panel.sharingType = .none
+        applyCaptureVisibility()
         panel.collectionBehavior = [.canJoinAllSpaces, .stationary, .fullScreenAuxiliary, .ignoresCycle]
 
         let root = NotchRootView()
@@ -61,6 +61,7 @@ final class ScreenNotch {
             .environmentObject(services.hud)
             .environmentObject(services.downloads)
             .environmentObject(services.updater)
+            .environmentObject(services.mixer)
             .environmentObject(Prefs.shared)
         let host = NSHostingView(rootView: root)
         host.sizingOptions = []
@@ -69,6 +70,12 @@ final class ScreenNotch {
         model.onOpenChange = { [weak self] open in self?.openChanged(open) }
         layout()
         panel.orderFrontRegardless()
+    }
+
+    /// Por padrão o notch fica fora de prints e gravações (de qualquer app); a opção em
+    /// Configurações › Captura de tela faz ele aparecer.
+    func applyCaptureVisibility() {
+        panel.sharingType = Prefs.shared.bool(.captureShowNotch) ? .readOnly : .none
     }
 
     func update(screen: NSScreen) {
@@ -153,6 +160,7 @@ final class NotchController {
         prefsObserver = Prefs.shared.objectWillChange.receive(on: RunLoop.main).sink { [weak self] in
             guard let self else { return }
             self.hotKeys.setEnabled(Prefs.shared.bool(.hotkeysEnabled))
+            self.notches.forEach { $0.applyCaptureVisibility() }
             let all = Prefs.shared.bool(.displayAllScreens)
             if all != self.showOnAllScreens {
                 self.showOnAllScreens = all

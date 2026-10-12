@@ -9,6 +9,8 @@ struct BrowserState: Decodable {
     var album = ""
     var artwork = ""
     var playing = false
+    /// Id da aba no navegador (ausente em versões antigas da extensão).
+    var tab: Int?
 }
 
 /// Servidor HTTP mínimo, só em 127.0.0.1, que recebe da extensão do navegador a música
@@ -20,8 +22,25 @@ final class BrowserBridge {
     static private(set) var lastContact: Date?
 
     var onState: ((BrowserState) -> Void)?
-    /// Comando esperando a próxima chamada da extensão.
+    /// Comando de música esperando a próxima chamada da aba que está tocando.
     var pendingCommand: String?
+    /// Aba que é a fonte de música atual; só ela recebe os comandos de tocar/pausar/pular.
+    var commandTab: Int?
+
+    private var seenTabs: [Int: (state: BrowserState, at: Date)] = [:]
+    private var tabVolumes: [Int: Double] = [:]
+
+    /// Abas que falaram com o app nos últimos segundos (ou seja, que estão tocando algo).
+    func activeTabs() -> [(id: Int, title: String, site: String)] {
+        let now = Date()
+        seenTabs = seenTabs.filter { now.timeIntervalSince($0.value.at) < 6 }
+        return seenTabs.sorted { $0.key < $1.key }.map { ($0.key, $0.value.state.title, $0.value.state.site) }
+    }
+
+    func volume(ofTab id: Int) -> Double { tabVolumes[id] ?? 1 }
+
+    /// O volume é aplicado na página quando a aba falar com o app de novo (até 1 s).
+    func setVolume(_ value: Double, forTab id: Int) { tabVolumes[id] = value }
 
     private var listener: NWListener?
     private static let allowedOrigins = ["chrome-extension://", "moz-extension://", "safari-web-extension://"]
@@ -73,12 +92,20 @@ final class BrowserBridge {
             send(status: "204 No Content", body: "", origin: origin, on: connection)
         case ("POST", "/state"):
             Self.lastContact = Date()
-            if let state = try? JSONDecoder().decode(BrowserState.self, from: request.body) {
+            let state = try? JSONDecoder().decode(BrowserState.self, from: request.body)
+            if let state {
+                if let tab = state.tab { seenTabs[tab] = (state, Date()) }
                 onState?(state)
             }
-            let command = pendingCommand.map { "\"\($0)\"" } ?? "null"
-            pendingCommand = nil
-            send(status: "200 OK", body: "{\"command\":\(command)}", origin: origin, on: connection)
+            // O comando de música vai só para a aba que é a fonte atual (ou para qualquer uma,
+            // se a extensão for antiga e não informar o id da aba).
+            var command = "null"
+            if let pending = pendingCommand, state?.tab == nil || commandTab == nil || state?.tab == commandTab {
+                command = "\"\(pending)\""
+                pendingCommand = nil
+            }
+            let volume = state?.tab.flatMap { tabVolumes[$0] }.map { String(format: "%.3f", $0) } ?? "null"
+            send(status: "200 OK", body: "{\"command\":\(command),\"volume\":\(volume)}", origin: origin, on: connection)
         default:
             send(status: "404 Not Found", body: "{}", origin: origin, on: connection)
         }

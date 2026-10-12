@@ -106,6 +106,18 @@ enum Demo {
                       bytesTotal: 0, finished: true)]
     }
 
+    static var mixerApps: [MixerApp] {
+        func app(_ name: String, _ path: String, _ volume: Double) -> MixerApp {
+            MixerApp(id: name, name: name, icon: NSWorkspace.shared.icon(forFile: path), objects: [], playing: true, volume: volume)
+        }
+        return [app("Música", "/System/Applications/Music.app", 0.8), app("Safari", "/Applications/Safari.app", 0.35),
+                app("FaceTime", "/System/Applications/FaceTime.app", 1)]
+    }
+
+    static var mixerTabs: [MixerTab] {
+        [MixerTab(id: 1, title: "Vídeo de exemplo", site: "www.youtube.com", volume: 0.5)]
+    }
+
     static let homeApps = ["/Applications/Safari.app", "/System/Applications/Mail.app", "/System/Applications/Notes.app",
                            "/System/Applications/Calendar.app", "/System/Applications/Maps.app",
                            "/System/Applications/Photos.app"]

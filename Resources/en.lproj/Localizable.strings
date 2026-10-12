@@ -324,6 +324,19 @@
 "• Solte arquivos no notch para guardar na bandeja; solte um app para criar um atalho." = "• Drop files on the notch to keep them in the tray; drop an app to create a shortcut.";
 "• ⌃⌥N abre e fecha o notch pelo teclado." = "• ⌃⌥N opens and closes the notch from the keyboard.";
 
+"Mostrar o OpenNotch em prints e gravações" = "Show OpenNotch in screenshots and recordings";
+"Desligado, o painel fica invisível em qualquer captura de tela, mesmo aberto. Ligue para conseguir printar ou gravar o próprio OpenNotch." = "When off, the panel is invisible in any screen capture, even while open. Turn it on to screenshot or record OpenNotch itself.";
+
+"Volume por app" = "Per-app volume";
+"Volume por app e por aba" = "Per-app and per-tab volume";
+"Nenhum app tocando som" = "No app is playing sound";
+"Os apps e as abas com áudio aparecem aqui, cada um com o seu volume." = "Apps and tabs with audio show up here, each with its own volume.";
+"Abas do navegador" = "Browser tabs";
+"Silenciar" = "Mute";
+"Devolver o som" = "Unmute";
+"O volume por app precisa do macOS 14.2 ou mais recente." = "Per-app volume needs macOS 14.2 or later.";
+"Libere “Gravação de Tela e Áudio do Sistema” para o OpenNotch poder ajustar o volume dos apps." = "Allow “Screen & System Audio Recording” so OpenNotch can adjust app volumes.";
+
 /* Usadas só na versão Windows */
 "Dê play em qualquer player ou no navegador." = "Press play in any player or in the browser.";
 "Sessões do Claude Code e do Codex aparecem aqui." = "Claude Code and Codex sessions show up here.";
@@ -334,3 +347,4 @@
 "Abrir ao iniciar o Windows" = "Open at Windows startup";
 "Ctrl + Alt + N abre o notch, V abre Textos e S abre Captura de tela." = "Ctrl + Alt + N opens the notch, V opens Texts and S opens Screen Capture.";
 "Configurações importadas." = "Settings imported.";
+"Os apps com áudio aparecem aqui, cada um com o seu volume." = "Apps with audio show up here, each with its own volume.";

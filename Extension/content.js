@@ -51,6 +51,13 @@
     }
   };
 
+  // Volume escolhido no OpenNotch para esta aba (0 a 1). Vale só para a página, não para o sistema.
+  const applyVolume = (volume) => {
+    for (const m of document.querySelectorAll("video, audio")) {
+      if (Math.abs(m.volume - volume) > 0.005) m.volume = volume;
+    }
+  };
+
   let wasPlaying = false;
   const tick = () => {
     const state = snapshot();
@@ -61,6 +68,7 @@
       api.runtime.sendMessage(state, (answer) => {
         if (api.runtime.lastError) return;
         if (answer && answer.command) run(answer.command);
+        if (answer && typeof answer.volume === "number") applyVolume(Math.min(Math.max(answer.volume, 0), 1));
       });
     } catch (_) {
       // extensão recarregada: esta aba precisa ser recarregada também

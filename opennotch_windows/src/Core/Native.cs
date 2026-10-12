@@ -32,6 +32,12 @@ internal static partial class Native
     [DllImport("user32.dll")]
     public static extern bool IsWindowVisible(IntPtr hWnd);
 
+    public const uint WDA_NONE = 0x0, WDA_EXCLUDEFROMCAPTURE = 0x11;
+
+    /// <summary>Define se a janela aparece em capturas de tela (Windows 10 2004 ou mais recente).</summary>
+    [DllImport("user32.dll")]
+    public static extern bool SetWindowDisplayAffinity(IntPtr hWnd, uint affinity);
+
     [DllImport("kernel32.dll")]
     public static extern bool GetSystemTimes(out long idle, out long kernel, out long user);
 

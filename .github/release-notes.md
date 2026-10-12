@@ -1,7 +1,9 @@
 ## Novidades
 
-- **Versão para Windows**: o OpenNotch agora também existe para Windows 10 e 11, como uma barra no topo da tela.
-- A release passa a ter um arquivo para cada sistema.
+- **Volume por app**: uma aba nova com um controle de volume para cada app que está tocando som, sem mexer no volume geral. No macOS também aparece cada aba do navegador (com a extensão).
+- **Aparecer ou não em capturas**: nova opção em Configurações › Captura de tela para o OpenNotch sair nos prints e gravações.
+- **Abre junto com o sistema**: vem ligado por padrão; dá para desligar em Configurações.
+- A extensão do navegador foi atualizada (0.2.0). Quem já usa precisa baixar de novo em Configurações › Extensão do navegador e recarregar.
 
 ## Qual arquivo baixar
 

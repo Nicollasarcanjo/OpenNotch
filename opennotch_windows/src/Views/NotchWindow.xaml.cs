@@ -8,7 +8,7 @@ using System.Windows.Threading;
 
 namespace OpenNotch;
 
-public enum NotchTab { Home, Agents, Apps, Capture, Texts, Files, Timers, System }
+public enum NotchTab { Home, Agents, Apps, Mixer, Capture, Texts, Files, Timers, System }
 
 /// <summary>
 /// O notch de uma tela: uma barra no topo que abre ao passar o mouse.
@@ -42,6 +42,7 @@ public partial class NotchWindow : Window
             new(NotchTab.Home, "", Loc.T("Início"), () => true, () => new HomeView()),
             new(NotchTab.Agents, "", Loc.T("Agentes de IA"), () => s.ModAgents, () => new AgentsView()),
             new(NotchTab.Apps, "", Loc.T("Apps abertos"), () => s.ModApps, () => new AppsView()),
+            new(NotchTab.Mixer, "\uE767", Loc.T("Volume por app"), () => s.ModMixer, () => new MixerView()),
             new(NotchTab.Capture, "", Loc.T("Captura de tela"), () => s.ModCapture, () => new CaptureView()),
             new(NotchTab.Texts, "", Loc.T("Textos"), () => s.ModNotes || s.ModClipboard, () => new TextsView()),
             new(NotchTab.Files, "", Loc.T("Arquivos"), () => s.ModTray || s.ModDownloads, () => new FilesView()),
@@ -87,6 +88,8 @@ public partial class NotchWindow : Window
         var style = Native.GetWindowLongPtr(handle, Native.GWL_EXSTYLE).ToInt64();
         Native.SetWindowLongPtr(handle, Native.GWL_EXSTYLE, new IntPtr(style | Native.WS_EX_TOOLWINDOW));
 
+        ApplyCaptureVisibility();
+
         // A tela vem em pixels; o WPF posiciona em unidades independentes de DPI.
         var scale = PresentationSource.FromVisual(this)?.CompositionTarget?.TransformToDevice.M11 ?? 1;
         var bounds = _screen.Bounds;
@@ -94,10 +97,23 @@ public partial class NotchWindow : Window
         Top = bounds.Top / scale;
     }
 
+    /// <summary>
+    /// Por padrão o notch fica fora de prints e gravações (de qualquer app); a opção
+    /// "Mostrar o OpenNotch em prints e gravações" faz ele aparecer.
+    /// </summary>
+    private void ApplyCaptureVisibility()
+    {
+        var handle = new WindowInteropHelper(this).Handle;
+        if (handle == IntPtr.Zero) return;
+        Native.SetWindowDisplayAffinity(handle,
+            Settings.Current.CaptureShowNotch ? Native.WDA_NONE : Native.WDA_EXCLUDEFROMCAPTURE);
+    }
+
     private void OnChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (sender is Settings)
         {
+            if (e.PropertyName == nameof(Settings.CaptureShowNotch)) ApplyCaptureVisibility();
             BuildTabs();
         }
         UpdateEars();

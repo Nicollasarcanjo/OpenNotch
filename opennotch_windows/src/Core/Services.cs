@@ -8,6 +8,7 @@ public sealed class Services
     public MusicManager Music { get; } = new();
     public AgentMonitor Agents { get; } = new();
     public AppMonitor Apps { get; } = new();
+    public AudioMixer Mixer { get; } = new();
     public CaptureManager Capture { get; } = new();
     public NotesStore Notes { get; } = new();
     public ClipboardManager Clipboard { get; } = new();

@@ -497,6 +497,7 @@ private struct ModulesPane: View {
             Toggle("Calendário", isOn: prefs.boolBinding(.modCalendar))
             Toggle("Agentes de IA", isOn: prefs.boolBinding(.modAgents))
             Toggle("Gerenciador de apps abertos", isOn: prefs.boolBinding(.modApps))
+            Toggle("Volume por app e por aba", isOn: prefs.boolBinding(.modMixer))
             Toggle("Captura e gravação de tela", isOn: prefs.boolBinding(.modCapture))
             Toggle("Bandeja de arquivos", isOn: prefs.boolBinding(.modTray))
             Toggle("Progresso de downloads", isOn: prefs.boolBinding(.modDownloads))
@@ -623,6 +624,11 @@ private struct CapturePane: View {
             Toggle("Abrir o notch mostrando a captura", isOn: prefs.boolBinding(.captureShowAfter))
             Stepper("Mostrar as últimas \(prefs.int(.captureGalleryCount)) capturas",
                     value: prefs.intBinding(.captureGalleryCount), in: 3...40)
+        }
+        Section {
+            Toggle("Mostrar o OpenNotch em prints e gravações", isOn: prefs.boolBinding(.captureShowNotch))
+        } footer: {
+            Text("Desligado, o painel fica invisível em qualquer captura de tela, mesmo aberto. Ligue para conseguir printar ou gravar o próprio OpenNotch.")
         }
         Section {
             Toggle("Som do obturador nos prints", isOn: prefs.boolBinding(.captureSound))

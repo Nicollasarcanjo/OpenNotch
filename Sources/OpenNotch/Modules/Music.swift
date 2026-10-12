@@ -50,7 +50,7 @@ final class MusicManager: ObservableObject {
     private var permissionTimer: Timer?
     private let queue = DispatchQueue(label: "opennotch.applescript")
     private var artworkKey = ""
-    private let bridge = BrowserBridge()
+    let bridge = BrowserBridge()
     private var browserArtwork = ""
     private var lastBrowserBeat = Date.distantPast
     private var browserTimer: Timer?
@@ -107,6 +107,7 @@ final class MusicManager: ObservableObject {
         // Um app tocando tem prioridade; e aba pausada não toma o lugar de outro player.
         if player != .browser, isPlaying || !state.playing { return }
         lastBrowserBeat = Date()
+        bridge.commandTab = state.tab
         browserArtwork = state.artwork
         apply(player: .browser, playing: state.playing, title: state.title,
               artist: state.artist, album: state.album.isEmpty ? state.site : state.album)

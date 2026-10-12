@@ -1,5 +1,6 @@
 import AppKit
 import Combine
+import ServiceManagement
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private var controller: NotchController!
@@ -8,6 +9,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         controller = NotchController()
+        enableLaunchAtLoginOnce()
         updateStatusItem()
         NotificationCenter.default.addObserver(forName: .showOnboarding, object: nil, queue: .main) { [weak self] _ in
             self?.controller.showOnboarding()
@@ -41,6 +43,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
         controller.showSettings()
         return false
+    }
+
+    /// O OpenNotch vem configurado para abrir junto com o Mac. Isso é feito uma única vez:
+    /// se o usuário desligar depois em Configurações › Geral, a escolha dele é respeitada.
+    private func enableLaunchAtLoginOnce() {
+        let prefs = Prefs.shared
+        guard !Demo.enabled, !prefs.bool(.launchAtLoginConfigured),
+              ProcessInfo.processInfo.environment["OPENNOTCH_SNAPSHOT"] == nil else { return }
+        prefs.set(true, for: .launchAtLoginConfigured)
+        try? SMAppService.mainApp.register()
     }
 
     private func updateStatusItem() {

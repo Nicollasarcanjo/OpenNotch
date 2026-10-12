@@ -42,6 +42,7 @@
                     <CheckBox Content="{l:T 'Música'}" IsChecked="{Binding ModMusic}" />
                     <CheckBox Content="{l:T 'Agentes de IA'}" IsChecked="{Binding ModAgents}" />
                     <CheckBox Content="{l:T 'Gerenciador de apps abertos'}" IsChecked="{Binding ModApps}" />
+                    <CheckBox Content="{l:T 'Volume por app'}" IsChecked="{Binding ModMixer}" />
                     <CheckBox Content="{l:T 'Captura de tela'}" IsChecked="{Binding ModCapture}" />
                     <CheckBox Content="{l:T 'Anotações'}" IsChecked="{Binding ModNotes}" />
                     <CheckBox Content="{l:T 'Histórico de textos copiados'}" IsChecked="{Binding ModClipboard}" />
@@ -72,6 +73,7 @@
                 <StackPanel>
                     <CheckBox Content="{l:T 'Copiar automaticamente'}" IsChecked="{Binding CaptureAutoCopy}" />
                     <CheckBox Content="{l:T 'Abrir o notch mostrando a captura'}" IsChecked="{Binding CaptureShowAfter}" />
+                    <CheckBox Content="{l:T 'Mostrar o OpenNotch em prints e gravações'}" IsChecked="{Binding CaptureShowNotch}" />
                 </StackPanel>
             </GroupBox>
 

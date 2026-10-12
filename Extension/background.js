@@ -5,6 +5,8 @@ const ENDPOINT = "http://127.0.0.1:38917/state";
 const api = typeof browser !== "undefined" ? browser : chrome;
 
 api.runtime.onMessage.addListener((state, sender, reply) => {
+  // O id da aba deixa o app mandar comandos e volume para a aba certa.
+  if (sender.tab) state.tab = sender.tab.id;
   fetch(ENDPOINT, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

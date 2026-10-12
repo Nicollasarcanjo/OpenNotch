@@ -10,9 +10,9 @@ final class Prefs: ObservableObject {
         case homeBlocks, homeApps, homeGif, homeSlides, homeSlideInterval, homeMediaWidth
         // Geral
         case hoverOpens, hoverDelay, closeDelay, showMenuBarIcon, hotkeysEnabled, hudVolume, hudBrightness
-        case displayAllScreens, onboardingDone, updateAutoCheck, language
+        case displayAllScreens, onboardingDone, updateAutoCheck, language, launchAtLoginConfigured
         // Módulos (abas)
-        case modMusic, modCalendar, modAgents, modApps, modCapture, modTray, modDownloads, downloadsNotify, modClipboard, modTimers, modNotes, modSystem
+        case modMusic, modCalendar, modAgents, modApps, modMixer, modCapture, modTray, modDownloads, downloadsNotify, modClipboard, modTimers, modNotes, modSystem
         // Música
         case musicSpotify, musicAppleMusic, musicBrowser, musicEars
         // Agentes de IA
@@ -22,7 +22,7 @@ final class Prefs: ObservableObject {
         case appsShowBackground, appsSort
         // Captura de tela
         case captureFolder, captureAutoCopy, captureSound, captureShowAfter, captureAudio, captureClicks
-        case captureGalleryCount, captureWatchSystem
+        case captureGalleryCount, captureWatchSystem, captureShowNotch
         // Clipboard
         case clipLimit, clipSkipConcealed, clipPersist
         // Timers
@@ -35,8 +35,8 @@ final class Prefs: ObservableObject {
 
     private static let defaults: [Key: Any] = [
         .hoverOpens: true, .hoverDelay: 0.12, .closeDelay: 0.35, .showMenuBarIcon: true, .hotkeysEnabled: true, .hudVolume: true, .hudBrightness: true,
-        .displayAllScreens: true, .onboardingDone: false, .updateAutoCheck: true, .language: "",
-        .modMusic: true, .modCalendar: true, .modAgents: true, .modApps: true, .modCapture: true, .modTray: true, .modDownloads: true, .downloadsNotify: true, .modClipboard: true,
+        .displayAllScreens: true, .onboardingDone: false, .updateAutoCheck: true, .language: "", .launchAtLoginConfigured: false,
+        .modMusic: true, .modCalendar: true, .modAgents: true, .modApps: true, .modMixer: true, .modCapture: true, .modTray: true, .modDownloads: true, .downloadsNotify: true, .modClipboard: true,
         .modTimers: true, .modNotes: true, .modSystem: true,
         .musicSpotify: true, .musicAppleMusic: true, .musicBrowser: true, .musicEars: true,
         .agentsClaude: true, .agentsCodex: true, .agentsAntigravity: true, .agentsNotify: true,
@@ -44,7 +44,7 @@ final class Prefs: ObservableObject {
         .agentsCustom: "[]", .agentsHideIdleHours: 12,
         .appsShowBackground: false, .appsSort: "cpu",
         .captureFolder: "", .captureAutoCopy: true, .captureSound: true, .captureShowAfter: true,
-        .captureAudio: false, .captureClicks: false, .captureGalleryCount: 12, .captureWatchSystem: true,
+        .captureAudio: false, .captureClicks: false, .captureGalleryCount: 12, .captureWatchSystem: true, .captureShowNotch: false,
         .clipLimit: 40, .clipSkipConcealed: true, .clipPersist: true,
         .timersEar: true, .timersSound: true,
         .sysInterval: 2.0, .sysCPU: true, .sysRAM: true, .sysDisk: true, .sysBattery: true, .sysNetwork: true,
@@ -84,7 +84,7 @@ final class Prefs: ObservableObject {
     // MARK: Importar e exportar
 
     /// Preferências que não fazem sentido levar para outro Mac ou restaurar depois.
-    private static let notExported: Set<Key> = [.onboardingDone]
+    private static let notExported: Set<Key> = [.onboardingDone, .launchAtLoginConfigured]
 
     /// As preferências alteradas pelo usuário, em JSON.
     func exportData() -> Data? {
