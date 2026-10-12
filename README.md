@@ -143,6 +143,15 @@ Também há:
 - Exportar e importar as configurações em um arquivo.
 - Aviso de versão nova, com link para a página de download.
 
+## Versões
+
+| Versão | O que mudou |
+|---|---|
+| 0.2.1 | Ícone de anotar mais legível, ajuste visual nas configurações e imagens no README |
+| 0.2.0 | Downloads, anotação de prints, vários monitores, boas-vindas, inglês, exportar/importar configurações e aviso de atualização |
+
+Todas as versões ficam em [Releases](https://github.com/Nicollasarcanjo/OpenNotch/releases).
+
 ## Como compilar
 
 Requisitos: macOS 14 ou mais recente e Xcode (ou as Command Line Tools) com Swift 5.9+.
@@ -153,7 +162,7 @@ Requisitos: macOS 14 ou mais recente e Xcode (ou as Command Line Tools) com Swif
 
 O script compila em modo release e monta `build/OpenNotch.app`. Se houver um certificado "Apple Development" no Keychain, o app é assinado com ele; assim o macOS mantém as permissões entre uma compilação e outra. Sem certificado, a assinatura é ad hoc e as permissões são pedidas de novo a cada compilação.
 
-Para publicar uma versão, atualize o arquivo `VERSION` e envie uma tag (`git tag v0.2.0 && git push origin v0.2.0`). O GitHub Actions compila, empacota e cria a release com o `OpenNotch.zip`.
+Para publicar uma versão, atualize o arquivo `VERSION` e envie uma tag (`git tag v0.2.1 && git push origin v0.2.1`). O GitHub Actions compila, empacota e cria a release com o `OpenNotch.zip`. O texto da release vem de `.github/release-notes.md`.
 
 Para uma versão notarizada (que abre em qualquer Mac sem aviso), é preciso uma conta paga do Apple Developer Program; o passo a passo está em `Scripts/notarize.sh`.
 

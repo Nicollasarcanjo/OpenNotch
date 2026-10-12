@@ -1,3 +1,10 @@
+## Novidades
+
+- Ícone de anotar print mais legível na galeria de capturas.
+- A janela de configurações ganhou fundo sólido na barra lateral.
+- README com imagens de cada funcionalidade.
+- Modo de demonstração interno, usado para gerar essas imagens com dados fictícios.
+
 ## Como instalar
 
 1. Baixe o **OpenNotch.zip** abaixo e dê dois cliques para descompactar.
