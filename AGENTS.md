@@ -62,7 +62,7 @@ Não deixe uma versão "para depois" sem registrar. A tabela é a fonte da verda
 | Calendário | Sim | Não | A fazer |
 | Indicador de volume e brilho | Sim | Não | O Windows já tem o próprio |
 | Atalhos globais | Sim | Sim | macOS ⌃⌥ + tecla; Windows Ctrl + Alt + tecla. Sem "gravar área" no Windows |
-| Configurações, com liga/desliga por módulo | Sim | Sim | Windows tem menos opções |
+| Configurações, com liga/desliga por módulo | Sim | Sim | Mesmo desenho (barra lateral e seções em cartões). Windows tem menos painéis, porque tem menos recursos |
 | Português e inglês | Sim | Sim | Mesma tabela de frases |
 | Exportar e importar configurações | Sim | Sim | Os arquivos não são intercambiáveis entre sistemas |
 | Aviso de versão nova | Sim | Sim | |
@@ -115,7 +115,8 @@ As duas versões seguem o mesmo desenho, com nomes equivalentes. Ao procurar ond
 
 ### Boas práticas em C# (Windows)
 
-- **A aparência segue a versão macOS.** Dentro do notch, nada de controles com cara de Windows clássico: barras de rolagem, controles deslizantes, menus e dicas têm estilo próprio, definido em `NotchWindow.xaml`. Controle novo dentro do notch precisa de estilo escuro equivalente ao do macOS.
+- **A aparência segue a versão macOS.** Dentro do notch, nada de controles com cara de Windows clássico: barras de rolagem, controles deslizantes, menus e dicas têm estilo próprio, definido em `src/Views/DarkControls.xaml`, que o notch e as janelas (configurações, boas-vindas) compartilham. Controle novo precisa de estilo escuro equivalente ao do macOS.
+- Nas janelas, cada opção é uma linha dentro de um cartão de seção (`Section`, `Row`, `Divider`), com interruptor (`Switch`) no lugar de caixa de seleção e controle segmentado (`Segment`) no lugar de lista suspensa.
 - Animações com duração e curva explícitas; abrir usa um leve efeito de mola, fechar é mais curto. Não troque de estado sem transição.
 
 - WPF com telas em XAML e código de tela mínimo: o `.xaml.cs` só trata eventos e repassa para o objeto de lógica.

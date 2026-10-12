@@ -32,6 +32,17 @@ internal static partial class Native
     [DllImport("user32.dll")]
     public static extern bool IsWindowVisible(IntPtr hWnd);
 
+    [DllImport("dwmapi.dll")]
+    private static extern int DwmSetWindowAttribute(IntPtr hWnd, int attribute, ref int value, int size);
+
+    /// <summary>Barra de título escura, para combinar com o conteúdo (Windows 10 2004 ou mais recente).</summary>
+    public static void UseDarkTitleBar(IntPtr handle)
+    {
+        var enabled = 1;
+        try { DwmSetWindowAttribute(handle, 20 /* DWMWA_USE_IMMERSIVE_DARK_MODE */, ref enabled, sizeof(int)); }
+        catch { /* Windows antigo: a barra fica clara */ }
+    }
+
     public const uint WDA_NONE = 0x0, WDA_EXCLUDEFROMCAPTURE = 0x11;
 
     /// <summary>Define se a janela aparece em capturas de tela (Windows 10 2004 ou mais recente).</summary>

@@ -2,111 +2,323 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:l="clr-namespace:OpenNotch"
-        Title="{l:T 'Configurações do OpenNotch'}" Width="520" Height="640"
-        WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize">
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="18">
-            <StackPanel.Resources>
-                <Style TargetType="GroupBox">
-                    <Setter Property="Margin" Value="0,0,0,12" />
-                    <Setter Property="Padding" Value="10,8" />
-                </Style>
-                <Style TargetType="CheckBox">
-                    <Setter Property="Margin" Value="0,3" />
-                </Style>
-            </StackPanel.Resources>
+        Title="{l:T 'Configurações do OpenNotch'}" Width="760" Height="540"
+        WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize"
+        Background="{DynamicResource WindowBack}" TextElement.Foreground="White"
+        FontFamily="Segoe UI Variable Text, Segoe UI">
+    <Window.Resources>
+        <ResourceDictionary Source="/OpenNotch;component/src/views/darkcontrols.xaml" />
+    </Window.Resources>
+    <!-- Mesmo desenho da janela de configurações do macOS: barra lateral com os painéis
+         e, à direita, seções em cartões com uma opção por linha. -->
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
 
-            <GroupBox Header="{l:T 'Geral'}">
-                <StackPanel>
-                    <CheckBox Content="{l:T 'Abrir ao passar o mouse'}" IsChecked="{Binding HoverOpens}" />
-                    <CheckBox Content="{l:T 'Mostrar indicadores com o notch fechado'}" IsChecked="{Binding ShowClosedIndicators}" />
-                    <TextBlock Text="{l:T 'Desligado, o notch fica minimizado no topo da tela e só aparece ao passar o mouse.'}"
-                               Foreground="Gray" FontSize="11" TextWrapping="Wrap" Margin="20,0,0,4" />
-                    <CheckBox Content="{l:T 'Mostrar em todos os monitores'}" IsChecked="{Binding DisplayAllScreens}" />
-                    <CheckBox Content="{l:T 'Ativar atalhos do OpenNotch'}" IsChecked="{Binding HotkeysEnabled}" />
-                    <TextBlock Text="{l:T 'Ctrl + Alt + N abre o notch, V abre Textos e S abre Captura de tela.'}"
-                               Foreground="Gray" FontSize="11" TextWrapping="Wrap" Margin="20,0,0,4" />
-                    <CheckBox x:Name="Startup" Content="{l:T 'Abrir ao iniciar o Windows'}" Click="OnStartup" />
-                    <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
-                        <TextBlock Text="{l:T 'Idioma'}" VerticalAlignment="Center" Margin="0,0,10,0" />
-                        <ComboBox x:Name="Language" Width="180" SelectionChanged="OnLanguage">
-                            <ComboBoxItem Tag="" Content="{l:T 'Igual ao do sistema'}" />
-                            <ComboBoxItem Tag="pt-BR" Content="Português" />
-                            <ComboBoxItem Tag="en" Content="English" />
-                        </ComboBox>
-                    </StackPanel>
-                    <TextBlock x:Name="LanguageNote" Text="{l:T 'O idioma muda na próxima vez que o app for aberto.'}"
-                               Foreground="Gray" FontSize="11" Visibility="Collapsed" Margin="0,4,0,0" />
+        <Border Background="{StaticResource SidebarBack}" BorderBrush="{StaticResource Line}" BorderThickness="0,0,1,0">
+            <ListBox x:Name="Sidebar" Background="Transparent" BorderThickness="0" Margin="10"
+                     ItemContainerStyle="{StaticResource SidebarItem}" SelectionChanged="OnPane"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled" />
+        </Border>
+
+        <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" Padding="22,20,18,10">
+            <Grid>
+                <!-- Geral -->
+                <StackPanel x:Name="PaneGeneral">
+                    <TextBlock Style="{StaticResource SectionTitle}" Text="{l:T 'Abertura do notch'}" />
+                    <Border Style="{StaticResource Section}">
+                        <StackPanel>
+                            <DockPanel Style="{StaticResource Row}">
+                                <CheckBox DockPanel.Dock="Right" Style="{StaticResource Switch}" IsChecked="{Binding HoverOpens}" />
+                                <TextBlock Style="{StaticResource RowLabel}" Text="{l:T 'Abrir ao passar o mouse'}" />
+                            </DockPanel>
+                            <Border Style="{StaticResource Divider}" />
+                            <DockPanel Style="{StaticResource Row}">
+                                <TextBlock DockPanel.Dock="Right" Style="{StaticResource RowValue}" Width="52" TextAlignment="Right"
+                                           Text="{Binding HoverDelay, StringFormat='{}{0:0.00} s'}" />
+                                <Slider DockPanel.Dock="Right" Width="180" Minimum="0" Maximum="1" SmallChange="0.05"
+                                        TickFrequency="0.05" IsSnapToTickEnabled="True" Value="{Binding HoverDelay}" />
+                                <TextBlock Style="{StaticResource RowLabel}" Text="{l:T 'Espera antes de abrir'}" />
+                            </DockPanel>
+                            <Border Style="{StaticResource Divider}" />
+                            <DockPanel Style="{StaticResource Row}">
+                                <TextBlock DockPanel.Dock="Right" Style="{StaticResource RowValue}" Width="52" TextAlignment="Right"
+                                           Text="{Binding CloseDelay, StringFormat='{}{0:0.00} s'}" />
+                                <Slider DockPanel.Dock="Right" Width="180" Minimum="0.1" Maximum="2" TickFrequency="0.05"
+                                        IsSnapToTickEnabled="True" Value="{Binding CloseDelay}" />
+                                <TextBlock Style="{StaticResource RowLabel}" Text="{l:T 'Espera antes de fechar'}" />
+                            </DockPanel>
+                        </StackPanel>
+                    </Border>
+                    <TextBlock Style="{StaticResource Footer}" Text="" />
+
+                    <TextBlock Style="{StaticResource SectionTitle}" Text="{l:T 'Notch fechado'}" />
+                    <Border Style="{StaticResource Section}">
+                        <DockPanel Style="{StaticResource Row}">
+                            <CheckBox DockPanel.Dock="Right" Style="{StaticResource Switch}" IsChecked="{Binding ShowClosedIndicators}" />
+                            <TextBlock Style="{StaticResource RowLabel}" Text="{l:T 'Mostrar indicadores com o notch fechado'}" />
+                        </DockPanel>
+                    </Border>
+                    <TextBlock Style="{StaticResource Footer}"
+                               Text="{l:T 'Desligado, o notch fica minimizado no topo da tela e só aparece ao passar o mouse.'}" />
+
+                    <TextBlock Style="{StaticResource SectionTitle}" Text="{l:T 'Monitores'}" />
+                    <Border Style="{StaticResource Section}">
+                        <DockPanel Style="{StaticResource Row}">
+                            <CheckBox DockPanel.Dock="Right" Style="{StaticResource Switch}" IsChecked="{Binding DisplayAllScreens}" />
+                            <TextBlock Style="{StaticResource RowLabel}" Text="{l:T 'Mostrar em todos os monitores'}" />
+                        </DockPanel>
+                    </Border>
+                    <TextBlock Style="{StaticResource Footer}" Text="" />
+
+                    <TextBlock Style="{StaticResource SectionTitle}" Text="{l:T 'Aplicativo'}" />
+                    <Border Style="{StaticResource Section}">
+                        <StackPanel>
+                            <DockPanel Style="{StaticResource Row}">
+                                <Border DockPanel.Dock="Right" Background="#3A3A3C" CornerRadius="7">
+                                    <StackPanel x:Name="LanguageChoice" Orientation="Horizontal" />
+                                </Border>
+                                <TextBlock Style="{StaticResource RowLabel}" Text="{l:T 'Idioma'}" />
+                            </DockPanel>
+                            <Border Style="{StaticResource Divider}" />
+                            <DockPanel Style="{StaticResource Row}">
+                                <CheckBox x:Name="Startup" DockPanel.Dock="Right" Style="{StaticResource Switch}" Click="OnStartup" />
+                                <TextBlock Style="{StaticResource RowLabel}" Text="{l:T 'Abrir ao iniciar o Windows'}" />
+                            </DockPanel>
+                        </StackPanel>
+                    </Border>
+                    <TextBlock x:Name="LanguageNote" Style="{StaticResource Footer}" Visibility="Hidden"
+                               Text="{l:T 'O idioma muda na próxima vez que o app for aberto.'}" />
                 </StackPanel>
-            </GroupBox>
 
-            <GroupBox Header="{l:T 'Módulos'}">
-                <UniformGrid Columns="2">
-                    <CheckBox Content="{l:T 'Música'}" IsChecked="{Binding ModMusic}" />
-                    <CheckBox Content="{l:T 'Agentes de IA'}" IsChecked="{Binding ModAgents}" />
-                    <CheckBox Content="{l:T 'Gerenciador de apps abertos'}" IsChecked="{Binding ModApps}" />
-                    <CheckBox Content="{l:T 'Volume por app'}" IsChecked="{Binding ModMixer}" />
-                    <CheckBox Content="{l:T 'Captura de tela'}" IsChecked="{Binding ModCapture}" />
-                    <CheckBox Content="{l:T 'Anotações'}" IsChecked="{Binding ModNotes}" />
-                    <CheckBox Content="{l:T 'Histórico de textos copiados'}" IsChecked="{Binding ModClipboard}" />
-                    <CheckBox Content="{l:T 'Bandeja de arquivos'}" IsChecked="{Binding ModTray}" />
-                    <CheckBox Content="{l:T 'Progresso de downloads'}" IsChecked="{Binding ModDownloads}" />
-                    <CheckBox Content="{l:T 'Timers'}" IsChecked="{Binding ModTimers}" />
-                    <CheckBox Content="{l:T 'Monitor do sistema'}" IsChecked="{Binding ModSystem}" />
-                </UniformGrid>
-            </GroupBox>
-
-            <GroupBox Header="{l:T 'Agentes de IA'}">
-                <StackPanel>
-                    <CheckBox Content="Claude Code" IsChecked="{Binding AgentsClaude}" />
-                    <CheckBox Content="Codex" IsChecked="{Binding AgentsCodex}" />
-                    <CheckBox Content="{l:T 'Abrir o notch para avisar'}" IsChecked="{Binding AgentsNotify}" />
-                    <CheckBox Content="{l:T 'Tocar som'}" IsChecked="{Binding AgentsSound}" />
+                <!-- Atalhos -->
+                <StackPanel x:Name="PaneShortcuts" Visibility="Collapsed">
+                    <TextBlock Style="{StaticResource SectionTitle}" Text="{l:T 'Atalhos do OpenNotch'}" />
+                    <Border Style="{StaticResource Section}">
+                        <StackPanel>
+                            <DockPanel Style="{StaticResource Row}">
+                                <CheckBox DockPanel.Dock="Right" Style="{StaticResource Switch}" IsChecked="{Binding HotkeysEnabled}" />
+                                <TextBlock Style="{StaticResource RowLabel}" Text="{l:T 'Ativar atalhos do OpenNotch'}" />
+                            </DockPanel>
+                            <Border Style="{StaticResource Divider}" />
+                            <DockPanel Style="{StaticResource Row}">
+                                <TextBlock DockPanel.Dock="Right" Style="{StaticResource RowValue}" Text="Ctrl + Alt + N" />
+                                <TextBlock Style="{StaticResource RowLabel}" Text="{l:T 'Abrir ou fechar o notch'}" />
+                            </DockPanel>
+                            <Border Style="{StaticResource Divider}" />
+                            <DockPanel Style="{StaticResource Row}">
+                                <TextBlock DockPanel.Dock="Right" Style="{StaticResource RowValue}" Text="Ctrl + Alt + V" />
+                                <TextBlock Style="{StaticResource RowLabel}" Text="{l:T 'Abrir Textos (anotações e copiados)'}" />
+                            </DockPanel>
+                            <Border Style="{StaticResource Divider}" />
+                            <DockPanel Style="{StaticResource Row}">
+                                <TextBlock DockPanel.Dock="Right" Style="{StaticResource RowValue}" Text="Ctrl + Alt + S" />
+                                <TextBlock Style="{StaticResource RowLabel}" Text="{l:T 'Abrir Captura de tela'}" />
+                            </DockPanel>
+                        </StackPanel>
+                    </Border>
+                    <TextBlock Style="{StaticResource Footer}"
+                               Text="{l:T 'Funcionam em qualquer app. Por enquanto as teclas são fixas.'}" />
                 </StackPanel>
-            </GroupBox>
 
-            <GroupBox Header="{l:T 'Textos'}">
-                <StackPanel>
-                    <CheckBox Content="{l:T 'Manter o histórico ao fechar o app'}" IsChecked="{Binding ClipPersist}" />
-                    <CheckBox Content="{l:T 'Tocar som ao terminar'}" IsChecked="{Binding TimersSound}" />
+                <!-- Módulos -->
+                <StackPanel x:Name="PaneModules" Visibility="Collapsed">
+                    <TextBlock Style="{StaticResource SectionTitle}" Text="{l:T 'Funcionalidades ativas'}" />
+                    <Border Style="{StaticResource Section}">
+                        <StackPanel x:Name="ModuleRows" />
+                    </Border>
+                    <TextBlock Style="{StaticResource Footer}"
+                               Text="{l:T 'Um módulo desativado some do notch e para de rodar em segundo plano.'}" />
                 </StackPanel>
-            </GroupBox>
 
-            <GroupBox Header="{l:T 'Captura de tela'}">
-                <StackPanel>
-                    <CheckBox Content="{l:T 'Copiar automaticamente'}" IsChecked="{Binding CaptureAutoCopy}" />
-                    <CheckBox Content="{l:T 'Abrir o notch mostrando a captura'}" IsChecked="{Binding CaptureShowAfter}" />
-                    <CheckBox Content="{l:T 'Mostrar o OpenNotch em prints e gravações'}" IsChecked="{Binding CaptureShowNotch}" />
+                <!-- Agentes de IA -->
+                <StackPanel x:Name="PaneAgents" Visibility="Collapsed">
+                    <TextBlock Style="{StaticResource SectionTitle}" Text="{l:T 'Ferramentas acompanhadas'}" />
+                    <Border Style="{StaticResource Section}">
+                        <StackPanel>
+                            <DockPanel Style="{StaticResource Row}">
+                                <CheckBox DockPanel.Dock="Right" Style="{StaticResource Switch}" IsChecked="{Binding AgentsClaude}" />
+                                <TextBlock Style="{StaticResource RowLabel}" Text="Claude Code" />
+                            </DockPanel>
+                            <Border Style="{StaticResource Divider}" />
+                            <DockPanel Style="{StaticResource Row}">
+                                <CheckBox DockPanel.Dock="Right" Style="{StaticResource Switch}" IsChecked="{Binding AgentsCodex}" />
+                                <TextBlock Style="{StaticResource RowLabel}" Text="Codex" />
+                            </DockPanel>
+                            <Border Style="{StaticResource Divider}" />
+                            <DockPanel Style="{StaticResource Row}">
+                                <Border DockPanel.Dock="Right" Background="#3A3A3C" CornerRadius="7">
+                                    <StackPanel x:Name="ClaudeWindowChoice" Orientation="Horizontal" />
+                                </Border>
+                                <TextBlock Style="{StaticResource RowLabel}" Text="{l:T 'Janela de contexto do Claude'}" />
+                            </DockPanel>
+                            <Border Style="{StaticResource Divider}" />
+                            <DockPanel Style="{StaticResource Row}">
+                                <Border DockPanel.Dock="Right" Background="#3A3A3C" CornerRadius="7">
+                                    <StackPanel x:Name="HideIdleChoice" Orientation="Horizontal" />
+                                </Border>
+                                <TextBlock Style="{StaticResource RowLabel}" Text="{l:T 'Esconder sessões ociosas há mais de'}" />
+                            </DockPanel>
+                        </StackPanel>
+                    </Border>
+                    <TextBlock Style="{StaticResource Footer}" Text="" />
+
+                    <TextBlock Style="{StaticResource SectionTitle}" Text="{l:T 'Quando uma tarefa terminar'}" />
+                    <Border Style="{StaticResource Section}">
+                        <StackPanel>
+                            <DockPanel Style="{StaticResource Row}">
+                                <CheckBox DockPanel.Dock="Right" Style="{StaticResource Switch}" IsChecked="{Binding AgentsNotify}" />
+                                <TextBlock Style="{StaticResource RowLabel}" Text="{l:T 'Abrir o notch para avisar'}" />
+                            </DockPanel>
+                            <Border Style="{StaticResource Divider}" />
+                            <DockPanel Style="{StaticResource Row}">
+                                <TextBlock DockPanel.Dock="Right" Style="{StaticResource RowValue}" Width="52" TextAlignment="Right"
+                                           Text="{Binding AgentsNotifySeconds, StringFormat='{}{0:0} s'}" />
+                                <Slider DockPanel.Dock="Right" Width="180" Minimum="2" Maximum="20" TickFrequency="1"
+                                        IsSnapToTickEnabled="True" Value="{Binding AgentsNotifySeconds}" />
+                                <TextBlock Style="{StaticResource RowLabel}" Text="{l:T 'Tempo aberto'}" />
+                            </DockPanel>
+                            <Border Style="{StaticResource Divider}" />
+                            <DockPanel Style="{StaticResource Row}">
+                                <CheckBox DockPanel.Dock="Right" Style="{StaticResource Switch}" IsChecked="{Binding AgentsSound}" />
+                                <TextBlock Style="{StaticResource RowLabel}" Text="{l:T 'Tocar som'}" />
+                            </DockPanel>
+                        </StackPanel>
+                    </Border>
                 </StackPanel>
-            </GroupBox>
 
-            <GroupBox Header="{l:T 'Atualizações'}">
-                <StackPanel>
-                    <TextBlock x:Name="UpdateStatus" Margin="0,0,0,6" />
-                    <StackPanel Orientation="Horizontal">
-                        <Button Content="{l:T 'Verificar agora'}" Padding="10,3" Click="OnCheckUpdate" />
-                        <Button x:Name="DownloadButton" Content="{l:T 'Abrir página de download'}" Padding="10,3"
-                                Margin="8,0,0,0" Click="OnDownload" Visibility="Collapsed" />
-                    </StackPanel>
-                    <CheckBox Content="{l:T 'Verificar atualizações automaticamente'}" IsChecked="{Binding UpdateAutoCheck}"
-                              Margin="0,8,0,0" />
+                <!-- Captura de tela -->
+                <StackPanel x:Name="PaneCapture" Visibility="Collapsed">
+                    <TextBlock Style="{StaticResource SectionTitle}" Text="{l:T 'Depois de capturar'}" />
+                    <Border Style="{StaticResource Section}">
+                        <StackPanel>
+                            <DockPanel Style="{StaticResource Row}">
+                                <CheckBox DockPanel.Dock="Right" Style="{StaticResource Switch}" IsChecked="{Binding CaptureAutoCopy}" />
+                                <TextBlock Style="{StaticResource RowLabel}" Text="{l:T 'Copiar automaticamente'}" />
+                            </DockPanel>
+                            <Border Style="{StaticResource Divider}" />
+                            <DockPanel Style="{StaticResource Row}">
+                                <CheckBox DockPanel.Dock="Right" Style="{StaticResource Switch}" IsChecked="{Binding CaptureShowAfter}" />
+                                <TextBlock Style="{StaticResource RowLabel}" Text="{l:T 'Abrir o notch mostrando a captura'}" />
+                            </DockPanel>
+                            <Border Style="{StaticResource Divider}" />
+                            <DockPanel Style="{StaticResource Row}">
+                                <TextBlock DockPanel.Dock="Right" Style="{StaticResource RowValue}" Width="52" TextAlignment="Right"
+                                           Text="{Binding CaptureGalleryCount}" />
+                                <Slider DockPanel.Dock="Right" Width="180" Minimum="3" Maximum="40" TickFrequency="1"
+                                        IsSnapToTickEnabled="True" Value="{Binding CaptureGalleryCount}" />
+                                <TextBlock Style="{StaticResource RowLabel}" Text="{l:T 'Capturas na galeria'}" />
+                            </DockPanel>
+                        </StackPanel>
+                    </Border>
+                    <TextBlock Style="{StaticResource Footer}" Text="" />
+
+                    <Border Style="{StaticResource Section}">
+                        <DockPanel Style="{StaticResource Row}">
+                            <CheckBox DockPanel.Dock="Right" Style="{StaticResource Switch}" IsChecked="{Binding CaptureShowNotch}" />
+                            <TextBlock Style="{StaticResource RowLabel}" Text="{l:T 'Mostrar o OpenNotch em prints e gravações'}" />
+                        </DockPanel>
+                    </Border>
+                    <TextBlock Style="{StaticResource Footer}"
+                               Text="{l:T 'Desligado, o painel fica invisível em qualquer captura de tela, mesmo aberto. Ligue para conseguir printar ou gravar o próprio OpenNotch.'}" />
                 </StackPanel>
-            </GroupBox>
 
-            <GroupBox Header="{l:T 'Configurações'}">
-                <StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <Button Content="{l:T 'Exportar…'}" Padding="10,3" Click="OnExport" />
-                        <Button Content="{l:T 'Importar…'}" Padding="10,3" Margin="8,0,0,0" Click="OnImport" />
-                    </StackPanel>
-                    <TextBlock x:Name="TransferMessage" Foreground="Gray" FontSize="11" Margin="0,6,0,0" />
+                <!-- Textos -->
+                <StackPanel x:Name="PaneTexts" Visibility="Collapsed">
+                    <TextBlock Style="{StaticResource SectionTitle}" Text="{l:T 'Textos copiados'}" />
+                    <Border Style="{StaticResource Section}">
+                        <StackPanel>
+                            <DockPanel Style="{StaticResource Row}">
+                                <TextBlock DockPanel.Dock="Right" Style="{StaticResource RowValue}" Width="52" TextAlignment="Right"
+                                           Text="{Binding ClipLimit}" />
+                                <Slider DockPanel.Dock="Right" Width="180" Minimum="5" Maximum="200" TickFrequency="5"
+                                        IsSnapToTickEnabled="True" Value="{Binding ClipLimit}" />
+                                <TextBlock Style="{StaticResource RowLabel}" Text="{l:T 'Itens guardados'}" />
+                            </DockPanel>
+                            <Border Style="{StaticResource Divider}" />
+                            <DockPanel Style="{StaticResource Row}">
+                                <CheckBox DockPanel.Dock="Right" Style="{StaticResource Switch}" IsChecked="{Binding ClipPersist}" />
+                                <TextBlock Style="{StaticResource RowLabel}" Text="{l:T 'Manter o histórico ao fechar o app'}" />
+                            </DockPanel>
+                        </StackPanel>
+                    </Border>
+                    <TextBlock Style="{StaticResource Footer}"
+                               Text="{l:T 'Senhas copiadas de gerenciadores de senha ficam de fora do histórico.'}" />
                 </StackPanel>
-            </GroupBox>
 
-            <DockPanel LastChildFill="False">
-                <TextBlock x:Name="VersionText" Foreground="Gray" VerticalAlignment="Center" />
-                <Button DockPanel.Dock="Right" Content="{l:T 'Sair do OpenNotch'}" Padding="10,3" Click="OnQuit" />
-            </DockPanel>
-        </StackPanel>
-    </ScrollViewer>
+                <!-- Timers -->
+                <StackPanel x:Name="PaneTimers" Visibility="Collapsed">
+                    <Border Style="{StaticResource Section}">
+                        <DockPanel Style="{StaticResource Row}">
+                            <CheckBox DockPanel.Dock="Right" Style="{StaticResource Switch}" IsChecked="{Binding TimersSound}" />
+                            <TextBlock Style="{StaticResource RowLabel}" Text="{l:T 'Tocar som ao terminar'}" />
+                        </DockPanel>
+                    </Border>
+                    <TextBlock Style="{StaticResource Footer}"
+                               Text="{l:T 'As durações de foco, pausa e contagem são ajustadas na própria aba Timers.'}" />
+                </StackPanel>
+
+                <!-- Sobre -->
+                <StackPanel x:Name="PaneAbout" Visibility="Collapsed">
+                    <Border Style="{StaticResource Section}">
+                        <StackPanel>
+                            <DockPanel Style="{StaticResource Row}">
+                                <TextBlock x:Name="VersionText" DockPanel.Dock="Right" Style="{StaticResource RowValue}" />
+                                <TextBlock Style="{StaticResource RowLabel}" Text="OpenNotch" />
+                            </DockPanel>
+                            <Border Style="{StaticResource Divider}" />
+                            <DockPanel Style="{StaticResource Row}">
+                                <TextBlock Style="{StaticResource RowValue}"
+                                           Text="{l:T 'Gratuito, sem anúncios e sem recursos bloqueados.'}" />
+                            </DockPanel>
+                        </StackPanel>
+                    </Border>
+                    <TextBlock Style="{StaticResource Footer}" Text="" />
+
+                    <TextBlock Style="{StaticResource SectionTitle}" Text="{l:T 'Atualizações'}" />
+                    <Border Style="{StaticResource Section}">
+                        <StackPanel>
+                            <DockPanel Style="{StaticResource Row}">
+                                <TextBlock x:Name="UpdateStatus" DockPanel.Dock="Right" Style="{StaticResource RowValue}" />
+                                <TextBlock Style="{StaticResource RowLabel}" Text="{l:T 'Situação'}" />
+                            </DockPanel>
+                            <Border Style="{StaticResource Divider}" />
+                            <DockPanel Style="{StaticResource Row}">
+                                <Button Style="{StaticResource Push}" Content="{l:T 'Verificar agora'}" Click="OnCheckUpdate" />
+                                <Button x:Name="DownloadButton" Style="{StaticResource Prominent}" Margin="8,0,0,0"
+                                        Content="{l:T 'Abrir página de download'}" Click="OnDownload" Visibility="Collapsed" />
+                            </DockPanel>
+                            <Border Style="{StaticResource Divider}" />
+                            <DockPanel Style="{StaticResource Row}">
+                                <CheckBox DockPanel.Dock="Right" Style="{StaticResource Switch}" IsChecked="{Binding UpdateAutoCheck}" />
+                                <TextBlock Style="{StaticResource RowLabel}" Text="{l:T 'Verificar atualizações automaticamente'}" />
+                            </DockPanel>
+                        </StackPanel>
+                    </Border>
+                    <TextBlock Style="{StaticResource Footer}"
+                               Text="{l:T 'O app só avisa que há versão nova e abre a página do GitHub; a instalação é manual.'}" />
+
+                    <TextBlock Style="{StaticResource SectionTitle}" Text="{l:T 'Configurações'}" />
+                    <Border Style="{StaticResource Section}">
+                        <DockPanel Style="{StaticResource Row}">
+                            <Button Style="{StaticResource Push}" Content="{l:T 'Exportar…'}" Click="OnExport" />
+                            <Button Style="{StaticResource Push}" Content="{l:T 'Importar…'}" Margin="8,0,0,0" Click="OnImport" />
+                            <TextBlock x:Name="TransferMessage" Style="{StaticResource RowValue}" Margin="12,0,0,0" />
+                        </DockPanel>
+                    </Border>
+                    <TextBlock Style="{StaticResource Footer}"
+                               Text="{l:T 'O arquivo exportado leva as opções. Anotações, histórico de copiados e capturas não entram.'}" />
+
+                    <Border Style="{StaticResource Section}">
+                        <DockPanel Style="{StaticResource Row}">
+                            <Button Style="{StaticResource Push}" Content="{l:T 'Mostrar as boas-vindas de novo'}" Click="OnWelcome" />
+                            <Button Style="{StaticResource Push}" Content="{l:T 'Sair do OpenNotch'}" Margin="8,0,0,0" Click="OnQuit" />
+                        </DockPanel>
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </ScrollViewer>
+    </Grid>
 </Window>

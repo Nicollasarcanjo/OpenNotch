@@ -356,3 +356,7 @@
 "Como você quer usar" = "How you want to use it";
 "• Ctrl + Alt + N abre e fecha o notch pelo teclado." = "• Ctrl + Alt + N opens and closes the notch from the keyboard.";
 "• O ícone do OpenNotch fica na área de notificação, perto do relógio." = "• The OpenNotch icon lives in the notification area, near the clock.";
+"Capturas na galeria" = "Captures in the gallery";
+"Itens guardados" = "Items kept";
+"Senhas copiadas de gerenciadores de senha ficam de fora do histórico." = "Passwords copied from password managers are left out of the history.";
+"O arquivo exportado leva as opções. Anotações, histórico de copiados e capturas não entram." = "The exported file carries the options. Notes, copied history and captures are not included.";

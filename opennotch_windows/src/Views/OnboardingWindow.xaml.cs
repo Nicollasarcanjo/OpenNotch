@@ -17,6 +17,8 @@ public partial class OnboardingWindow : Window
         DataContext = Settings.Current;
         using var key = Registry.CurrentUser.OpenSubKey(RunKey);
         Startup.IsChecked = key?.GetValue("OpenNotch") != null;
+        SourceInitialized += (_, _) =>
+            Native.UseDarkTitleBar(new System.Windows.Interop.WindowInteropHelper(this).Handle);
     }
 
     private void OnDone(object sender, RoutedEventArgs e)

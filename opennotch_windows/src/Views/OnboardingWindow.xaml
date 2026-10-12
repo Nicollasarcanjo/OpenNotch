@@ -5,6 +5,9 @@
         Title="{l:T 'Bem-vindo ao OpenNotch'}" Width="540" SizeToContent="Height"
         WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Background="#1C1C1E"
         TextElement.Foreground="White" FontFamily="Segoe UI Variable Text, Segoe UI">
+    <Window.Resources>
+        <ResourceDictionary Source="/OpenNotch;component/src/views/darkcontrols.xaml" />
+    </Window.Resources>
     <StackPanel Margin="26">
         <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
             <Image Source="/Resources/AppIcon.ico" Width="56" Height="56" Margin="0,0,14,0" />
@@ -26,12 +29,19 @@
         <Border Background="#14FFFFFF" CornerRadius="10" Padding="14,12" Margin="0,0,0,10">
             <StackPanel>
                 <TextBlock Text="{l:T 'Como você quer usar'}" FontWeight="SemiBold" Margin="0,0,0,6" />
-                <CheckBox x:Name="Startup" Foreground="White" Margin="0,3" Content="{l:T 'Abrir ao iniciar o Windows'}" />
-                <CheckBox Foreground="White" Margin="0,3" IsChecked="{Binding HoverOpens}"
-                          Content="{l:T 'Abrir ao passar o mouse'}" />
-                <CheckBox Foreground="White" Margin="0,3" IsChecked="{Binding ShowClosedIndicators}"
-                          Content="{l:T 'Mostrar indicadores com o notch fechado'}" />
-                <TextBlock TextWrapping="Wrap" Foreground="#80FFFFFF" FontSize="11" Margin="20,0,0,0"
+                <DockPanel LastChildFill="False" Margin="0,4">
+                    <CheckBox x:Name="Startup" DockPanel.Dock="Right" Style="{StaticResource Switch}" />
+                    <TextBlock VerticalAlignment="Center" Text="{l:T 'Abrir ao iniciar o Windows'}" />
+                </DockPanel>
+                <DockPanel LastChildFill="False" Margin="0,4">
+                    <CheckBox DockPanel.Dock="Right" Style="{StaticResource Switch}" IsChecked="{Binding HoverOpens}" />
+                    <TextBlock VerticalAlignment="Center" Text="{l:T 'Abrir ao passar o mouse'}" />
+                </DockPanel>
+                <DockPanel LastChildFill="False" Margin="0,4">
+                    <CheckBox DockPanel.Dock="Right" Style="{StaticResource Switch}" IsChecked="{Binding ShowClosedIndicators}" />
+                    <TextBlock VerticalAlignment="Center" Text="{l:T 'Mostrar indicadores com o notch fechado'}" />
+                </DockPanel>
+                <TextBlock TextWrapping="Wrap" Foreground="#80FFFFFF" FontSize="11" Margin="0,2,0,0"
                            Text="{l:T 'Desligado, o notch fica minimizado no topo da tela e só aparece ao passar o mouse.'}" />
             </StackPanel>
         </Border>
@@ -48,6 +58,7 @@
             </StackPanel>
         </Border>
 
-        <Button Content="{l:T 'Começar a usar'}" HorizontalAlignment="Right" Padding="18,6" IsDefault="True" Click="OnDone" />
+        <Button Style="{StaticResource Prominent}" Content="{l:T 'Começar a usar'}" HorizontalAlignment="Right" Padding="18,6"
+                IsDefault="True" Click="OnDone" />
     </StackPanel>
 </Window>

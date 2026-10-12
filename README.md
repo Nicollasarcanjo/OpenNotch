@@ -194,6 +194,7 @@ Também há:
 
 | Versão | O que mudou |
 |---|---|
+| 0.4.2 | Windows: janela de configurações refeita no desenho da versão macOS (barra lateral, seções em cartões, interruptores) |
 | 0.4.1 | Windows: notch minimizado quando fechado, animações novas, controles com a aparência da versão macOS e tela de boas-vindas |
 | 0.4.0 | Volume por app e por aba, opção de aparecer em capturas, e o app passa a abrir junto com o sistema por padrão |
 | 0.3.0 | Primeira versão para Windows; a release passa a ter um arquivo por sistema |
@@ -232,7 +233,7 @@ Dá para compilar a versão Windows a partir do macOS ou do Linux (só não para
 
 ### Publicar
 
-Para publicar uma versão, atualize o arquivo `VERSION` e envie uma tag (`git tag v0.4.1 && git push origin v0.4.1`). O GitHub Actions compila as duas versões e cria a release com `OpenNotch-macOS.zip` e `OpenNotch-Windows.zip`. O texto da release vem de `.github/release-notes.md`.
+Para publicar uma versão, atualize o arquivo `VERSION` e envie uma tag (`git tag v0.4.2 && git push origin v0.4.2`). O GitHub Actions compila as duas versões e cria a release com `OpenNotch-macOS.zip` e `OpenNotch-Windows.zip`. O texto da release vem de `.github/release-notes.md`.
 
 Para uma versão notarizada (que abre em qualquer Mac sem aviso), é preciso uma conta paga do Apple Developer Program; o passo a passo está em `Scripts/notarize.sh`.
 
@@ -275,7 +276,7 @@ O macOS pede cada uma na primeira vez que o recurso é usado:
 - O indicador de volume e brilho aparece junto com o aviso padrão do macOS, sem substituí-lo.
 - Widgets do macOS não podem ser embutidos; os blocos da tela inicial são do próprio app.
 - A extensão do navegador ainda não suporta Safari nem Firefox, e é instalada manualmente.
-- A versão Windows ainda não tem gravação de tela, anotação de prints, tela inicial personalizável nem calendário, e a janela de configurações dela ainda usa a aparência padrão do Windows.
+- A versão Windows ainda não tem gravação de tela, anotação de prints, tela inicial personalizável nem calendário.
 - O app ainda não é notarizado; por isso o macOS pede a liberação manual na primeira abertura.
 - A atualização não é automática: o app avisa e a instalação é manual.
 - A gravação de tela pega só o monitor principal.

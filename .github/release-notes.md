@@ -2,10 +2,9 @@
 
 Esta versão é sobre o **Windows**; a versão macOS não mudou.
 
-- **Notch minimizado**: fechado, ele agora é só um risco discreto no centro do topo da tela e abre ao passar o mouse, sem ocupar espaço. Quem quiser os indicadores (música, timer, agentes) com ele fechado pode ligar nas configurações.
-- **Animações novas** ao abrir, fechar e trocar de aba.
-- **Aparência igual à do macOS**: barras de rolagem finas, controles deslizantes, menus, dicas e os anéis da aba Sistema foram redesenhados.
-- **Tela de boas-vindas** na primeira execução.
+- **Janela de configurações refeita**, no mesmo desenho da versão macOS: tema escuro, barra lateral com os painéis (Geral, Atalhos, Módulos, Agentes de IA, Captura de tela, Textos, Timers e Sobre), seções em cartões e interruptores no lugar das caixas de seleção.
+- Novas opções que antes só existiam no arquivo de preferências: espera para abrir e fechar, tempo do aviso de agente, janela de contexto do Claude, sessões ociosas, itens do histórico e capturas na galeria.
+- A tela de boas-vindas ganhou o mesmo visual e pode ser reaberta em Configurações › Sobre.
 
 ## Qual arquivo baixar
 
