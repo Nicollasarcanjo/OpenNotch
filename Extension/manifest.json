@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "OpenNotch — música do navegador",
+  "description": "Envia para o app OpenNotch, neste computador, a música que está tocando no navegador e recebe os comandos de tocar, pausar e pular.",
+  "version": "0.1.0",
+  "background": { "service_worker": "background.js", "scripts": ["background.js"] },
+  "host_permissions": ["http://127.0.0.1:38917/*"],
+  "browser_specific_settings": { "gecko": { "id": "extension@opennotch.dev" } },
+  "content_scripts": [
+    {
+      "js": ["content.js"],
+      "run_at": "document_idle",
+      "matches": [
+        "*://music.youtube.com/*",
+        "*://www.youtube.com/*",
+        "*://open.spotify.com/*",
+        "*://soundcloud.com/*",
+        "*://www.deezer.com/*",
+        "*://tidal.com/*",
+        "*://listen.tidal.com/*",
+        "*://music.amazon.com/*",
+        "*://music.amazon.com.br/*",
+        "*://music.apple.com/*"
+      ]
+    }
+  ]
+}
