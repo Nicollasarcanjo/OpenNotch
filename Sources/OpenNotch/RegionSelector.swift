@@ -67,7 +67,7 @@ private final class SelectionView: NSView {
             border.stroke()
             label("\(Int(selection.width)) × \(Int(selection.height))", near: selection)
         } else {
-            label("Arraste para escolher a área da gravação · Esc cancela",
+            label(L("Arraste para escolher a área da gravação · Esc cancela"),
                   near: CGRect(x: bounds.midX, y: bounds.midY, width: 0, height: 0), centered: true)
         }
     }

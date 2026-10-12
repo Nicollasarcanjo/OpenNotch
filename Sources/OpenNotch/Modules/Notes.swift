@@ -10,7 +10,7 @@ struct Note: Identifiable, Codable, Equatable {
     var title: String {
         let line = text.split(whereSeparator: \.isNewline)
             .first { !$0.trimmingCharacters(in: .whitespaces).isEmpty }
-        return line.map { $0.trimmingCharacters(in: .whitespaces) } ?? "Anotação vazia"
+        return line.map { $0.trimmingCharacters(in: .whitespaces) } ?? L("Anotação vazia")
     }
 }
 

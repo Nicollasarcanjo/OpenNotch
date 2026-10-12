@@ -12,6 +12,8 @@ final class CaptureManager: ObservableObject {
     /// Chamado antes de capturar, para o notch sair da frente.
     var beforeCapture: (() -> Void)?
     var onCaptured: ((URL) -> Void)?
+    /// Abre o editor de marcações para um print.
+    var onAnnotate: ((URL) -> Void)?
 
     private var recorder: Process?
     private var recorderInput: Pipe?
@@ -46,6 +48,11 @@ final class CaptureManager: ObservableObject {
         }
         query.start()
         reload()
+        // O print anotado entra na galeria e já vai copiado.
+        AnnotateWindowController.onSaved = { [weak self] url in
+            self?.reload()
+            self?.copy(url)
+        }
     }
 
     private func systemResultsChanged(announce: Bool) {
@@ -72,7 +79,7 @@ final class CaptureManager: ObservableObject {
     func screenshot(region: Bool) {
         guard !busy, !isRecording, ensurePermission() else { return }
         let prefs = Prefs.shared
-        let url = newFile(prefix: "Captura", ext: "png")
+        let url = newFile(prefix: L("Captura"), ext: "png")
         var args = ["-t", "png"]
         if !prefs.bool(.captureSound) { args.append("-x") }
         if region { args.append("-i") }   // seleção de área do próprio macOS; Esc cancela
@@ -125,7 +132,7 @@ final class CaptureManager: ObservableObject {
     }
 
     private func launchRecorder(_ arguments: [String]) {
-        let url = newFile(prefix: "Gravação", ext: "mov")
+        let url = newFile(prefix: L("Gravação"), ext: "mov")
         let process = Process()
         let input = Pipe()
         process.executableURL = Self.tool
@@ -297,7 +304,7 @@ struct CaptureView: View {
         .onAppear { capture.reload() }
     }
 
-    private func actionButton(_ title: String, icon: String, tint: Color = .white,
+    private func actionButton(_ title: LocalizedStringKey, icon: String, tint: Color = .white,
                               action: @escaping () -> Void) -> some View {
         Button(action: action) {
             HStack(spacing: 6) {
@@ -352,6 +359,17 @@ private struct CaptureThumb: View {
         .clipShape(RoundedRectangle(cornerRadius: 9))
         .overlay(RoundedRectangle(cornerRadius: 9).stroke(Color.white.opacity(0.12)))
         .overlay(ClickCatcher(onClick: copy, onSecondaryClick: { capture.open(url) }))
+        .overlay(alignment: .topTrailing) {
+            if !CaptureManager.isVideo(url) {
+                Button { capture.onAnnotate?(url) } label: {
+                    Image(systemName: "pencil.tip.crop.circle.fill").font(.system(size: 17))
+                        .symbolRenderingMode(.palette).foregroundStyle(.white, .black.opacity(0.65))
+                        .padding(5).contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .help("Anotar: seta, retângulo, texto e borrar")
+            }
+        }
         .help("Clique: copiar · Clique com dois dedos: abrir\n\(url.lastPathComponent)")
         .task(id: url) { await loadThumbnail() }
     }

@@ -313,7 +313,7 @@ private struct AppRowView: View {
             if isExpanded {
                 ForEach(app.processes) { process in
                     HStack(spacing: 0) {
-                        Text(process.name + (app.instances.contains(process.id) ? "  (principal)" : ""))
+                        Text(process.name + (app.instances.contains(process.id) ? L("  (principal)") : ""))
                             .font(.system(size: 11)).foregroundStyle(.secondary).lineLimit(1)
                             .padding(.leading, 40)
                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -326,7 +326,7 @@ private struct AppRowView: View {
                                 .contentShape(Rectangle())
                         }
                         .buttonStyle(.plain)
-                        .help("Encerrar só este processo (PID \(process.id))")
+                        .help(L("Encerrar só este processo (PID %@)", String(process.id)))
                     }
                     .padding(.horizontal, 9).padding(.vertical, 3)
                 }
@@ -350,9 +350,9 @@ private struct MetricCells: View {
 
     var body: some View {
         let ram = Double(memory) / Double(max(memoryTotal, 1)) * 100
-        cell(cpu, help: "CPU: parte de todos os núcleos")
+        cell(cpu, help: L("CPU: parte de todos os núcleos"))
         cell(gpu, help: "GPU")
-        cell(ram, help: "Memória: " + ByteCountFormatter.string(fromByteCount: Int64(memory), countStyle: .memory))
+        cell(ram, help: L("Memória: %@", ByteCountFormatter.string(fromByteCount: Int64(memory), countStyle: .memory)))
     }
 
     private func cell(_ value: Double, help: String) -> some View {

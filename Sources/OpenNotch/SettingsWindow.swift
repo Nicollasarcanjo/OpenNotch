@@ -10,20 +10,20 @@ enum SettingsPane: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .general: return "Geral"
-        case .shortcuts: return "Atalhos"
-        case .home: return "Tela inicial"
-        case .modules: return "Módulos"
-        case .music: return "Música"
-        case .browserExtension: return "Extensão do navegador"
-        case .agents: return "Agentes de IA"
-        case .apps: return "Apps abertos"
-        case .capture: return "Captura de tela"
-        case .clipboard: return "Textos copiados"
-        case .timers: return "Timers"
-        case .system: return "Sistema"
-        case .calendar: return "Calendário"
-        case .about: return "Sobre"
+        case .general: return L("Geral")
+        case .shortcuts: return L("Atalhos")
+        case .home: return L("Tela inicial")
+        case .modules: return L("Módulos")
+        case .music: return L("Música")
+        case .browserExtension: return L("Extensão do navegador")
+        case .agents: return L("Agentes de IA")
+        case .apps: return L("Apps abertos")
+        case .capture: return L("Captura de tela")
+        case .clipboard: return L("Textos copiados")
+        case .timers: return L("Timers")
+        case .system: return L("Sistema")
+        case .calendar: return L("Calendário")
+        case .about: return L("Sobre")
         }
     }
 
@@ -47,19 +47,34 @@ enum SettingsPane: String, CaseIterable, Identifiable {
     }
 }
 
+extension Notification.Name {
+    static let showOnboarding = Notification.Name("OpenNotchShowOnboarding")
+}
+
 final class SettingsWindowController {
     private var window: NSWindow?
+    private let services: Services
+
+    init(services: Services) {
+        self.services = services
+    }
+
+    private static func root(_ pane: SettingsPane, _ services: Services) -> some View {
+        SettingsRootView(pane: pane)
+            .environmentObject(Prefs.shared)
+            .environmentObject(services.updater)
+    }
 
     func show(pane: SettingsPane? = nil) {
         if let pane, let window {
-            window.contentView = NSHostingView(rootView: SettingsRootView(pane: pane).environmentObject(Prefs.shared))
+            window.contentView = NSHostingView(rootView: Self.root(pane, services))
         }
         if window == nil {
             let w = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 720, height: 500),
                              styleMask: [.titled, .closable, .miniaturizable], backing: .buffered, defer: false)
-            w.title = "Configurações do OpenNotch"
+            w.title = L("Configurações do OpenNotch")
             w.isReleasedWhenClosed = false
-            w.contentView = NSHostingView(rootView: SettingsRootView(pane: pane ?? .general).environmentObject(Prefs.shared))
+            w.contentView = NSHostingView(rootView: Self.root(pane ?? .general, services))
             w.center()
             window = w
         }
@@ -68,9 +83,9 @@ final class SettingsWindowController {
     }
 
     /// Para desenvolvimento: salva um PNG de cada painel em `directory`.
-    static func snapshotAll(to directory: String) {
+    static func snapshotAll(to directory: String, services: Services) {
         for pane in SettingsPane.allCases {
-            let view = NSHostingView(rootView: SettingsRootView(pane: pane).environmentObject(Prefs.shared))
+            let view = NSHostingView(rootView: root(pane, services))
             let frame = NSRect(x: 0, y: 0, width: 720, height: 500)
             let window = NSWindow(contentRect: frame, styleMask: [.titled], backing: .buffered, defer: false)
             window.contentView = view
@@ -142,6 +157,18 @@ private struct GeneralPane: View {
     @EnvironmentObject var prefs: Prefs
     @State private var launchAtLogin = SMAppService.mainApp.status == .enabled
     @State private var loginError: String?
+    @State private var languageChanged = false
+
+    /// O macOS escolhe o idioma do app pela preferência AppleLanguages, lida ao abrir.
+    private func setLanguage(_ code: String) {
+        prefs.set(code, for: .language)
+        if code.isEmpty {
+            UserDefaults.standard.removeObject(forKey: "AppleLanguages")
+        } else {
+            UserDefaults.standard.set([code], forKey: "AppleLanguages")
+        }
+        languageChanged = true
+    }
 
     var body: some View {
         Section("Abertura do notch") {
@@ -163,7 +190,22 @@ private struct GeneralPane: View {
         } footer: {
             Text("O indicador aparece ao lado do notch. O aviso padrão do macOS continua aparecendo também.")
         }
+        Section {
+            Toggle("Mostrar em todos os monitores", isOn: prefs.boolBinding(.displayAllScreens))
+        } header: {
+            Text("Monitores")
+        } footer: {
+            Text("Em monitores sem notch físico, o painel aparece no centro da barra de menus. Desligado, ele fica só na tela do MacBook.")
+        }
         Section("Aplicativo") {
+            Picker("Idioma", selection: Binding(get: { prefs.string(.language) }, set: setLanguage)) {
+                Text("Igual ao do sistema").tag("")
+                Text("Português").tag("pt-BR")
+                Text("English").tag("en")
+            }
+            if languageChanged {
+                Text("O idioma muda na próxima vez que o app for aberto.").font(.caption).foregroundStyle(.secondary)
+            }
             Toggle("Abrir ao iniciar o Mac", isOn: $launchAtLogin)
                 .onChange(of: launchAtLogin) { _, enabled in setLaunchAtLogin(enabled) }
             if let loginError {
@@ -182,7 +224,7 @@ private struct GeneralPane: View {
             if enabled { try SMAppService.mainApp.register() } else { try SMAppService.mainApp.unregister() }
             loginError = nil
         } catch {
-            loginError = "Não foi possível alterar: \(error.localizedDescription)"
+            loginError = L("Não foi possível alterar: %@", error.localizedDescription)
             launchAtLogin = SMAppService.mainApp.status == .enabled
         }
     }
@@ -235,11 +277,10 @@ private struct ExtensionPane: View {
 
     var body: some View {
         Section {
-            Text("Com a extensão, a música que toca no navegador (YouTube, YouTube Music, Spotify Web, SoundCloud, "
-                 + "Deezer, Tidal, Amazon Music e Apple Music) aparece no notch, com os botões de tocar, pausar e pular.")
+            Text("Com a extensão, a música que toca no navegador (YouTube, YouTube Music, Spotify Web, SoundCloud, Deezer, Tidal, Amazon Music e Apple Music) aparece no notch, com os botões de tocar, pausar e pular.")
             HStack {
                 Button("Baixar extensão") {
-                    message = BrowserExtension.download() == nil ? nil : "Extensão salva. Agora siga os passos abaixo."
+                    message = BrowserExtension.download() == nil ? nil : L("Extensão salva. Agora siga os passos abaixo.")
                 }
                 .buttonStyle(.borderedProminent)
                 if let message { Text(message).font(.caption).foregroundStyle(.secondary) }
@@ -255,7 +296,7 @@ private struct ExtensionPane: View {
                     Text("\(index + 1)").font(.system(.body, design: .rounded).weight(.semibold))
                         .frame(width: 22, height: 22)
                         .background(Color.accentColor.opacity(0.25), in: Circle())
-                    Text(step).fixedSize(horizontal: false, vertical: true)
+                    Text(LocalizedStringKey(step)).fixedSize(horizontal: false, vertical: true)
                 }
             }
         }
@@ -272,10 +313,7 @@ private struct ExtensionPane: View {
                 }
             }
         } footer: {
-            Text("A extensão só conversa com o OpenNotch neste Mac e só envia dados enquanto há música tocando. "
-                 + "Se o Spotify ou o Apple Music estiverem tocando, eles têm prioridade. Pular faixa funciona em "
-                 + "YouTube, YouTube Music, Spotify Web e SoundCloud. Se você mover ou apagar a pasta, o navegador "
-                 + "desativa a extensão. Safari e Firefox ainda não são suportados.")
+            Text("A extensão só conversa com o OpenNotch neste Mac e só envia dados enquanto há música tocando. Se o Spotify ou o Apple Music estiverem tocando, eles têm prioridade. Pular faixa funciona em YouTube, YouTube Music, Spotify Web e SoundCloud. Se você mover ou apagar a pasta, o navegador desativa a extensão. Safari e Firefox ainda não são suportados.")
         }
     }
 }
@@ -306,8 +344,7 @@ private struct ShortcutsPane: View {
         } header: {
             Text("Atalhos de captura do macOS")
         } footer: {
-            Text("Você continua usando os atalhos normais do sistema; o que for capturado aparece na aba "
-                 + "Captura de tela, e o notch abre mostrando.")
+            Text("Você continua usando os atalhos normais do sistema; o que for capturado aparece na aba Captura de tela, e o notch abre mostrando.")
         }
     }
 }
@@ -376,7 +413,7 @@ private struct HomePane: View {
         }
 
         Section("Sequência de imagens") {
-            LabeledContent("Imagens", value: prefs.homeSlides.isEmpty ? "Nenhuma" : "\(prefs.homeSlides.count) selecionadas")
+            LabeledContent("Imagens", value: prefs.homeSlides.isEmpty ? L("Nenhuma") : L("%lld selecionadas", prefs.homeSlides.count))
             HStack {
                 Button("Escolher imagens ou pasta…", action: chooseSlides)
                 if !prefs.homeSlides.isEmpty {
@@ -402,7 +439,7 @@ private struct HomePane: View {
     }
 
     private func fileLabel(_ path: String) -> String {
-        path.isEmpty ? "Nenhum" : (path as NSString).lastPathComponent
+        path.isEmpty ? L("Nenhum") : (path as NSString).lastPathComponent
     }
 
     private func panel(types: [UTType], multiple: Bool, folders: Bool) -> NSOpenPanel {
@@ -461,6 +498,7 @@ private struct ModulesPane: View {
             Toggle("Gerenciador de apps abertos", isOn: prefs.boolBinding(.modApps))
             Toggle("Captura e gravação de tela", isOn: prefs.boolBinding(.modCapture))
             Toggle("Bandeja de arquivos", isOn: prefs.boolBinding(.modTray))
+            Toggle("Progresso de downloads", isOn: prefs.boolBinding(.modDownloads))
             Toggle("Histórico de textos copiados", isOn: prefs.boolBinding(.modClipboard))
             Toggle("Timers", isOn: prefs.boolBinding(.modTimers))
             Toggle("Anotações", isOn: prefs.boolBinding(.modNotes))
@@ -536,8 +574,7 @@ private struct AgentsPane: View {
         } header: {
             Text("Outras ferramentas")
         } footer: {
-            Text("Para ferramentas sem suporte nativo, o OpenNotch acha os processos pelo nome, mostra a pasta "
-                 + "em que rodam e usa o consumo de CPU para estimar quando estão trabalhando.")
+            Text("Para ferramentas sem suporte nativo, o OpenNotch acha os processos pelo nome, mostra a pasta em que rodam e usa o consumo de CPU para estimar quando estão trabalhando.")
         }
         .onChange(of: custom) { _, value in prefs.customAgents = value }
     }
@@ -557,8 +594,7 @@ private struct AppsPane: View {
             }
             Toggle("Incluir apps sem ícone no Dock", isOn: prefs.boolBinding(.appsShowBackground))
         } footer: {
-            Text("A CPU é mostrada como parte de todos os núcleos, como no Gerenciador de Tarefas do Windows. "
-                 + "O uso só é medido enquanto a aba está aberta.")
+            Text("A CPU é mostrada como parte de todos os núcleos, como no Gerenciador de Tarefas do Windows. O uso só é medido enquanto a aba está aberta.")
         }
     }
 }
@@ -568,7 +604,7 @@ private struct CapturePane: View {
 
     private var folderLabel: String {
         let custom = prefs.string(.captureFolder)
-        return custom.isEmpty ? "Imagens/OpenNotch" : (custom as NSString).abbreviatingWithTildeInPath
+        return custom.isEmpty ? L("Imagens/OpenNotch") : (custom as NSString).abbreviatingWithTildeInPath
     }
 
     var body: some View {
@@ -594,8 +630,7 @@ private struct CapturePane: View {
         } header: {
             Text("Opções")
         } footer: {
-            Text("Clique numa captura para copiar; clique com dois dedos para abrir no app padrão. "
-                 + "O macOS pede a permissão de Gravação de Tela na primeira captura.")
+            Text("Clique numa captura para copiar; clique com dois dedos para abrir no app padrão. O macOS pede a permissão de Gravação de Tela na primeira captura.")
         }
     }
 
@@ -672,31 +707,97 @@ private struct CalendarPane: View {
 
 private struct AboutPane: View {
     @EnvironmentObject var prefs: Prefs
+    @EnvironmentObject var updater: Updater
     @State private var confirmReset = false
+    @State private var transferMessage: String?
 
     var body: some View {
         Section {
-            LabeledContent("OpenNotch", value: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "dev")
+            LabeledContent("OpenNotch", value: updater.current)
             Text("Gratuito, sem anúncios e sem recursos bloqueados.").foregroundStyle(.secondary)
         }
         Section {
+            LabeledContent("Situação") { Text(updateStatus).foregroundStyle(.secondary) }
+            HStack {
+                Button("Verificar agora", action: updater.check).disabled(updater.state == .checking)
+                if updater.available != nil {
+                    Button("Abrir página de download", action: updater.openDownloadPage).buttonStyle(.borderedProminent)
+                }
+            }
+            Toggle("Verificar atualizações automaticamente", isOn: prefs.boolBinding(.updateAutoCheck))
+        } header: {
+            Text("Atualizações")
+        } footer: {
+            Text("O app só avisa que há versão nova e abre a página do GitHub; a instalação é manual.")
+        }
+        Section {
+            HStack {
+                Button("Exportar…", action: exportSettings)
+                Button("Importar…", action: importSettings)
+            }
+            if let transferMessage {
+                Text(transferMessage).font(.caption).foregroundStyle(.secondary)
+            }
             Button("Restaurar configurações padrão") { confirmReset = true }
                 .confirmationDialog("Restaurar todas as configurações para o padrão?", isPresented: $confirmReset) {
                     Button("Restaurar", role: .destructive) { prefs.resetAll() }
                 }
+        } header: {
+            Text("Configurações")
+        } footer: {
+            Text("O arquivo exportado leva as opções, a tela inicial e as ferramentas cadastradas. Anotações, histórico de copiados e capturas não entram.")
+        }
+        Section {
+            Button("Mostrar as boas-vindas de novo") {
+                NotificationCenter.default.post(name: .showOnboarding, object: nil)
+            }
             Button("Sair do OpenNotch") { NSApplication.shared.terminate(nil) }
+        }
+    }
+
+    private var updateStatus: String {
+        switch updater.state {
+        case .idle: return L("Ainda não verificado")
+        case .checking: return L("Verificando…")
+        case .upToDate: return L("Você está na versão mais recente")
+        case .available(let release): return L("Versão %@ disponível", release.version)
+        case .failed: return L("Não foi possível verificar")
+        }
+    }
+
+    private func exportSettings() {
+        let panel = NSSavePanel()
+        panel.nameFieldStringValue = "OpenNotch-config.json"
+        panel.allowedContentTypes = [.json]
+        guard panel.runModal() == .OK, let url = panel.url, let data = prefs.exportData() else { return }
+        do {
+            try data.write(to: url)
+            transferMessage = L("Configurações exportadas.")
+        } catch {
+            transferMessage = L("Não foi possível salvar o arquivo.")
+        }
+    }
+
+    private func importSettings() {
+        let panel = NSOpenPanel()
+        panel.allowedContentTypes = [.json]
+        guard panel.runModal() == .OK, let url = panel.url, let data = try? Data(contentsOf: url) else { return }
+        if let count = prefs.importData(data) {
+            transferMessage = L("%lld configurações importadas.", count)
+        } else {
+            transferMessage = L("Esse arquivo não é uma exportação do OpenNotch.")
         }
     }
 }
 
 private struct LabeledSlider: View {
-    let title: String
+    let title: LocalizedStringKey
     @Binding var value: Double
     let range: ClosedRange<Double>
     let step: Double
     let unit: String
 
-    init(_ title: String, value: Binding<Double>, range: ClosedRange<Double>, step: Double, unit: String) {
+    init(_ title: LocalizedStringKey, value: Binding<Double>, range: ClosedRange<Double>, step: Double, unit: String) {
         self.title = title
         _value = value
         self.range = range

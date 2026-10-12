@@ -9,6 +9,7 @@ struct NotchRootView: View {
     @EnvironmentObject var agents: AgentMonitor
     @EnvironmentObject var capture: CaptureManager
     @EnvironmentObject var hud: HUDMonitor
+    @EnvironmentObject var downloads: DownloadsMonitor
     @EnvironmentObject var prefs: Prefs
     @State private var dropTargeted = false
 
@@ -17,7 +18,8 @@ struct NotchRootView: View {
                  recording: capture.isRecording,
                  music: music.isPlaying && prefs.bool(.modMusic) && prefs.bool(.musicEars),
                  timer: timers.isRunning && prefs.bool(.modTimers) && prefs.bool(.timersEar),
-                 agents: prefs.bool(.modAgents) && prefs.bool(.agentsEar) ? agents.workingCount : 0)
+                 agents: prefs.bool(.modAgents) && prefs.bool(.agentsEar) ? agents.workingCount : 0,
+                 download: prefs.bool(.modDownloads) ? downloads.activeFraction : nil)
     }
 
     private var size: CGSize {
@@ -87,8 +89,9 @@ struct EarState: Equatable {
     var music: Bool
     var timer: Bool
     var agents: Int
+    var download: Double?
 
-    var visible: Bool { hud != nil || recording || music || timer || agents > 0 }
+    var visible: Bool { hud != nil || recording || music || timer || agents > 0 || download != nil }
 }
 
 /// Estado fechado: só as "orelhas" ao lado do notch físico.
@@ -122,6 +125,8 @@ struct NotchClosedView: View {
             ArtworkView(image: music.artwork, size: model.notchSize.height - 12, radius: 5)
         } else if ears.agents > 0 {
             Image(systemName: "sparkles").font(.system(size: 13, weight: .semibold)).foregroundStyle(.orange)
+        } else if ears.download != nil {
+            Image(systemName: "arrow.down.circle.fill").font(.system(size: 13, weight: .semibold)).foregroundStyle(.blue)
         } else {
             Image(systemName: "timer").font(.system(size: 13, weight: .semibold)).foregroundStyle(.orange)
         }
@@ -146,6 +151,10 @@ struct NotchClosedView: View {
                     .font(.system(size: 11, weight: .semibold, design: .rounded).monospacedDigit())
                     .foregroundStyle(.orange)
             }
+        } else if let download = ears.download, !ears.music {
+            Text("\(Int((download * 100).rounded()))%")
+                .font(.system(size: 11, weight: .semibold, design: .rounded).monospacedDigit())
+                .foregroundStyle(.blue)
         } else {
             AudioBarsView(playing: music.isPlaying).frame(width: 18, height: 14)
         }
@@ -155,6 +164,7 @@ struct NotchClosedView: View {
 /// Estado aberto: barra de abas na altura do notch físico e o conteúdo abaixo.
 struct NotchOpenView: View {
     @EnvironmentObject var model: NotchModel
+    @EnvironmentObject var updater: Updater
     @EnvironmentObject var prefs: Prefs
 
     var body: some View {
@@ -177,7 +187,13 @@ struct NotchOpenView: View {
             ForEach(tabs.prefix(Self.leftTabs)) { tabButton($0) }
             Spacer(minLength: model.notchSize.width + 16)
             ForEach(tabs.dropFirst(Self.leftTabs)) { tabButton($0) }
-            barButton(icon: "gearshape.fill", help: "Configurações", selected: false) { model.onOpenSettings?(nil) }
+            barButton(icon: "gearshape.fill", help: updater.available == nil ? "Configurações" : "Atualização disponível",
+                      selected: false) { model.onOpenSettings?(updater.available == nil ? nil : .about) }
+                .overlay(alignment: .topTrailing) {
+                    if updater.available != nil {
+                        Circle().fill(Color.red).frame(width: 7, height: 7).offset(x: -2, y: 3)
+                    }
+                }
         }
         .padding(.horizontal, 16)
     }
@@ -186,10 +202,10 @@ struct NotchOpenView: View {
     private static let leftTabs = 5
 
     private func tabButton(_ tab: NotchTab) -> some View {
-        barButton(icon: tab.icon, help: tab.title, selected: model.visibleTab == tab) { model.tab = tab }
+        barButton(icon: tab.icon, help: LocalizedStringKey(tab.title), selected: model.visibleTab == tab) { model.tab = tab }
     }
 
-    private func barButton(icon: String, help: String, selected: Bool, action: @escaping () -> Void) -> some View {
+    private func barButton(icon: String, help: LocalizedStringKey, selected: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Image(systemName: icon)
                 .font(.system(size: 12, weight: .medium))
@@ -211,7 +227,18 @@ struct NotchOpenView: View {
         case .agents: AgentsView()
         case .apps: AppsView()
         case .capture: CaptureView()
-        case .tray: TrayView()
+        case .tray:
+            HStack(spacing: 14) {
+                if prefs.bool(.modTray) {
+                    TrayView().frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+                if prefs.bool(.modTray), prefs.bool(.modDownloads) {
+                    Divider().opacity(0.4)
+                }
+                if prefs.bool(.modDownloads) {
+                    DownloadsPanel().frame(maxWidth: prefs.bool(.modTray) ? 250 : .infinity, maxHeight: .infinity)
+                }
+            }
         case .timers: TimersView()
         case .texts: TextsView()
         case .system: SystemView()

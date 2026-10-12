@@ -141,7 +141,7 @@ struct SystemView: View {
             if prefs.bool(.sysDisk) {
                 gauge("Disco", value: system.diskTotal > 0
                         ? 1 - Double(system.diskFree) / Double(system.diskTotal) : 0,
-                      text: "\(bytes(system.diskFree)) livres", color: .orange)
+                      text: L("%@ livres", bytes(system.diskFree)), color: .orange)
             }
             if prefs.bool(.sysBattery), let battery = system.battery {
                 gauge(system.charging ? "Carregando" : "Bateria", value: Double(battery) / 100,
@@ -160,7 +160,7 @@ struct SystemView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
-    private func gauge(_ title: String, value: Double, text: String, color: Color) -> some View {
+    private func gauge(_ title: LocalizedStringKey, value: Double, text: String, color: Color) -> some View {
         VStack(spacing: 6) {
             ZStack {
                 Circle().stroke(Color.white.opacity(0.1), lineWidth: 7)

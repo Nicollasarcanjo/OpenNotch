@@ -3,13 +3,18 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
-swift build -c release
+# OPENNOTCH_UNIVERSAL=1 gera um binário para Apple Silicon e Intel (usado ao publicar).
+ARCH_FLAGS=()
+if [ "${OPENNOTCH_UNIVERSAL:-}" = "1" ]; then ARCH_FLAGS=(--arch arm64 --arch x86_64); fi
+
+swift build -c release ${ARCH_FLAGS[@]+"${ARCH_FLAGS[@]}"}
 APP="build/OpenNotch.app"
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
-cp "$(swift build -c release --show-bin-path)/OpenNotch" "$APP/Contents/MacOS/OpenNotch"
+cp "$(swift build -c release ${ARCH_FLAGS[@]+"${ARCH_FLAGS[@]}"} --show-bin-path)/OpenNotch" "$APP/Contents/MacOS/OpenNotch"
 cp Resources/AppIcon.icns "$APP/Contents/Resources/AppIcon.icns"
 cp -R Extension "$APP/Contents/Resources/BrowserExtension"
+cp -R Resources/*.lproj "$APP/Contents/Resources/"
 
 cat > "$APP/Contents/Info.plist" <<'PLIST'
 <?xml version="1.0" encoding="UTF-8"?>
@@ -21,8 +26,10 @@ cat > "$APP/Contents/Info.plist" <<'PLIST'
     <key>CFBundleIdentifier</key><string>dev.opennotch.OpenNotch</string>
     <key>CFBundleName</key><string>OpenNotch</string>
     <key>CFBundlePackageType</key><string>APPL</string>
-    <key>CFBundleShortVersionString</key><string>0.1.0</string>
-    <key>CFBundleVersion</key><string>1</string>
+    <key>CFBundleShortVersionString</key><string>__VERSION__</string>
+    <key>CFBundleVersion</key><string>__BUILD__</string>
+    <key>CFBundleDevelopmentRegion</key><string>pt-BR</string>
+    <key>CFBundleLocalizations</key><array><string>pt-BR</string><string>en</string></array>
     <key>LSMinimumSystemVersion</key><string>14.0</string>
     <key>LSUIElement</key><true/>
     <key>NSAppleEventsUsageDescription</key><string>O OpenNotch usa Apple Events para ler e controlar a música do Spotify e do Apple Music.</string>
@@ -31,9 +38,18 @@ cat > "$APP/Contents/Info.plist" <<'PLIST'
 </plist>
 PLIST
 
+# A versão vem de OPENNOTCH_VERSION (usada pelo CI ao publicar) ou do arquivo VERSION.
+VERSION="${OPENNOTCH_VERSION:-$(cat VERSION)}"
+sed -i '' -e "s/__VERSION__/$VERSION/" -e "s/__BUILD__/${OPENNOTCH_BUILD:-1}/" "$APP/Contents/Info.plist"
+
 # Com um certificado "Apple Development" a assinatura é estável e o macOS mantém as permissões
 # (Automação, Gravação de Tela, Calendário) entre uma compilação e outra. Sem ele, assina ad hoc.
 IDENTITY="${OPENNOTCH_SIGN_IDENTITY:-$(security find-identity -v -p codesigning 2>/dev/null \
     | awk -F'"' '/Apple Development/ {print $2; exit}')}"
-codesign --force --deep --sign "${IDENTITY:--}" "$APP"
+# A notarização exige o "hardened runtime"; com ele, controlar o Spotify precisa do entitlement de Apple Events.
+SIGN_FLAGS=(--force --deep)
+if [ "${OPENNOTCH_HARDENED:-}" = "1" ]; then
+    SIGN_FLAGS+=(--options runtime --timestamp --entitlements Resources/OpenNotch.entitlements)
+fi
+codesign "${SIGN_FLAGS[@]}" --sign "${IDENTITY:--}" "$APP"
 echo "OK: $APP"

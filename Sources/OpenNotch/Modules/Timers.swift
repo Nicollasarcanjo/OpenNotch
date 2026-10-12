@@ -93,7 +93,7 @@ struct TimersView: View {
         HStack(spacing: 24) {
             VStack(spacing: 8) {
                 Picker("", selection: $timers.mode) {
-                    ForEach(TimerManager.Mode.allCases) { Text($0.rawValue).tag($0) }
+                    ForEach(TimerManager.Mode.allCases) { Text(LocalizedStringKey($0.rawValue)).tag($0) }
                 }
                 .pickerStyle(.segmented)
                 .labelsHidden()

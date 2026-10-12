@@ -56,8 +56,8 @@ struct CalendarView: View {
                             RoundedRectangle(cornerRadius: 1.5)
                                 .fill(Color(cgColor: event.calendar.cgColor)).frame(width: 3, height: 22)
                             VStack(alignment: .leading, spacing: 0) {
-                                Text(event.title ?? "Evento").font(.system(size: 11, weight: .medium)).lineLimit(1)
-                                Text(event.isAllDay ? "Dia inteiro"
+                                Text(event.title ?? L("Evento")).font(.system(size: 11, weight: .medium)).lineLimit(1)
+                                Text(event.isAllDay ? L("Dia inteiro")
                                      : event.startDate.formatted(date: .omitted, time: .shortened))
                                     .font(.system(size: 10)).foregroundStyle(.secondary)
                             }

@@ -44,7 +44,7 @@ private func matches(_ text: String, _ query: String) -> Bool {
 }
 
 private struct PanelHeader<Trailing: View>: View {
-    let title: String
+    let title: LocalizedStringKey
     @ViewBuilder var trailing: Trailing
 
     var body: some View {
@@ -137,7 +137,7 @@ private struct NotesPanel: View {
         editing = nil
     }
 
-    private func iconButton(_ icon: String, help: String, action: @escaping () -> Void) -> some View {
+    private func iconButton(_ icon: String, help: LocalizedStringKey, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Image(systemName: icon).font(.system(size: 10, weight: .semibold))
                 .frame(width: 20, height: 18)
@@ -217,7 +217,7 @@ private struct CopiedRow: View {
 
     var body: some View {
         HStack(spacing: 6) {
-            Text(copied ? "Copiado" : item.text.trimmingCharacters(in: .whitespacesAndNewlines))
+            Text(copied ? L("Copiado") : item.text.trimmingCharacters(in: .whitespacesAndNewlines))
                 .font(.system(size: 12, weight: copied ? .semibold : .regular)).lineLimit(1)
                 .foregroundStyle(copied ? Color.green : Color.white)
                 .frame(maxWidth: .infinity, alignment: .leading)

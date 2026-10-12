@@ -9,6 +9,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         controller = NotchController()
         updateStatusItem()
+        NotificationCenter.default.addObserver(forName: .showOnboarding, object: nil, queue: .main) { [weak self] _ in
+            self?.controller.showOnboarding()
+        }
         prefsObserver = Prefs.shared.objectWillChange
             .receive(on: RunLoop.main)
             .sink { [weak self] in self?.updateStatusItem() }
@@ -29,7 +32,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             }
         }
         if let path = env["OPENNOTCH_SETTINGS_SNAPSHOT"] {
-            SettingsWindowController.snapshotAll(to: path)
+            SettingsWindowController.snapshotAll(to: path, services: controller.services)
             NSApplication.shared.terminate(nil)
         }
     }
@@ -47,10 +50,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             item.button?.image = NSImage(systemSymbolName: "rectangle.topthird.inset.filled",
                                          accessibilityDescription: "OpenNotch")
             let menu = NSMenu()
-            menu.addItem(withTitle: "Abrir OpenNotch", action: #selector(openNotch), keyEquivalent: "").target = self
-            menu.addItem(withTitle: "Configurações…", action: #selector(openSettings), keyEquivalent: ",").target = self
+            menu.addItem(withTitle: L("Abrir OpenNotch"), action: #selector(openNotch), keyEquivalent: "").target = self
+            menu.addItem(withTitle: L("Configurações…"), action: #selector(openSettings), keyEquivalent: ",").target = self
             menu.addItem(.separator())
-            menu.addItem(withTitle: "Sair", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+            menu.addItem(withTitle: L("Sair"), action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
             item.menu = menu
             statusItem = item
         } else if !wanted, let item = statusItem {

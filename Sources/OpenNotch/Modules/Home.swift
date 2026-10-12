@@ -10,14 +10,14 @@ enum HomeBlock: String, Codable, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .music: return "Música"
-        case .calendar: return "Calendário"
-        case .apps: return "Atalhos de apps"
-        case .gif: return "GIF"
-        case .slideshow: return "Sequência de imagens"
-        case .clock: return "Relógio"
-        case .system: return "Sistema (resumo)"
-        case .timer: return "Timer (resumo)"
+        case .music: return L("Música")
+        case .calendar: return L("Calendário")
+        case .apps: return L("Atalhos de apps")
+        case .gif: return L("GIF")
+        case .slideshow: return L("Sequência de imagens")
+        case .clock: return L("Relógio")
+        case .system: return L("Sistema (resumo)")
+        case .timer: return L("Timer (resumo)")
         }
     }
 
@@ -174,7 +174,7 @@ private struct AppShortcutsBlock: View {
 
 private struct MediaPlaceholder: View {
     let icon: String
-    let text: String
+    let text: LocalizedStringKey
 
     var body: some View {
         VStack(spacing: 4) {
@@ -312,7 +312,7 @@ private struct SystemMiniBlock: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
-    private func ring(_ title: String, _ value: Double, _ color: Color) -> some View {
+    private func ring(_ title: LocalizedStringKey, _ value: Double, _ color: Color) -> some View {
         let clamped = min(max(value, 0), 1)
         return VStack(spacing: 5) {
             ZStack {
@@ -334,7 +334,7 @@ private struct TimerMiniBlock: View {
 
     var body: some View {
         VStack(spacing: 6) {
-            Text(timers.mode.rawValue).font(.system(size: 10)).foregroundStyle(.secondary)
+            Text(LocalizedStringKey(timers.mode.rawValue)).font(.system(size: 10)).foregroundStyle(.secondary)
             Text(timers.display)
                 .font(.system(size: 26, weight: .semibold, design: .rounded).monospacedDigit())
             Button(action: timers.toggle) {

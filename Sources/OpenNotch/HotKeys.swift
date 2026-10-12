@@ -27,10 +27,10 @@ enum Shortcut: UInt32, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .toggleNotch: return "Abrir ou fechar o notch"
-        case .texts: return "Abrir Textos (anotações e copiados)"
-        case .capture: return "Abrir Captura de tela"
-        case .recordRegion: return "Gravar uma área / parar a gravação"
+        case .toggleNotch: return L("Abrir ou fechar o notch")
+        case .texts: return L("Abrir Textos (anotações e copiados)")
+        case .capture: return L("Abrir Captura de tela")
+        case .recordRegion: return L("Gravar uma área / parar a gravação")
         }
     }
 }

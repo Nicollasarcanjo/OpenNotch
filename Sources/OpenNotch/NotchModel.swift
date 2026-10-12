@@ -24,7 +24,7 @@ enum NotchTab: String, CaseIterable, Identifiable {
         case .agents: return "Agentes de IA"
         case .apps: return "Apps abertos"
         case .capture: return "Captura de tela"
-        case .tray: return "Bandeja"
+        case .tray: return "Arquivos"
         case .timers: return "Timers"
         case .texts: return "Textos"
         case .system: return "Sistema"
@@ -38,7 +38,7 @@ enum NotchTab: String, CaseIterable, Identifiable {
         case .agents: return prefs.bool(.modAgents)
         case .apps: return prefs.bool(.modApps)
         case .capture: return prefs.bool(.modCapture)
-        case .tray: return prefs.bool(.modTray)
+        case .tray: return prefs.bool(.modTray) || prefs.bool(.modDownloads)
         case .timers: return prefs.bool(.modTimers)
         case .texts: return prefs.bool(.modClipboard) || prefs.bool(.modNotes)
         case .system: return prefs.bool(.modSystem)

@@ -9,7 +9,7 @@ struct AgentSession: Identifiable, Equatable {
     var project: String
     var working: Bool
     /// Texto de estado quando não está trabalhando (ex.: "ocioso", "aguardando você").
-    var idleText = "ocioso"
+    var idleText = L("ocioso")
     var usage: Double?          // 0...1
     var usageLabel = ""         // o que a porcentagem mede: "contexto", "CPU"
     var updated = Date.distantPast
@@ -196,14 +196,14 @@ private final class ClaudeScanner {
                                        title: (info["name"] as? String) ?? projectName(cwd),
                                        project: projectName(cwd),
                                        working: status == "busy")
-            session.idleText = status == "idle" ? "ocioso" : status
+            session.idleText = status == "idle" ? L("ocioso") : status
             session.updated = Date(timeIntervalSince1970: updatedMs / 1000)
             if let tokens = contextTokens(sessionID: sessionID) {
                 // Sem informação local sobre o tamanho da janela: usa o configurado e,
                 // se a sessão já passou dele, assume a janela de 1M.
                 let window = tokens > contextWindow ? max(1_000_000, tokens) : contextWindow
                 session.usage = min(tokens / window, 1)
-                session.usageLabel = "contexto"
+                session.usageLabel = L("contexto")
             }
             provider.sessions.append(session)
         }
@@ -284,7 +284,7 @@ private final class CodexScanner {
             session.updated = modified
             if let percent = info.contextPercent {
                 session.usage = percent
-                session.usageLabel = "contexto"
+                session.usageLabel = L("contexto")
             }
             provider.sessions.append(session)
         }
@@ -370,10 +370,10 @@ private final class CodexScanner {
         let minutes = dict["window_minutes"] as? Double ?? 0
         let label: String
         switch minutes {
-        case 10080: label = "semana"
-        case let m where m >= 1440: label = "\(Int(m / 1440)) dias"
+        case 10080: label = L("semana")
+        case let m where m >= 1440: label = L("%lld dias", Int(m / 1440))
         case let m where m >= 60: label = "\(Int(m / 60)) h"
-        default: label = "limite"
+        default: label = L("limite")
         }
         // Se a janela já virou desde a última leitura, o uso voltou a zero.
         if let resets = dict["resets_at"] as? Double, resets < Date().timeIntervalSince1970 {
@@ -408,7 +408,7 @@ private final class AntigravityScanner {
             var provider = AgentProvider(id: variant.id, name: variant.name, icon: "atom", approximate: true)
             let root = base.appendingPathComponent(variant.folder)
             let latest = ["conversations", "brain"].compactMap { newestChange(in: root.appendingPathComponent($0)) }.max()
-            var session = AgentSession(id: variant.id, title: "Agente", project: "",
+            var session = AgentSession(id: variant.id, title: L("Agente"), project: "",
                                        working: latest.map { Date().timeIntervalSince($0) < activeWindow } ?? false)
             session.updated = latest ?? .distantPast
             provider.sessions = [session]
@@ -579,7 +579,7 @@ private struct AgentRow: View {
                 Text("\(Int((usage * 100).rounded()))%")
                     .font(.system(size: 10).monospacedDigit()).frame(width: 30, alignment: .trailing)
             }
-            Text(session.working ? "trabalhando" : session.idleText)
+            Text(session.working ? L("trabalhando") : session.idleText)
                 .font(.system(size: 10))
                 .foregroundStyle(session.working ? Color.orange : Color.secondary)
                 .frame(width: 70, alignment: .trailing)
@@ -591,8 +591,10 @@ private struct AgentRow: View {
 
 struct UsageBar: View {
     let value: Double
+    /// Cor fixa; sem ela a barra vai de verde a vermelho conforme enche.
+    var tint: Color?
 
-    private var color: Color { value >= 0.9 ? .red : value >= 0.7 ? .orange : .green }
+    private var color: Color { tint ?? (value >= 0.9 ? .red : value >= 0.7 ? .orange : .green) }
 
     var body: some View {
         GeometryReader { geo in

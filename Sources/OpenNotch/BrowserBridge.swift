@@ -87,8 +87,7 @@ final class BrowserBridge {
     private func send(status: String, body: String, origin: String?, on connection: NWConnection) {
         var head = "HTTP/1.1 \(status)\r\nContent-Type: application/json\r\nContent-Length: \(body.utf8.count)\r\n"
         if let origin {
-            head += "Access-Control-Allow-Origin: \(origin)\r\nAccess-Control-Allow-Headers: Content-Type\r\n"
-                + "Access-Control-Allow-Methods: POST, OPTIONS\r\n"
+            head += "Access-Control-Allow-Origin: \(origin)\r\nAccess-Control-Allow-Headers: Content-Type\r\nAccess-Control-Allow-Methods: POST, OPTIONS\r\n"
         }
         head += "Connection: close\r\n\r\n"
         connection.send(content: Data((head + body).utf8), completion: .contentProcessed { _ in connection.cancel() })

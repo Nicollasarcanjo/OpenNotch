@@ -5,9 +5,9 @@ enum Player: String {
     case spotify = "Spotify"
     case music = "Music"
     /// Aba de música no navegador, informada pela extensão do OpenNotch.
-    case browser = "Navegador"
+    case browser = "Navegador"   // nome interno; o que aparece na tela vem de displayName
 
-    var displayName: String { self == .music ? "Apple Music" : rawValue }
+    var displayName: String { self == .music ? "Apple Music" : self == .browser ? L("Navegador") : rawValue }
 
     /// Players que são apps e respondem a AppleScript.
     static let native: [Player] = [.spotify, .music]
@@ -144,6 +144,24 @@ final class MusicManager: ObservableObject {
     func playPause() {
         isPlaying.toggle()
         send("playpause")
+    }
+
+    /// Pede ao macOS a permissão de controlar os players abertos (usado na tela de boas-vindas).
+    /// `completion` recebe true se pelo menos um foi liberado, false se negado, nil se nenhum está aberto.
+    func requestAutomation(completion: @escaping (Bool?) -> Void) {
+        let running = Player.native.filter(\.isRunning)
+        queue.async { [weak self] in
+            guard let self else { return }
+            var result: Bool?
+            for player in running {
+                let allowed = self.canControl(player)
+                result = (result ?? false) || allowed
+            }
+            DispatchQueue.main.async {
+                completion(result)
+                if result == true { self.refresh() }
+            }
+        }
     }
 
     func openAutomationSettings() {
@@ -359,7 +377,7 @@ struct MusicView: View {
                     .onTapGesture { music.openPlayer() }
                     .help(music.player == .browser ? "Tocando no navegador" : "Abrir \(music.player?.displayName ?? "player")")
                 VStack(alignment: .leading, spacing: 3) {
-                    Text(music.title.isEmpty ? "Sem título" : music.title)
+                    Text(music.title.isEmpty ? L("Sem título") : music.title)
                         .font(.system(size: 15, weight: .semibold)).lineLimit(1)
                     Text(music.artist).font(.system(size: 12)).foregroundStyle(.secondary).lineLimit(1)
                     Text(music.album).font(.system(size: 11)).foregroundStyle(.tertiary).lineLimit(1)
