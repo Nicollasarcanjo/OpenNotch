@@ -162,12 +162,14 @@ final class NotchController {
         NotificationCenter.default.addObserver(forName: NSApplication.didChangeScreenParametersNotification,
                                                object: nil, queue: .main) { [weak self] _ in self?.rebuild() }
         // Clique em qualquer outro app fecha o notch.
-        clickMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown]) { [weak self] _ in
-            self?.closeAll()
+        if !Demo.enabled {
+            clickMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown]) { [weak self] _ in
+                self?.closeAll()
+            }
         }
         rebuild()
 
-        if !Prefs.shared.bool(.onboardingDone) {
+        if !Prefs.shared.bool(.onboardingDone), !Demo.enabled {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { [weak self] in self?.onboarding.show() }
         }
     }

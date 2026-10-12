@@ -30,6 +30,10 @@ final class DownloadsMonitor: ObservableObject {
     }
 
     init() {
+        if Demo.enabled {
+            items = Demo.downloads
+            return
+        }
         prefsObserver = NotificationCenter.default.addObserver(forName: UserDefaults.didChangeNotification,
                                                                object: nil, queue: .main) { [weak self] _ in
             self?.syncEnabled()

@@ -4,7 +4,11 @@
 
 Um app gratuito para macOS que transforma o notch do MacBook em um painel útil: música, agentes de IA, apps abertos, captura de tela, anotações e mais. Sem anúncios e sem recursos bloqueados.
 
+<img src="docs/screenshots/home.png" width="820" alt="OpenNotch aberto na tela inicial, com o player de música e atalhos de apps">
+
 Passe o mouse sobre o notch (ou clique nele) para abrir o painel. Com ele fechado, pequenos indicadores aparecem ao lado do notch: a capa da música, o tempo do timer, quantos agentes de IA estão trabalhando, o cronômetro de uma gravação, o volume e o brilho.
+
+<img src="docs/screenshots/fechado.png" width="720" alt="Notch fechado com a capa da música à esquerda e o contador de agentes de IA à direita">
 
 Somente macOS 14 ou mais recente. Em telas sem notch (Macs antigos e monitores externos), o painel fica no centro da barra de menus.
 
@@ -39,11 +43,15 @@ A primeira aba é uma fileira de blocos que você escolhe e ordena em Configura�
 
 ### Música
 
+<img src="docs/screenshots/home.png" width="720" alt="Tela inicial com o player de música e atalhos de apps">
+
 - Spotify e Apple Music: título, artista, álbum, capa e botões de voltar, tocar/pausar e avançar.
 - Música do navegador (YouTube, YouTube Music, Spotify Web, SoundCloud, Deezer, Tidal, Amazon Music, Apple Music web) por meio de uma extensão para Brave, Chrome e Edge. O passo a passo e o download ficam em Configurações › Extensão do navegador.
 - Com o notch fechado, a capa e barrinhas animadas aparecem ao lado dele.
 
 ### Agentes de IA
+
+<img src="docs/screenshots/agents.png" width="720" alt="Aba de agentes de IA com sessões do Claude Code e do Codex">
 
 Mostra as sessões de ferramentas de IA abertas no Mac, com o projeto de cada uma e o estado (trabalhando ou ocioso). Quando uma tarefa termina, o notch abre por alguns segundos avisando, com som opcional.
 
@@ -58,6 +66,8 @@ Tudo é lido dos arquivos que essas ferramentas já gravam em disco. O OpenNotch
 
 ### Apps abertos
 
+<img src="docs/screenshots/apps.png" width="720" alt="Gerenciador de apps com CPU, GPU e memória de cada app">
+
 Um gerenciador de tarefas no notch:
 
 - Lista os apps abertos com CPU, GPU e memória, em porcentagem.
@@ -66,6 +76,8 @@ Um gerenciador de tarefas no notch:
 - Na lista expandida dá para encerrar um processo só.
 
 ### Captura de tela
+
+<img src="docs/screenshots/capture.png" width="720" alt="Aba de captura com os botões de print e gravação e a galeria das últimas capturas">
 
 - Print da tela toda ou de uma área.
 - Gravação da tela toda ou de uma área.
@@ -76,20 +88,28 @@ Um gerenciador de tarefas no notch:
 
 ### Textos
 
+<img src="docs/screenshots/texts.png" width="720" alt="Aba Textos com anotações à esquerda e textos copiados à direita">
+
 - Anotações: crie quantas quiser; são salvas automaticamente.
 - Histórico de textos copiados: clique para copiar de novo, ou salve um item como anotação. Senhas copiadas de gerenciadores ficam de fora.
 - Busca única nas anotações e nos textos copiados.
 
 ### Arquivos
 
+<img src="docs/screenshots/tray.png" width="720" alt="Aba Arquivos com a bandeja e o progresso dos downloads">
+
 - Bandeja: solte arquivos no notch para guardá-los e arraste para outro lugar depois.
 - Downloads: progresso dos arquivos baixando na pasta Downloads (Safari, Chrome, Brave e outros apps que informam o progresso ao sistema). Com o notch fechado, a porcentagem aparece ao lado dele.
 
 ### Timers
 
+<img src="docs/screenshots/timers.png" width="720" alt="Aba Timers no modo Pomodoro">
+
 Pomodoro (foco e pausa), contagem regressiva e cronômetro. Com o notch fechado, o tempo aparece ao lado dele.
 
 ### Sistema
+
+<img src="docs/screenshots/system.png" width="720" alt="Aba Sistema com CPU, memória, disco, bateria e rede">
 
 CPU, memória, disco, bateria e velocidade da rede.
 
@@ -111,6 +131,8 @@ Ao mudar o volume ou o brilho, um indicador aparece ao lado do notch.
 O painel aparece em todos os monitores conectados, cada um com o seu estado aberto ou fechado. Dá para deixar só na tela do MacBook.
 
 ### Configurações
+
+<img src="docs/screenshots/configuracoes.png" width="560" alt="Janela de configurações no painel Módulos">
 
 Abertas pela engrenagem dentro do notch ou pelo ícone da barra de menus. Cada módulo pode ser ligado ou desligado, e quase tudo é ajustável: como o notch abre, tempos de espera, quais ferramentas de IA acompanhar, pasta das capturas, tamanho do histórico, blocos da tela inicial e assim por diante.
 
@@ -134,6 +156,12 @@ O script compila em modo release e monta `build/OpenNotch.app`. Se houver um cer
 Para publicar uma versão, atualize o arquivo `VERSION` e envie uma tag (`git tag v0.2.0 && git push origin v0.2.0`). O GitHub Actions compila, empacota e cria a release com o `OpenNotch.zip`.
 
 Para uma versão notarizada (que abre em qualquer Mac sem aviso), é preciso uma conta paga do Apple Developer Program; o passo a passo está em `Scripts/notarize.sh`.
+
+As imagens deste README são geradas pelo próprio app, em modo de demonstração e com dados fictícios, sem capturar a tela:
+
+```bash
+./Scripts/make-screenshots.sh
+```
 
 Para regenerar o ícone:
 
@@ -188,7 +216,8 @@ Sources/OpenNotch/
   ProcScan.swift, RegionSelector.swift
   Modules/                          um arquivo por funcionalidade
 Extension/                          extensão do navegador
-Scripts/                            gerador do ícone
+Scripts/                            ícone, imagens do README e notarização
+docs/screenshots/                   imagens do README
 ```
 
 ## Licença

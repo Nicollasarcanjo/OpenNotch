@@ -7,6 +7,10 @@ final class TrayStore: ObservableObject {
     private let key = "trayPaths"
 
     init() {
+        if Demo.enabled {
+            items = Demo.trayFiles
+            return
+        }
         let paths = UserDefaults.standard.stringArray(forKey: key) ?? []
         items = paths.map { URL(fileURLWithPath: $0) }.filter { FileManager.default.fileExists(atPath: $0.path) }
     }
@@ -36,7 +40,10 @@ final class TrayStore: ObservableObject {
         persist()
     }
 
-    private func persist() { UserDefaults.standard.set(items.map(\.path), forKey: key) }
+    private func persist() {
+        guard !Demo.enabled else { return }
+        UserDefaults.standard.set(items.map(\.path), forKey: key)
+    }
 }
 
 struct TrayView: View {

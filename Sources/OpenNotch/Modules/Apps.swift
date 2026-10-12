@@ -85,6 +85,10 @@ final class AppMonitor: ObservableObject {
     }
 
     init() {
+        if Demo.enabled {
+            apps = Demo.apps
+            return
+        }
         let t = Timer(timeInterval: 2, repeats: true) { [weak self] _ in self?.sample() }
         RunLoop.main.add(t, forMode: .common)
         timer = t
@@ -92,7 +96,7 @@ final class AppMonitor: ObservableObject {
 
     private func sample() {
         let prefs = Prefs.shared
-        guard active, prefs.bool(.modApps), !sampling else { return }
+        guard !Demo.enabled, active, prefs.bool(.modApps), !sampling else { return }
         sampling = true
         let background = prefs.bool(.appsShowBackground)
         let sort = AppSort(rawValue: prefs.string(.appsSort)) ?? .cpu

@@ -36,6 +36,11 @@ final class CaptureManager: ObservableObject {
     }
 
     init() {
+        if Demo.enabled {
+            items = Demo.captures
+            hasPermission = true
+            return
+        }
         query.predicate = NSPredicate(format: "kMDItemIsScreenCapture = 1")
         query.searchScopes = [NSMetadataQueryUserHomeScope]
         query.sortDescriptors = [NSSortDescriptor(key: NSMetadataItemFSCreationDateKey, ascending: false)]
@@ -199,6 +204,7 @@ final class CaptureManager: ObservableObject {
     // MARK: Galeria
 
     func reload() {
+        guard !Demo.enabled else { return }
         let keys: Set<URLResourceKey> = [.contentModificationDateKey]
         var candidates = (try? FileManager.default.contentsOfDirectory(at: folder, includingPropertiesForKeys: Array(keys),
                                                                        options: [.skipsHiddenFiles])) ?? []
@@ -362,7 +368,7 @@ private struct CaptureThumb: View {
         .overlay(alignment: .topTrailing) {
             if !CaptureManager.isVideo(url) {
                 Button { capture.onAnnotate?(url) } label: {
-                    Image(systemName: "pencil.tip.crop.circle.fill").font(.system(size: 17))
+                    Image(systemName: "pencil.circle.fill").font(.system(size: 17))
                         .symbolRenderingMode(.palette).foregroundStyle(.white, .black.opacity(0.65))
                         .padding(5).contentShape(Rectangle())
                 }

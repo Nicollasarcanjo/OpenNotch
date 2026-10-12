@@ -48,13 +48,13 @@ enum HomeBlock: String, Codable, CaseIterable, Identifiable {
 
 extension Prefs {
     var homeBlocks: [HomeBlock] {
-        get { decoded(.homeBlocks) ?? [.music, .calendar] }
+        get { Demo.enabled ? [.music, .apps] : decoded(.homeBlocks) ?? [.music, .calendar] }
         set { encode(newValue, for: .homeBlocks) }
     }
 
     /// Caminhos dos apps com atalho na tela inicial.
     var homeApps: [String] {
-        get { decoded(.homeApps) ?? [] }
+        get { Demo.enabled ? Demo.homeApps : decoded(.homeApps) ?? [] }
         set { encode(newValue, for: .homeApps) }
     }
 

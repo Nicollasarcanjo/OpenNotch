@@ -56,6 +56,15 @@ final class MusicManager: ObservableObject {
     private var browserTimer: Timer?
 
     init() {
+        if Demo.enabled {
+            player = .spotify
+            isPlaying = true
+            title = "Manhã de Sol"
+            artist = "Banda Exemplo"
+            album = "Álbum de Demonstração"
+            artwork = Demo.artwork
+            return
+        }
         bridge.onState = { [weak self] state in self?.handleBrowser(state) }
         bridge.start()
         // Se a aba fechar ou a extensão parar de responder, o player do navegador some.

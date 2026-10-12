@@ -129,6 +129,7 @@ struct SettingsRootView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .frame(width: 720, height: 500)
+        .background(Color(nsColor: .windowBackgroundColor))
     }
 
     @ViewBuilder private var detail: some View {

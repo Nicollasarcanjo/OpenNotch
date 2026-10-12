@@ -25,6 +25,10 @@ final class NotesStore: ObservableObject {
             .appendingPathComponent("OpenNotch", isDirectory: true)
         try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         file = dir.appendingPathComponent("notes.json")
+        if Demo.enabled {
+            notes = Demo.notes
+            return
+        }
         if let data = try? Data(contentsOf: file), let saved = try? JSONDecoder().decode([Note].self, from: data) {
             notes = saved
         } else {
@@ -68,6 +72,7 @@ final class NotesStore: ObservableObject {
     }
 
     private func scheduleSave() {
+        guard !Demo.enabled else { return }
         pending?.cancel()
         let item = DispatchWorkItem { [weak self] in
             guard let self, let data = try? JSONEncoder().encode(self.notes) else { return }

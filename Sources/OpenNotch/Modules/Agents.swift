@@ -58,6 +58,10 @@ final class AgentMonitor: ObservableObject {
     private let custom = CustomScanner()
 
     init() {
+        if Demo.enabled {
+            providers = Demo.providers
+            return
+        }
         let t = Timer(timeInterval: 3, repeats: true) { [weak self] _ in self?.scan() }
         RunLoop.main.add(t, forMode: .common)
         timer = t

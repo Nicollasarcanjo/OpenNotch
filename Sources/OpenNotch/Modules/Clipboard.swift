@@ -27,6 +27,10 @@ final class ClipboardManager: ObservableObject {
     }()
 
     init() {
+        if Demo.enabled {
+            items = Demo.copied
+            return
+        }
         if Prefs.shared.bool(.clipPersist), let data = try? Data(contentsOf: file),
            let saved = try? JSONDecoder().decode([ClipItem].self, from: data) {
             items = saved
@@ -64,6 +68,7 @@ final class ClipboardManager: ObservableObject {
 
     /// Grava o histórico em disco (só o dono lê o arquivo) ou apaga o arquivo se a opção for desligada.
     func save() {
+        guard !Demo.enabled else { return }
         guard Prefs.shared.bool(.clipPersist) else {
             try? FileManager.default.removeItem(at: file)
             return
