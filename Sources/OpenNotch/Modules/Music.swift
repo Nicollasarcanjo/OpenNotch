@@ -47,6 +47,7 @@ final class MusicManager: ObservableObject {
     @Published private(set) var blocked: Player?
 
     private var spotifyTrackID = ""
+    private var permissionTimer: Timer?
     private let queue = DispatchQueue(label: "opennotch.applescript")
     private var artworkKey = ""
     private let bridge = BrowserBridge()
@@ -153,17 +154,39 @@ final class MusicManager: ObservableObject {
 
     /// Confere com o macOS se o OpenNotch pode controlar o player. Na primeira vez isso
     /// faz o sistema mostrar o pedido de permissão. Roda fora da thread principal.
-    private func canControl(_ p: Player) -> Bool {
+    private func canControl(_ p: Player, askUser: Bool = true) -> Bool {
         guard p != .browser else { return true }
         let target = NSAppleEventDescriptor(bundleIdentifier: p.bundleID)
-        let status = AEDeterminePermissionToAutomateTarget(target.aeDesc, typeWildCard, typeWildCard, true)
+        let status = AEDeterminePermissionToAutomateTarget(target.aeDesc, typeWildCard, typeWildCard, askUser)
         // procNotFound = o player fechou no meio do caminho; não é falta de permissão.
         let allowed = status == noErr
         let denied = status == OSStatus(errAEEventNotPermitted)
         DispatchQueue.main.async {
-            if denied { self.blocked = p } else if allowed, self.blocked == p { self.blocked = nil }
+            if denied {
+                self.blocked = p
+                self.watchPermission()
+            } else if allowed, self.blocked == p {
+                self.blocked = nil
+                self.refresh()   // agora dá para ler estado e capa direto do player
+            }
         }
         return allowed
+    }
+
+    /// Enquanto o controle estiver bloqueado, confere a cada 2 s se a permissão foi liberada
+    /// nos Ajustes, para o aviso sumir sozinho.
+    private func watchPermission() {
+        guard permissionTimer == nil else { return }
+        let t = Timer(timeInterval: 2, repeats: true) { [weak self] timer in
+            guard let self, let blocked = self.blocked else {
+                timer.invalidate()
+                self?.permissionTimer = nil
+                return
+            }
+            self.queue.async { _ = self.canControl(blocked, askUser: false) }
+        }
+        RunLoop.main.add(t, forMode: .common)
+        permissionTimer = t
     }
 
     func next() { send("next track") }
@@ -340,28 +363,26 @@ struct MusicView: View {
                         .font(.system(size: 15, weight: .semibold)).lineLimit(1)
                     Text(music.artist).font(.system(size: 12)).foregroundStyle(.secondary).lineLimit(1)
                     Text(music.album).font(.system(size: 11)).foregroundStyle(.tertiary).lineLimit(1)
-                    Spacer(minLength: 4)
+                    Spacer(minLength: 2)
+                    HStack(spacing: 18) {
+                        control("backward.fill", size: 15, action: music.previous)
+                        control(music.isPlaying ? "pause.fill" : "play.fill", size: 22, action: music.playPause)
+                        control("forward.fill", size: 15, action: music.next)
+                        Spacer(minLength: 0)
+                        if let player = music.player {
+                            Text(player.displayName).font(.system(size: 9, weight: .medium))
+                                .padding(.horizontal, 6).padding(.vertical, 2)
+                                .background(Color.white.opacity(0.1), in: Capsule())
+                                .foregroundStyle(.secondary)
+                        }
+                    }
                     if let blocked = music.blocked, blocked == music.player {
                         // Sem a permissão de Automação o macOS descarta os comandos em silêncio.
-                        VStack(alignment: .leading, spacing: 3) {
-                            Text("O macOS bloqueou o controle do \(blocked.displayName).")
-                                .font(.system(size: 10, weight: .medium)).foregroundStyle(.orange)
-                            Button("Permitir em Ajustes › Automação", action: music.openAutomationSettings)
-                                .font(.system(size: 10))
+                        Button(action: music.openAutomationSettings) {
+                            Text("Controle do \(blocked.displayName) bloqueado · Abrir Ajustes")
+                                .font(.system(size: 10, weight: .medium)).foregroundStyle(.orange).lineLimit(1)
                         }
-                    } else {
-                        HStack(spacing: 18) {
-                            control("backward.fill", size: 15, action: music.previous)
-                            control(music.isPlaying ? "pause.fill" : "play.fill", size: 22, action: music.playPause)
-                            control("forward.fill", size: 15, action: music.next)
-                            Spacer(minLength: 0)
-                            if let player = music.player {
-                                Text(player.displayName).font(.system(size: 9, weight: .medium))
-                                    .padding(.horizontal, 6).padding(.vertical, 2)
-                                    .background(Color.white.opacity(0.1), in: Capsule())
-                                    .foregroundStyle(.secondary)
-                            }
-                        }
+                        .buttonStyle(.plain)
                     }
                 }
                 .frame(height: 104)
