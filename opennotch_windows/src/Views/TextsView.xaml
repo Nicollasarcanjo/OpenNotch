@@ -3,8 +3,22 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:l="clr-namespace:OpenNotch">
     <DockPanel>
-        <TextBox x:Name="Search" DockPanel.Dock="Top" Style="{StaticResource Input}" Margin="0,0,0,6"
-                 TextChanged="OnSearch" ToolTip="{l:T 'Buscar nas anotações e nos textos copiados'}" />
+        <Border DockPanel.Dock="Top" Background="#14FFFFFF" CornerRadius="7" Margin="0,0,0,6" Height="24">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="26" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Style="{StaticResource Glyph}" Text="&#xE721;" FontSize="11" Foreground="{StaticResource Dim}"
+                           HorizontalAlignment="Center" />
+                <!-- O texto de exemplo some quando o campo tem conteúdo. -->
+                <TextBlock x:Name="SearchHint" Grid.Column="1" Text="{l:T 'Buscar nas anotações e nos textos copiados'}"
+                           Foreground="{StaticResource Faint}" VerticalAlignment="Center" IsHitTestVisible="False" />
+                <TextBox x:Name="Search" Grid.Column="1" Background="Transparent" Foreground="White" CaretBrush="White"
+                         BorderThickness="0" Padding="0" FontSize="12" VerticalContentAlignment="Center"
+                         TextChanged="OnSearch" />
+            </Grid>
+        </Border>
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition x:Name="NotesColumn" Width="*" />

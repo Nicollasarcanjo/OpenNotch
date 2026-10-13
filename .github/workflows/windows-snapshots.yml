@@ -25,6 +25,7 @@ jobs:
         shell: pwsh
         run: |
           $env:OPENNOTCH_DEMO = "1"
+          $env:OPENNOTCH_LANG = "pt-BR"
           $env:OPENNOTCH_SNAPSHOT_DIR = "$PWD\snapshots"
           $exe = (Get-ChildItem opennotch_windows\bin\Release\*\OpenNotch.exe | Select-Object -First 1).FullName
           $app = Start-Process -FilePath $exe -PassThru

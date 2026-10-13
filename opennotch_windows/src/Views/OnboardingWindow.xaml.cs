@@ -15,6 +15,21 @@ public partial class OnboardingWindow : Window
     {
         InitializeComponent();
         DataContext = Settings.Current;
+        try
+        {
+            // O .ico tem vários tamanhos; sem escolher, o WPF pega o menor e amplia.
+            var resource = Application.GetResourceStream(new Uri("pack://application:,,,/Resources/AppIcon.ico"));
+            if (resource != null)
+            {
+                var decoder = new System.Windows.Media.Imaging.IconBitmapDecoder(resource.Stream,
+                    System.Windows.Media.Imaging.BitmapCreateOptions.None, System.Windows.Media.Imaging.BitmapCacheOption.OnLoad);
+                Logo.Source = decoder.Frames.OrderByDescending(f => f.PixelWidth).First();
+            }
+        }
+        catch
+        {
+            // sem o ícone, a tela abre só com o texto
+        }
         using var key = Registry.CurrentUser.OpenSubKey(RunKey);
         Startup.IsChecked = key?.GetValue("OpenNotch") != null;
         SourceInitialized += (_, _) =>

@@ -52,7 +52,7 @@
                             </DockPanel>
                         </StackPanel>
                     </Border>
-                    <TextBlock Style="{StaticResource Footer}" Text="" />
+                    <Border Height="10" />
 
                     <TextBlock Style="{StaticResource SectionTitle}" Text="{l:T 'Notch fechado'}" />
                     <Border Style="{StaticResource Section}">
@@ -71,7 +71,7 @@
                             <TextBlock Style="{StaticResource RowLabel}" Text="{l:T 'Mostrar em todos os monitores'}" />
                         </DockPanel>
                     </Border>
-                    <TextBlock Style="{StaticResource Footer}" Text="" />
+                    <Border Height="10" />
 
                     <TextBlock Style="{StaticResource SectionTitle}" Text="{l:T 'Aplicativo'}" />
                     <Border Style="{StaticResource Section}">
@@ -173,7 +173,7 @@
                             </DockPanel>
                         </StackPanel>
                     </Border>
-                    <TextBlock Style="{StaticResource Footer}" Text="" />
+                    <Border Height="10" />
 
                     <TextBlock Style="{StaticResource SectionTitle}" Text="{l:T 'Quando uma tarefa terminar'}" />
                     <Border Style="{StaticResource Section}">
@@ -197,7 +197,7 @@
                             </DockPanel>
                         </StackPanel>
                     </Border>
-                    <TextBlock Style="{StaticResource Footer}" Text="" />
+                    <Border Height="10" />
                     <TextBlock Style="{StaticResource SectionTitle}" Text="{l:T 'Outras ferramentas'}" />
                     <Border Style="{StaticResource Section}">
                         <StackPanel>
@@ -243,7 +243,7 @@
                             <TextBlock x:Name="GifName" Style="{StaticResource RowValue}" TextTrimming="CharacterEllipsis" />
                         </DockPanel>
                     </Border>
-                    <TextBlock Style="{StaticResource Footer}" Text="" />
+                    <Border Height="10" />
 
                     <TextBlock Style="{StaticResource SectionTitle}" Text="{l:T 'Sequência de imagens'}" />
                     <Border Style="{StaticResource Section}">
@@ -296,7 +296,7 @@
                             </DockPanel>
                         </StackPanel>
                     </Border>
-                    <TextBlock Style="{StaticResource Footer}" Text="" />
+                    <Border Height="10" />
 
                     <TextBlock Style="{StaticResource SectionTitle}" Text="{l:T 'Como instalar'}" />
                     <Border Style="{StaticResource Section}">
@@ -395,7 +395,7 @@
                             </DockPanel>
                         </StackPanel>
                     </Border>
-                    <TextBlock Style="{StaticResource Footer}" Text="" />
+                    <Border Height="10" />
 
                     <TextBlock Style="{StaticResource Footer}"
                                Text="{l:T 'A gravação de tela no Windows é simples: cerca de 8 quadros por segundo, sem áudio e até 3 minutos.'}" />
@@ -459,7 +459,7 @@
                             </DockPanel>
                         </StackPanel>
                     </Border>
-                    <TextBlock Style="{StaticResource Footer}" Text="" />
+                    <Border Height="10" />
 
                     <TextBlock Style="{StaticResource SectionTitle}" Text="{l:T 'Atualizações'}" />
                     <Border Style="{StaticResource Section}">

@@ -10,7 +10,7 @@
     </Window.Resources>
     <StackPanel Margin="26">
         <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
-            <Image Source="/Resources/AppIcon.ico" Width="56" Height="56" Margin="0,0,14,0" />
+            <Image x:Name="Logo" Width="56" Height="56" Margin="0,0,14,0" />
             <StackPanel VerticalAlignment="Center">
                 <TextBlock Text="{l:T 'Bem-vindo ao OpenNotch'}" FontSize="22" FontWeight="SemiBold" />
                 <TextBlock Text="{l:T 'Passe o mouse no centro do topo da tela para abrir o painel.'}"

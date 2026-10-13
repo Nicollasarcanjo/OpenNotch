@@ -44,7 +44,12 @@ public partial class TextsView : UserControl
         return (sender as FrameworkElement)?.DataContext as T;
     }
 
-    private void OnSearch(object sender, TextChangedEventArgs e) => Refresh();
+    private void OnSearch(object sender, TextChangedEventArgs e)
+    {
+        if (SearchHint == null) return;   // ainda montando a tela
+        SearchHint.Visibility = Search.Text.Length == 0 ? Visibility.Visible : Visibility.Collapsed;
+        Refresh();
+    }
 
     // Anotações
 

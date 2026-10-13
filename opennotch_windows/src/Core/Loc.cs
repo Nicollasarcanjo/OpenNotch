@@ -13,7 +13,8 @@ public static class Loc
 
     public static void Init()
     {
-        var chosen = Settings.Current.Language;
+        // OPENNOTCH_LANG força o idioma (usado ao gerar as imagens do README).
+        var chosen = Environment.GetEnvironmentVariable("OPENNOTCH_LANG") ?? Settings.Current.Language;
         var code = string.IsNullOrEmpty(chosen) ? CultureInfo.CurrentUICulture.TwoLetterISOLanguageName : chosen;
         English = !code.StartsWith("pt", StringComparison.OrdinalIgnoreCase);
     }
