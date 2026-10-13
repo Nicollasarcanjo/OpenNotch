@@ -58,7 +58,19 @@ As funcionalidades e as imagens abaixo descrevem a versão macOS, que é a mais 
 
 No Windows não existe notch físico, então o painel fica **minimizado** quando fechado: só um risco discreto no centro do topo da tela, que abre ao passar o mouse. Quem preferir ver a capa da música, o timer e os agentes sem abrir pode ligar "Mostrar indicadores com o notch fechado" nas configurações.
 
-A versão Windows é desenvolvida a partir de um Mac: quem escreve o código só consegue compilá-la, e os ajustes são feitos com base no retorno de quem a usa. Se algo não funcionar ou ficar feio, abra uma issue.
+### Como fica no Windows
+
+<img src="docs/screenshots/windows/notch-home.png" width="640" alt="OpenNotch no Windows, aberto na tela inicial com a música e o relógio">
+
+<img src="docs/screenshots/windows/notch-fechado.png" width="330" alt="Notch fechado no Windows mostrando a capa e o verso da música">
+
+<img src="docs/screenshots/windows/notch-agents.png" width="640" alt="Aba de agentes de IA no Windows">
+
+<img src="docs/screenshots/windows/notch-mixer.png" width="640" alt="Aba de volume por app no Windows">
+
+<img src="docs/screenshots/windows/config-general.png" width="640" alt="Janela de configurações do Windows, com barra lateral e seções em cartões">
+
+Essas imagens são tiradas automaticamente: a cada mudança, o GitHub roda a versão Windows num Windows de verdade, em modo de demonstração, e guarda uma imagem de cada tela. É assim que a aparência é conferida, já que o desenvolvimento é feito num Mac. O que essas imagens não mostram são as interações (passar o mouse, arrastar, gravar a tela): se algo assim não funcionar, abra uma issue.
 
 ## Funcionalidades
 
@@ -84,7 +96,7 @@ A primeira aba é uma fileira de blocos que você escolhe e ordena em Configura�
 - Spotify e Apple Music: título, artista, álbum, capa e botões de voltar, tocar/pausar e avançar.
 - Música do navegador (YouTube, YouTube Music, Spotify Web, SoundCloud, Deezer, Tidal, Amazon Music, Apple Music web) por meio de uma extensão para Brave, Chrome e Edge. O passo a passo e o download ficam em Configurações › Extensão do navegador.
 - Com o notch fechado, a capa e barrinhas animadas aparecem ao lado dele.
-- **Letra da música**: com o notch fechado, o verso que está sendo cantado aparece embaixo dele, acompanhando a música. Dá para ligar ou desligar e escolher a fonte, o tamanho, a cor e a borda do texto em Configurações › Música (no Windows, Configurações › Letra da música). Só aparece em músicas que têm letra sincronizada disponível.
+- **Letra da música**: com o notch fechado, o verso que está sendo cantado aparece na mesma linha do notch, entre a capa e o indicador da direita, acompanhando a música. Onde há o recorte da câmera, o verso é dividido: metade de cada lado. Verso longo quebra em duas linhas. Dá para ligar ou desligar e escolher a fonte, o tamanho, a cor e a borda do texto em Configurações › Música (no Windows, Configurações › Letra da música). Só aparece em músicas que têm letra sincronizada disponível.
 
 ### Agentes de IA
 
@@ -198,6 +210,7 @@ Também há:
 
 | Versão | O que mudou |
 |---|---|
+| 0.5.1 | A letra passa a ficar na mesma linha do notch, sem abrir espaço embaixo. Windows: ajustes de aparência e imagens no README |
 | 0.5.0 | Letra da música no notch fechado (macOS e Windows). Windows ganha o que faltava: tela inicial personalizável, gravação de tela, anotação de prints, Antigravity e ferramentas cadastradas, volume por aba e calendário |
 | 0.4.2 | Windows: janela de configurações refeita no desenho da versão macOS (barra lateral, seções em cartões, interruptores) |
 | 0.4.1 | Windows: notch minimizado quando fechado, animações novas, controles com a aparência da versão macOS e tela de boas-vindas |
@@ -238,7 +251,7 @@ Dá para compilar a versão Windows a partir do macOS ou do Linux (só não para
 
 ### Publicar
 
-Para publicar uma versão, atualize o arquivo `VERSION` e envie uma tag (`git tag v0.5.0 && git push origin v0.5.0`). O GitHub Actions compila as duas versões e cria a release com `OpenNotch-macOS.zip` e `OpenNotch-Windows.zip`. O texto da release vem de `.github/release-notes.md`.
+Para publicar uma versão, atualize o arquivo `VERSION` e envie uma tag (`git tag v0.5.1 && git push origin v0.5.1`). O GitHub Actions compila as duas versões e cria a release com `OpenNotch-macOS.zip` e `OpenNotch-Windows.zip`. O texto da release vem de `.github/release-notes.md`.
 
 Para uma versão notarizada (que abre em qualquer Mac sem aviso), é preciso uma conta paga do Apple Developer Program; o passo a passo está em `Scripts/notarize.sh`.
 

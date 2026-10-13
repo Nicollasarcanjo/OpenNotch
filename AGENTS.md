@@ -72,7 +72,16 @@ Não deixe uma versão "para depois" sem registrar. A tabela é a fonte da verda
 
 ### Estado de verificação
 
-A versão macOS é executada e conferida a cada mudança. A versão Windows, até agora, **só foi compilada** (inclusive a partir do macOS) e nunca foi executada por quem a escreveu. Trate qualquer comportamento dela como não confirmado até alguém rodar num Windows de verdade, e diga isso com clareza nos PRs.
+A versão macOS é executada e conferida a cada mudança.
+
+A versão Windows é conferida de duas formas, nenhuma delas com uma pessoa usando:
+
+- **Compilação**, que também funciona a partir do macOS e do Linux.
+- **Autoteste visual** (`.github/workflows/windows-snapshots.yml`): a cada push na `main` que mexe em `opennotch_windows/`, o GitHub roda o app num Windows de verdade, em modo de demonstração, e publica na branch `ci-snapshots` um PNG de cada aba do notch, de cada painel das configurações e das boas-vindas, mais um `errors.txt` com qualquer erro em tempo de execução. Para ver: `git fetch origin ci-snapshots` e abrir as imagens.
+
+Ao mudar a interface do Windows, **olhe as imagens do autoteste antes de dar o trabalho por pronto**, e leia o `errors.txt`. Telas novas devem entrar no autoteste (`SelfTest` em `src/Core/Demo.cs`), com dados de exemplo em `Demo`.
+
+O autoteste não cobre interação: passar o mouse, clicar, arrastar, gravar a tela, áudio. Trate esses comportamentos como não confirmados até alguém usar num Windows, e diga isso com clareza nos PRs.
 
 ## Arquitetura
 
@@ -164,7 +173,7 @@ Não existe suíte de testes automatizados. Enquanto não existir, "funciona" si
 - **Paridade no mesmo PR**, conforme a regra principal.
 - **Título** em português, no imperativo ou descritivo curto: "Adiciona gravação de área", "Corrige capa que não carregava".
 - **Descrição** pelo modelo em `.github/pull_request_template.md`: o que muda para o usuário, plataformas e como foi testado.
-- **Seja exato sobre o teste.** Diga o que foi executado e em qual sistema. Se a versão Windows só foi compilada, escreva "Windows: só compilado".
+- **Seja exato sobre o teste.** Diga o que foi executado e em qual sistema. Para o Windows, diga se foi "só compilado", "conferido nas imagens do autoteste" ou "usado num Windows".
 - **CI verde** antes de pedir revisão: as duas versões compilam e a tabela de tradução está em dia.
 - **Atualize a documentação junto:** README (funcionalidades e limitações), a tabela de paridade deste arquivo e, se a interface mudou, as imagens.
 - **Commits** pequenos e com mensagem que explica o porquê quando ele não é óbvio. Sem commits de "ajustes" misturando assuntos.

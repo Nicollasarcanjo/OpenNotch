@@ -1,19 +1,8 @@
 ## Novidades
 
-**macOS e Windows**
-
-- **Letra da música no notch fechado**: o verso que está sendo cantado aparece acompanhando a música. Dá para ligar ou desligar e escolher fonte, tamanho, cor e borda do texto nas configurações. Funciona nas músicas que têm letra sincronizada no LRCLIB.
-
-**Windows** (o que faltava em relação ao macOS)
-
-- **Tela inicial personalizável**: escolha e ordene os blocos (música, relógio, calendário, atalhos de apps, GIF, sequência de imagens, resumo do sistema e do timer). Arraste um programa ou atalho até o notch para criar um atalho.
-- **Gravação de tela**, da tela toda ou de uma área, com Ctrl + Alt + R. É uma primeira versão: cerca de 8 quadros por segundo, sem áudio e até 3 minutos.
-- **Anotar prints**: seta, retângulo, texto e borrar.
-- **Agentes de IA**: Antigravity e ferramentas cadastradas por você.
-- **Volume por aba do navegador**, com a extensão (Configurações › Extensão do navegador).
-- Painéis novos nas configurações: Tela inicial, Letra da música e Extensão do navegador.
-
-A extensão do navegador foi atualizada (0.3.0); quem já usa precisa baixar de novo e recarregar.
+- **Letra da música**: o verso agora fica na mesma linha do notch, entre a capa e o indicador, sem abrir espaço embaixo. Onde há o recorte da câmera, ele é dividido em duas metades, uma de cada lado. Verso longo quebra em duas linhas.
+- **Windows**: linhas de anotações e textos copiados alinhadas, busca com ícone e texto de exemplo, ícone nítido nas boas-vindas e espaçamento ajustado nas configurações.
+- A partir desta versão a aparência do Windows é conferida automaticamente num Windows de verdade a cada mudança; o README mostra essas imagens.
 
 ## Qual arquivo baixar
 
