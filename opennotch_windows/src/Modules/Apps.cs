@@ -85,7 +85,7 @@ public sealed class AppMonitor : Observable
 
     private async void Sample()
     {
-        if (!_active || !Settings.Current.ModApps || _sampling) return;
+        if (Demo.Enabled || !_active || !Settings.Current.ModApps || _sampling) return;
         _sampling = true;
         foreach (var app in Apps) { if (app.Expanded) _expanded.Add(app.Id); else _expanded.Remove(app.Id); }
         List<AppRow> rows;

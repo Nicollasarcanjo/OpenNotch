@@ -146,6 +146,7 @@ internal static class Strings
         ["Escolher imagens ou pasta…"] = "Choose images or folder…",
         ["Escolher imagens…"] = "Choose images…",
         ["Escolher pasta…"] = "Choose folder…",
+        ["Esconder ociosas após"] = "Hide idle after",
         ["Esconder sessões ociosas há mais de"] = "Hide sessions idle for more than",
         ["Espera antes de abrir"] = "Delay before opening",
         ["Espera antes de fechar"] = "Delay before closing",

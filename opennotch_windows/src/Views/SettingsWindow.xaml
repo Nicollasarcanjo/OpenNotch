@@ -169,7 +169,7 @@
                                 <Border DockPanel.Dock="Right" Background="#3A3A3C" CornerRadius="7">
                                     <StackPanel x:Name="HideIdleChoice" Orientation="Horizontal" />
                                 </Border>
-                                <TextBlock Style="{StaticResource RowLabel}" Text="{l:T 'Esconder sessões ociosas há mais de'}" />
+                                <TextBlock Style="{StaticResource RowLabel}" Text="{l:T 'Esconder ociosas após'}" />
                             </DockPanel>
                         </StackPanel>
                     </Border>
