@@ -36,6 +36,11 @@ public sealed class NotesStore
 
     public NotesStore()
     {
+        if (Demo.Enabled)
+        {
+            foreach (var note in Demo.Notes()) Notes.Add(note);
+            return;
+        }
         try
         {
             if (File.Exists(FilePath))
@@ -65,6 +70,7 @@ public sealed class NotesStore
 
     public void Save()
     {
+        if (Demo.Enabled) return;
         try { File.WriteAllText(FilePath, JsonSerializer.Serialize(Notes.ToList())); }
         catch { }
     }
@@ -91,6 +97,11 @@ public sealed class ClipboardManager
 
     public ClipboardManager()
     {
+        if (Demo.Enabled)
+        {
+            foreach (var item in Demo.Copied()) Items.Add(item);
+            return;
+        }
         if (!Settings.Current.ClipPersist) return;
         try
         {
@@ -172,6 +183,7 @@ public sealed class ClipboardManager
 
     public void Save()
     {
+        if (Demo.Enabled) return;
         try
         {
             if (Settings.Current.ClipPersist) File.WriteAllText(FilePath, JsonSerializer.Serialize(Items.ToList()));

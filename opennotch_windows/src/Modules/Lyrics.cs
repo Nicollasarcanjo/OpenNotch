@@ -25,6 +25,11 @@ public sealed class LyricsManager : Observable
     public LyricsManager(MusicManager music)
     {
         _music = music;
+        if (Demo.Enabled)
+        {
+            _line = "Um verso de exemplo aparece aqui";
+            return;
+        }
         _http.DefaultRequestHeaders.UserAgent.ParseAdd("OpenNotch (https://github.com/Nicollasarcanjo/OpenNotch)");
         _timer.Tick += (_, _) => Tick();
         _timer.Start();

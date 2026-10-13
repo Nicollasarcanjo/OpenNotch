@@ -75,6 +75,17 @@ public sealed class AudioMixer
 
     public AudioMixer()
     {
+        if (Demo.Enabled)
+        {
+            foreach (var (name, volume) in new[] { ("Música", 0.8), ("Navegador", 0.35), ("Chamada de vídeo", 1.0) })
+            {
+                var app = new MixerApp { Id = name, Name = name };
+                app.Show(volume);
+                Apps.Add(app);
+            }
+            Tabs.Add(new MixerTab { Id = 1, Title = "Vídeo de exemplo", Site = "www.exemplo.com" });
+            return;
+        }
         _timer.Tick += (_, _) => Refresh();
         _timer.Start();
     }
@@ -83,7 +94,7 @@ public sealed class AudioMixer
 
     public void Refresh()
     {
-        if (!Active || !Settings.Current.ModMixer) return;
+        if (Demo.Enabled || !Active || !Settings.Current.ModMixer) return;
         // Logo depois de o usuário mexer no controle, não sobrescreve o valor com uma leitura atrasada.
         if ((DateTime.UtcNow - _lastChange).TotalSeconds < 1) return;
 

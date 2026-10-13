@@ -20,6 +20,8 @@ public sealed class OutlinedText : FrameworkElement
     public Brush Fill { get; set; } = Brushes.White;
     public Brush? Stroke { get; set; }
     public double StrokeWidth { get; set; }
+    /// <summary>Largura a partir da qual o texto quebra em duas linhas (0 = nunca quebra).</summary>
+    public double WrapWidth { get; set; }
 
     public string Text
     {
@@ -38,15 +40,28 @@ public sealed class OutlinedText : FrameworkElement
         var formatted = new FormattedText(_text, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight,
             new Typeface(Family, FontStyles.Normal, Bold ? FontWeights.SemiBold : FontWeights.Normal, FontStretches.Normal),
             Size, Brushes.White, VisualTreeHelper.GetDpi(this).PixelsPerDip);
-        _size = new Size(formatted.WidthIncludingTrailingWhitespace, formatted.Height);
+        if (WrapWidth > 0 && formatted.WidthIncludingTrailingWhitespace > WrapWidth)
+        {
+            // Verso longo: duas linhas centralizadas, em vez de um notch mais largo que a tela aguenta.
+            formatted.MaxTextWidth = WrapWidth;
+            formatted.MaxLineCount = 2;
+            formatted.TextAlignment = TextAlignment.Center;
+            formatted.Trimming = TextTrimming.CharacterEllipsis;
+            _size = new Size(WrapWidth, formatted.Height);
+        }
+        else
+        {
+            _size = new Size(formatted.WidthIncludingTrailingWhitespace, formatted.Height);
+        }
         _geometry = formatted.BuildGeometry(new Point(0, 0));
         _geometry.Freeze();
         InvalidateMeasure();
         InvalidateVisual();
     }
 
-    /// <summary>Largura que o texto ocupa, para o notch saber o quanto crescer.</summary>
+    /// <summary>Espaço que o texto ocupa, para o notch saber o quanto crescer.</summary>
     public double TextWidth => _size.Width;
+    public double TextHeight => _size.Height;
 
     protected override Size MeasureOverride(Size availableSize) => _size;
 

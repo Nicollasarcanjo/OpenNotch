@@ -94,7 +94,9 @@ final class ScreenNotch {
            screen.safeAreaInsets.top > 0 {
             model.notchSize = CGSize(width: screen.frame.width - left.width - right.width,
                                      height: screen.safeAreaInsets.top)
+            model.hasPhysicalNotch = true
         } else {
+            model.hasPhysicalNotch = false
             // Tela sem notch físico: um notch "virtual" do tamanho da barra de menus.
             let menuBar = screen.frame.maxY - screen.visibleFrame.maxY
             model.notchSize = CGSize(width: 190, height: max(menuBar, 24))
@@ -105,10 +107,10 @@ final class ScreenNotch {
     private func frame(open: Bool) -> NSRect {
         let size = open
             ? NotchModel.openSize
-            // Fechada, a janela já tem espaço para a linha da letra, que aparece embaixo do notch.
-            : CGSize(width: max(model.notchSize.width + 2 * (NotchModel.earWidth + NotchModel.closedTopRadius),
-                                NotchModel.lyricMaxWidth + 24),
-                     height: model.notchSize.height + NotchModel.lyricRowHeight)
+            // Fechada, a janela já tem largura para o verso da música, que aparece ao lado do notch.
+            : CGSize(width: model.notchSize.width
+                        + 2 * (NotchModel.earWidth + NotchModel.lyricSideWidth + NotchModel.closedTopRadius + 8),
+                     height: model.notchSize.height)
         return NSRect(x: screen.frame.midX - size.width / 2,
                       y: screen.frame.maxY - size.height,
                       width: size.width, height: size.height)

@@ -57,6 +57,12 @@ public sealed class AgentMonitor : Observable
 
     public AgentMonitor()
     {
+        if (Demo.Enabled)
+        {
+            foreach (var provider in Demo.Providers()) Providers.Add(provider);
+            _workingCount = 2;
+            return;
+        }
         _timer.Tick += (_, _) => Scan();
         _timer.Start();
         Scan();

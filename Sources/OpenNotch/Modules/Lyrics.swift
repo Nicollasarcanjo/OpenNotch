@@ -188,9 +188,12 @@ struct LyricStyle: Equatable {
 struct LyricText: View {
     let text: String
     let style: LyricStyle
+    var alignment: TextAlignment = .center
 
     var body: some View {
-        let label = Text(text).font(style.swiftUIFont).lineLimit(1)
+        // Verso longo quebra em duas linhas; se ainda assim não couber na altura do notch, a letra diminui.
+        let label = Text(text).font(style.swiftUIFont).lineLimit(2).multilineTextAlignment(alignment)
+            .lineSpacing(-1).minimumScaleFactor(0.6)
         ZStack {
             if style.outline, style.outlineWidth > 0 {
                 // Borda: o mesmo texto desenhado em volta, na cor da borda.

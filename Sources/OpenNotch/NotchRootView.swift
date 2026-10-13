@@ -33,12 +33,9 @@ struct NotchRootView: View {
         let extra = ears.visible ? 2 * NotchModel.earWidth : 0
         var size = CGSize(width: model.notchSize.width + 2 * NotchModel.closedTopRadius + extra,
                           height: model.notchSize.height)
-        if !lyric.isEmpty {
-            // O notch cresce para baixo e, se preciso, para os lados, até caber o verso.
-            let wanted = LyricStyle.current.width(of: lyric) + 36
-            size.width = max(size.width, min(wanted, NotchModel.lyricMaxWidth))
-            size.height += NotchModel.lyricRowHeight
-        }
+        // O verso entra na mesma linha do notch: a altura não muda, só a largura.
+        let layout = LyricLayout(lyric, physicalNotch: model.hasPhysicalNotch, notchWidth: model.notchSize.width)
+        size.width += layout.extraWidth + layout.centerExtra(notchWidth: model.notchSize.width)
         return size
     }
 
@@ -53,7 +50,8 @@ struct NotchRootView: View {
                 NotchOpenView()
                     .transition(.opacity.combined(with: .scale(scale: 0.92, anchor: .top)))
             } else {
-                NotchClosedView(ears: ears, lyric: lyric)
+                NotchClosedView(ears: ears, lyric: LyricLayout(lyric, physicalNotch: model.hasPhysicalNotch,
+                                                               notchWidth: model.notchSize.width))
                     .transition(.opacity)
             }
         }
@@ -96,6 +94,57 @@ extension NotchRootView {
     }
 }
 
+/// Como o verso da música se encaixa na linha do notch fechado.
+struct LyricLayout: Equatable {
+    let text: String
+    let physicalNotch: Bool
+    let first: String
+    let second: String
+    let sideWidth: CGFloat
+    let centerWidth: CGFloat
+
+    var isEmpty: Bool { text.isEmpty }
+
+    init(_ text: String, physicalNotch: Bool, notchWidth: CGFloat) {
+        self.text = text
+        let style = LyricStyle.current
+        let hasNotch = physicalNotch && !text.isEmpty
+        self.physicalNotch = hasNotch
+        if hasNotch {
+            // Divide o verso em duas metades de tamanho parecido, sem cortar palavras.
+            let words = text.split(separator: " ").map(String.init)
+            var best = (index: max(words.count / 2, 1), difference: CGFloat.greatestFiniteMagnitude)
+            for index in 1..<max(words.count, 2) where index <= words.count {
+                let left = style.width(of: words[..<index].joined(separator: " "))
+                let right = style.width(of: words[index...].joined(separator: " "))
+                if abs(left - right) < best.difference { best = (index, abs(left - right)) }
+            }
+            first = words.prefix(best.index).joined(separator: " ")
+            second = words.dropFirst(best.index).joined(separator: " ")
+            // As duas metades têm a mesma largura, para o notch continuar centralizado;
+            // metade que não cabe quebra em duas linhas.
+            let widest = max(style.width(of: first), style.width(of: second)) + 14
+            sideWidth = min(widest, NotchModel.lyricSideWidth)
+            centerWidth = 0
+        } else {
+            first = ""
+            second = ""
+            sideWidth = 0
+            centerWidth = text.isEmpty ? 0 : min(max(style.width(of: text) + 20, notchWidth), NotchModel.lyricCenterWidth)
+        }
+    }
+
+    /// Quanto o notch fechado precisa alargar para caber o verso.
+    var extraWidth: CGFloat {
+        physicalNotch ? 2 * sideWidth : 0
+    }
+
+    /// Em telas sem recorte, o verso ocupa o lugar do notch virtual (e pode ser mais largo que ele).
+    func centerExtra(notchWidth: CGFloat) -> CGFloat {
+        physicalNotch || text.isEmpty ? 0 : max(centerWidth - notchWidth, 0)
+    }
+}
+
 /// O que aparece ao lado do notch físico quando ele está fechado.
 struct EarState: Equatable {
     var hud: HUDState?
@@ -111,33 +160,41 @@ struct EarState: Equatable {
 /// Estado fechado: só as "orelhas" ao lado do notch físico.
 struct NotchClosedView: View {
     let ears: EarState
-    var lyric = ""
+    var lyric = LyricLayout("", physicalNotch: false, notchWidth: 0)
     @EnvironmentObject var model: NotchModel
     @EnvironmentObject var music: MusicManager
     @EnvironmentObject var timers: TimerManager
     @EnvironmentObject var capture: CaptureManager
 
     var body: some View {
-        VStack(spacing: 0) {
-            HStack(spacing: 0) {
-                if ears.visible {
-                    leftEar.frame(width: NotchModel.earWidth)
-                }
-                Color.clear.frame(width: model.notchSize.width)
-                if ears.visible {
-                    rightEar.frame(width: NotchModel.earWidth)
-                }
+        HStack(spacing: 0) {
+            if ears.visible {
+                leftEar.frame(width: NotchModel.earWidth)
             }
-            .frame(height: model.notchSize.height)
-            if !lyric.isEmpty {
-                // O verso fica embaixo do notch físico; trocar de verso faz uma transição suave.
-                LyricText(text: lyric, style: .current)
-                    .padding(.horizontal, 14)
-                    .frame(height: NotchModel.lyricRowHeight, alignment: .center)
-                    .id(lyric)
-                    .transition(.opacity.combined(with: .move(edge: .bottom)))
+            // O verso fica entre o ícone da música e o indicador da direita, na altura do notch.
+            // Onde há o recorte da câmera, ele é dividido: metade antes e metade depois do recorte.
+            if lyric.physicalNotch {
+                lyricPart(lyric.first, width: lyric.sideWidth, alignment: .trailing)
+                Color.clear.frame(width: model.notchSize.width)
+                lyricPart(lyric.second, width: lyric.sideWidth, alignment: .leading)
+            } else if !lyric.isEmpty {
+                lyricPart(lyric.text, width: lyric.centerWidth, alignment: .center)
+            } else {
+                Color.clear.frame(width: model.notchSize.width)
+            }
+            if ears.visible {
+                rightEar.frame(width: NotchModel.earWidth)
             }
         }
+        .frame(height: model.notchSize.height)
+    }
+
+    private func lyricPart(_ text: String, width: CGFloat, alignment: TextAlignment) -> some View {
+        LyricText(text: text, style: .current, alignment: alignment)
+            .frame(width: width, height: model.notchSize.height - 4,
+                   alignment: alignment == .trailing ? .trailing : alignment == .leading ? .leading : .center)
+            .id(text)
+            .transition(.opacity)
     }
 
     // Esquerda: volume/brilho > gravando > capa da música > agentes > timer.

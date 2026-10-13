@@ -56,13 +56,15 @@ final class NotchModel: ObservableObject {
     static let openSize = CGSize(width: 640, height: 224)
     static let earWidth: CGFloat = 52
     static let closedTopRadius: CGFloat = 6
-    /// Linha da letra da música, embaixo do notch fechado.
-    static let lyricRowHeight: CGFloat = 26
-    static let lyricMaxWidth: CGFloat = 480
+    /// Largura máxima do verso de cada lado do notch físico (ou do verso inteiro, em telas sem notch).
+    static let lyricSideWidth: CGFloat = 210
+    static let lyricCenterWidth: CGFloat = 420
 
     @Published var isOpen = false
     @Published var tab: NotchTab = .home
     @Published var notchSize = CGSize(width: 190, height: 32)
+    /// A tela tem o recorte da câmera no meio; nada pode ser desenhado ali.
+    @Published var hasPhysicalNotch = false
     /// Mantém aberto mesmo com o mouse fora (ex.: digitando uma nota).
     @Published var keepOpen = false
     /// Aviso mostrado na aba de agentes quando uma tarefa termina.

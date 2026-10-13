@@ -1,0 +1,41 @@
+# Roda a versão Windows num Windows de verdade, em modo de demonstração, e guarda uma imagem
+# de cada tela na branch "ci-snapshots". Serve para conferir a interface de fora do Windows.
+name: Windows snapshots
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ["opennotch_windows/**", ".github/workflows/windows-snapshots.yml"]
+
+permissions:
+  contents: write
+
+jobs:
+  snapshots:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+      - run: dotnet build opennotch_windows/OpenNotch.Windows.csproj -c Release
+
+      - name: Gerar as imagens
+        shell: pwsh
+        run: |
+          $env:OPENNOTCH_DEMO = "1"
+          $env:OPENNOTCH_SNAPSHOT_DIR = "$PWD\snapshots"
+          $exe = (Get-ChildItem opennotch_windows\bin\Release\*\OpenNotch.exe | Select-Object -First 1).FullName
+          $app = Start-Process -FilePath $exe -PassThru
+          if (-not $app.WaitForExit(180000)) { $app.Kill(); "O app não fechou sozinho em 3 minutos." | Out-File snapshots\timeout.txt }
+          Get-ChildItem snapshots | Select-Object Name, Length
+
+      - name: Publicar na branch ci-snapshots
+        shell: bash
+        run: |
+          cd snapshots
+          git init -q -b ci-snapshots
+          git add -A
+          git -c user.name="github-actions" -c user.email="actions@users.noreply.github.com" commit -q -m "Imagens de ${GITHUB_SHA::7}"
+          git push -q --force "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" ci-snapshots

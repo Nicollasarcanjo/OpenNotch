@@ -297,12 +297,14 @@ public partial class NotchWindow : Window
 
         // Letra da música: o notch minimizado vira uma faixa com o verso atual.
         var lyric = music && settings.LyricsEnabled && !recorder.IsBusy ? _services.Lyrics.Line : "";
+        LyricLine.WrapWidth = 440;
         LyricStyle.Apply(LyricLine);
         LyricLine.Text = lyric;
         LyricLine.Visibility = lyric.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
         var indicators = showIndicators || lyric.Length > 0;
 
-        EarArtwork.Source = music && !recorder.IsBusy && showIndicators ? _services.Music.Artwork : null;
+        // Com a letra, a capa da música aparece sempre: o verso fica entre ela e o indicador da direita.
+        EarArtwork.Source = music && !recorder.IsBusy && (showIndicators || lyric.Length > 0) ? _services.Music.Artwork : null;
         EarText.Foreground = recorder.IsBusy ? System.Windows.Media.Brushes.Tomato
             : new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(0xFF, 0x9F, 0x0A));
         EarText.Text = recorder.IsRecording ? "● " + recorder.Elapsed
@@ -317,9 +319,10 @@ public partial class NotchWindow : Window
         var size = indicators ? WithIndicators : Minimized;
         if (lyric.Length > 0)
         {
-            // Largura para caber o verso (mais as pontas, se os indicadores estiverem ligados).
-            var wanted = LyricLine.TextWidth + (showIndicators ? 120 : 36);
-            size = new Size(Math.Clamp(wanted, showIndicators ? WithIndicators.Width : 120, 620), WithIndicators.Height);
+            // Largura para caber o verso entre a capa e o indicador; duas linhas deixam o notch um pouco mais alto.
+            var wanted = LyricLine.TextWidth + 120;
+            size = new Size(Math.Clamp(wanted, WithIndicators.Width, 580),
+                            Math.Max(WithIndicators.Height, LyricLine.TextHeight + 8));
         }
         Resize(size, animated ? 260 : 0, new CubicEase { EasingMode = EasingMode.EaseInOut });
     }

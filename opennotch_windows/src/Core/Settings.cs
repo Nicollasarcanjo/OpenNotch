@@ -169,6 +169,8 @@ public sealed class Settings : Observable
 
     private static Settings Load()
     {
+        // No modo de demonstração valem sempre os padrões, e nada é gravado.
+        if (Demo.Enabled) return new Settings();
         _loading = true;
         try
         {
@@ -191,6 +193,7 @@ public sealed class Settings : Observable
 
     public void Save()
     {
+        if (Demo.Enabled) return;
         try { File.WriteAllText(FilePath, JsonSerializer.Serialize(this, Json)); }
         catch { /* disco cheio ou pasta bloqueada: as preferências valem só nesta execução */ }
     }

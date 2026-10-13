@@ -87,6 +87,8 @@ public partial class SettingsWindow : Window
         }
     }
 
+    public IEnumerable<string> PaneIds => _panes.Select(p => p.Id);
+
     /// <summary>Mostra um painel pelo id ("home", "agents"…).</summary>
     public void Select(string id)
     {

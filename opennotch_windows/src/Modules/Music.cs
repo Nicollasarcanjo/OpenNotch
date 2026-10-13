@@ -49,6 +49,16 @@ public sealed class MusicManager : Observable
 
     public MusicManager()
     {
+        if (Demo.Enabled)
+        {
+            _hasSession = _isPlaying = true;
+            _title = "Manhã de Sol";
+            _artist = "Banda Exemplo";
+            _album = "Álbum de Demonstração";
+            _source = "Player";
+            _artwork = Demo.Artwork();
+            return;
+        }
         _timer.Tick += async (_, _) => await Refresh();
         _timer.Start();
     }

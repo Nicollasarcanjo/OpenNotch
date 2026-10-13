@@ -74,6 +74,11 @@ public sealed class AppMonitor : Observable
 
     public AppMonitor()
     {
+        if (Demo.Enabled)
+        {
+            foreach (var app in Demo.Apps()) Apps.Add(app);
+            return;
+        }
         _timer.Tick += (_, _) => Sample();
         _timer.Start();
     }

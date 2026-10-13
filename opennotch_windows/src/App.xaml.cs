@@ -30,7 +30,14 @@ public partial class App : Application
             Shutdown();
             return;
         }
-        DispatcherUnhandledException += (_, args) => args.Handled = true;   // um erro numa aba não derruba o app
+        // Um erro numa aba não derruba o app, mas fica registrado em %APPDATA%\OpenNotch\errors.log.
+        DispatcherUnhandledException += (_, args) =>
+        {
+            SelfTest.Log(args.Exception.ToString());
+            args.Handled = true;
+        };
+        AppDomain.CurrentDomain.UnhandledException += (_, args) => SelfTest.Log(args.ExceptionObject.ToString() ?? "erro");
+        TaskScheduler.UnobservedTaskException += (_, args) => { SelfTest.Log(args.Exception.ToString()); args.SetObserved(); };
 
         Loc.Init();
         _services = Services.Instance;
@@ -53,10 +60,15 @@ public partial class App : Application
         Settings.Current.PropertyChanged += OnSettingsChanged;
         SystemEvents.DisplaySettingsChanged += (_, _) => Dispatcher.BeginInvoke(Rebuild);
 
-        EnableStartupOnce();
+        if (!Demo.Enabled) EnableStartupOnce();
         CreateTrayIcon();
         Rebuild();
 
+        if (SelfTest.Folder != null)
+        {
+            if (_notches.FirstOrDefault() is { } primary) _ = SelfTest.Run(primary);
+            return;
+        }
         if (!Settings.Current.OnboardingDone) new OnboardingWindow().Show();
 
         if (Settings.Current.UpdateAutoCheck)
