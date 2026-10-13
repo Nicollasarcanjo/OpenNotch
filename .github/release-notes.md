@@ -1,8 +1,7 @@
 ## Novidades
 
-- **Letra da música**: o verso agora fica na mesma linha do notch, entre a capa e o indicador, sem abrir espaço embaixo. Onde há o recorte da câmera, ele é dividido em duas metades, uma de cada lado. Verso longo quebra em duas linhas.
-- **Windows**: linhas de anotações e textos copiados alinhadas, busca com ícone e texto de exemplo, ícone nítido nas boas-vindas e espaçamento ajustado nas configurações.
-- A partir desta versão a aparência do Windows é conferida automaticamente num Windows de verdade a cada mudança; o README mostra essas imagens.
+- Primeira versão com o pacote da Microsoft Store (`OpenNotch-Store.msix`). Esse arquivo é só para o envio à loja; para instalar, use os arquivos da tabela abaixo.
+- Windows: abrir com o sistema, atualização e letra da música se adaptam quando o app vem da loja.
 
 ## Qual arquivo baixar
 

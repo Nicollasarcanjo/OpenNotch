@@ -13,6 +13,8 @@ param(
     [string]$IdentityName = $env:MSIX_IDENTITY_NAME,
     [string]$Publisher = $env:MSIX_PUBLISHER,
     [string]$PublisherDisplay = $env:MSIX_PUBLISHER_DISPLAY,
+    # Tem que ser exatamente um dos nomes reservados para o produto no Partner Center.
+    [string]$DisplayName = $env:MSIX_DISPLAY_NAME,
     [string]$Output = "OpenNotch-Store.msix"
 )
 $ErrorActionPreference = "Stop"
@@ -20,6 +22,7 @@ $ErrorActionPreference = "Stop"
 if (-not $IdentityName) { $IdentityName = "OpenNotch.Teste" }
 if (-not $Publisher) { $Publisher = "CN=OpenNotch Teste" }
 if (-not $PublisherDisplay) { $PublisherDisplay = "OpenNotch" }
+if (-not $DisplayName) { $DisplayName = "OpenNotch" }
 
 $root = Split-Path -Parent $PSScriptRoot
 $stage = Join-Path $root "out\msix"
@@ -37,6 +40,7 @@ $packageVersion = (($Version -split '\.')[0..2] -join '.') + ".0"
 $manifest = Get-Content (Join-Path $PSScriptRoot "AppxManifest.xml") -Raw
 $manifest = $manifest.Replace("__IDENTITY_NAME__", $IdentityName).Replace("__PUBLISHER__", $Publisher)
 $manifest = $manifest.Replace("__PUBLISHER_DISPLAY__", $PublisherDisplay).Replace("__VERSION__", $packageVersion)
+$manifest = $manifest.Replace("__DISPLAY_NAME__", [System.Security.SecurityElement]::Escape($DisplayName))
 Set-Content (Join-Path $stage "AppxManifest.xml") $manifest -Encoding utf8
 
 $makeappx = Get-ChildItem "${env:ProgramFiles(x86)}\Windows Kits\10\bin" -Recurse -Filter makeappx.exe |
