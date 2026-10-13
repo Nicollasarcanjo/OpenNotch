@@ -35,14 +35,38 @@ public sealed class MixerApp : Observable
     }
 }
 
+public sealed class MixerTab : Observable
+{
+    public int Id { get; init; }
+    public string Title { get; init; } = "";
+    public string Site { get; init; } = "";
+
+    private double _volume = 1;
+    /// <summary>0 a 1. Aplicado dentro da página pela extensão do navegador.</summary>
+    public double Volume
+    {
+        get => _volume;
+        set
+        {
+            if (!Set(ref _volume, Math.Clamp(value, 0, 1))) return;
+            Raise(nameof(Percent));
+            Changed?.Invoke(this);
+        }
+    }
+
+    public string Percent => $"{Math.Round(Volume * 100)}%";
+    internal Action<MixerTab>? Changed;
+}
+
 /// <summary>
 /// Volume por app, sem mexer no volume geral: usa as sessões de áudio do Windows,
 /// as mesmas do "Mixer de volume" do sistema. Na versão macOS isso é feito em Mixer.swift.
-/// Volume por aba do navegador ainda não existe no Windows (depende da extensão).
+/// O volume por aba do navegador depende da extensão (BrowserBridge).
 /// </summary>
 public sealed class AudioMixer
 {
     public ObservableCollection<MixerApp> Apps { get; } = [];
+    public ObservableCollection<MixerTab> Tabs { get; } = [];
     public bool Active { get; set; }
 
     private readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromSeconds(1.5) };
@@ -84,6 +108,8 @@ public sealed class AudioMixer
             }
         });
 
+        RefreshTabs();
+
         // Aparece quem está tocando agora ou quem está com o volume alterado.
         var wanted = groups
             .Where(g => g.Value.Any(s => s.Playing) || g.Value.Any(s => s.Volume < 0.995f))
@@ -105,6 +131,24 @@ public sealed class AudioMixer
             var app = new MixerApp { Id = name, Name = DisplayName(path, name), Icon = IconFor(path), Changed = Apply };
             app.Show(level);
             Apps.Add(app);
+        }
+    }
+
+    private void RefreshTabs()
+    {
+        var bridge = Services.Instance.Bridge;
+        var seen = bridge.ActiveTabs();
+        for (var i = Tabs.Count - 1; i >= 0; i--)
+        {
+            if (seen.All(t => t.Id != Tabs[i].Id)) Tabs.RemoveAt(i);
+        }
+        foreach (var tab in seen)
+        {
+            if (Tabs.Any(t => t.Id == tab.Id)) continue;
+            var item = new MixerTab { Id = tab.Id, Title = tab.Title, Site = tab.Site };
+            item.Volume = bridge.VolumeOf(tab.Id);
+            item.Changed = changed => bridge.SetVolume(changed.Id, changed.Volume);
+            Tabs.Add(item);
         }
     }
 

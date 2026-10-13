@@ -1,0 +1,36 @@
+<Window x:Class="OpenNotch.AnnotateWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:l="clr-namespace:OpenNotch"
+        Width="1000" Height="700" MinWidth="760" MinHeight="480" WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource WindowBack}" TextElement.Foreground="White"
+        FontFamily="Segoe UI Variable Text, Segoe UI">
+    <Window.Resources>
+        <ResourceDictionary Source="/OpenNotch;component/src/views/darkcontrols.xaml" />
+    </Window.Resources>
+    <DockPanel>
+        <DockPanel DockPanel.Dock="Top" Margin="12,10" LastChildFill="False">
+            <Border Background="#3A3A3C" CornerRadius="7" VerticalAlignment="Center">
+                <StackPanel x:Name="Tools" Orientation="Horizontal" />
+            </Border>
+            <StackPanel x:Name="Palette" Orientation="Horizontal" Margin="14,0,0,0" VerticalAlignment="Center" />
+            <TextBox x:Name="TextInput" Width="220" Margin="14,0,0,0" Padding="6,3" VerticalAlignment="Center"
+                     Background="#3A3A3C" Foreground="White" CaretBrush="White" BorderThickness="0"
+                     ToolTip="{l:T 'Digite o texto e clique na imagem'}" Visibility="Collapsed" />
+            <Button DockPanel.Dock="Right" Style="{StaticResource Prominent}" Content="{l:T 'Salvar e copiar'}"
+                    Click="OnSave" IsDefault="True" />
+            <Button DockPanel.Dock="Right" Style="{StaticResource Push}" Content="{l:T 'Cancelar'}" Margin="0,0,8,0"
+                    Click="OnCancel" IsCancel="True" />
+            <Button DockPanel.Dock="Right" Style="{StaticResource Push}" Content="{l:T 'Desfazer'}" Margin="0,0,8,0"
+                    Click="OnUndo" />
+        </DockPanel>
+        <!-- O desenho é feito em pixels da imagem; o Viewbox só encolhe tudo para caber na janela. -->
+        <Viewbox Margin="14" Stretch="Uniform" StretchDirection="DownOnly">
+            <Grid x:Name="Stage">
+                <Image x:Name="Picture" Stretch="None" />
+                <Canvas x:Name="Marks" Background="Transparent" Cursor="Cross" ClipToBounds="True"
+                        MouseLeftButtonDown="OnDown" MouseMove="OnMove" MouseLeftButtonUp="OnUp" />
+            </Grid>
+        </Viewbox>
+    </DockPanel>
+</Window>

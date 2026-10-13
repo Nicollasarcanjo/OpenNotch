@@ -13,12 +13,16 @@ public partial class MixerView : UserControl
         InitializeComponent();
         DataContext = _mixer;
         _mixer.Apps.CollectionChanged += (_, _) => UpdateEmpty();
+        _mixer.Tabs.CollectionChanged += (_, _) => UpdateEmpty();
         // Só consulta as sessões de áudio enquanto a aba está na tela.
         Loaded += (_, _) => { _mixer.Active = true; _mixer.Refresh(); UpdateEmpty(); };
         Unloaded += (_, _) => _mixer.Active = false;
         UpdateEmpty();
     }
 
-    private void UpdateEmpty() =>
-        Empty.Visibility = _mixer.Apps.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+    private void UpdateEmpty()
+    {
+        Empty.Visibility = _mixer.Apps.Count == 0 && _mixer.Tabs.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+        TabsTitle.Visibility = _mixer.Tabs.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+    }
 }

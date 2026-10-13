@@ -12,11 +12,13 @@ public sealed class CaptureItem
     public string Path { get; init; } = "";
     public ImageSource? Thumbnail { get; init; }
     public string Name => System.IO.Path.GetFileName(Path);
+    public bool IsVideo => System.IO.Path.GetExtension(Path).Equals(".mp4", StringComparison.OrdinalIgnoreCase);
+    public bool IsImage => !IsVideo;
 }
 
 /// <summary>
 /// Prints da tela (toda ou uma área) e galeria das últimas capturas, incluindo as feitas
-/// pelo Windows com Win + PrtScn. Gravação de tela ainda não existe nesta versão.
+/// pelo Windows com Win + PrtScn. A gravação em si fica em ScreenRecorder.
 /// </summary>
 public sealed class CaptureManager : Observable
 {
@@ -25,13 +27,21 @@ public sealed class CaptureManager : Observable
     public event Action<string>? Captured;
 
     private readonly List<FileSystemWatcher> _watchers = [];
-    private static readonly string[] Extensions = [".png", ".jpg", ".jpeg"];
+    private static readonly string[] Extensions = [".png", ".jpg", ".jpeg", ".mp4"];
+    public ScreenRecorder Recorder { get; } = new();
 
     public CaptureManager()
     {
         Watch(Paths.Captures, announce: false);
         Watch(Paths.SystemScreenshots, announce: true);
         Reload();
+        Recorder.Finished += path =>
+        {
+            Reload();
+            if (path == null) return;
+            if (Settings.Current.CaptureAutoCopy) Copy(path);
+            Captured?.Invoke(path);
+        };
     }
 
     private void Watch(string folder, bool announce)
@@ -71,7 +81,8 @@ public sealed class CaptureManager : Observable
         foreach (var file in files.OrderByDescending(f => f.LastWriteTimeUtc)
                      .Take(Math.Max(Settings.Current.CaptureGalleryCount, 1)))
         {
-            Items.Add(new CaptureItem { Path = file.FullName, Thumbnail = Thumbnail(file.FullName) });
+            var video = file.Extension.Equals(".mp4", StringComparison.OrdinalIgnoreCase);
+            Items.Add(new CaptureItem { Path = file.FullName, Thumbnail = video ? null : Thumbnail(file.FullName) });
         }
     }
 
@@ -126,9 +137,62 @@ public sealed class CaptureManager : Observable
         }
     }
 
+    /// <summary>Começa a gravar a tela toda ou uma área; se já estiver gravando, para.</summary>
+    public async void ToggleRecording(bool region)
+    {
+        if (Recorder.IsRecording)
+        {
+            Recorder.Stop();
+            return;
+        }
+        if (Recorder.IsBusy) return;
+        BeforeCapture?.Invoke();
+        await Task.Delay(350);
+        System.Drawing.Rectangle bounds = System.Windows.Forms.Screen.PrimaryScreen?.Bounds
+            ?? System.Windows.Forms.SystemInformation.VirtualScreen;
+        if (region)
+        {
+            if (RegionSelector.Select() is not { } area) return;
+            bounds = area;
+            await Task.Delay(120);
+        }
+        Recorder.Start(bounds);
+    }
+
+    /// <summary>Abre o editor de marcações; o resultado entra na galeria e já vai copiado.</summary>
+    public void Annotate(string path)
+    {
+        try
+        {
+            var editor = new AnnotateWindow(path);
+            editor.Saved += saved =>
+            {
+                Reload();
+                Copy(saved);
+            };
+            editor.Show();
+            editor.Activate();
+        }
+        catch
+        {
+            // arquivo apagado ou ilegível: nada abre
+        }
+    }
+
     /// <summary>Copia a imagem e também o arquivo, para colar tanto em editores quanto em pastas.</summary>
     public void Copy(string path)
     {
+        if (System.IO.Path.GetExtension(path).Equals(".mp4", StringComparison.OrdinalIgnoreCase))
+        {
+            try
+            {
+                var files = new DataObject();
+                files.SetFileDropList([path]);
+                Clipboard.SetDataObject(files, true);
+            }
+            catch { }
+            return;
+        }
         try
         {
             var image = new BitmapImage();

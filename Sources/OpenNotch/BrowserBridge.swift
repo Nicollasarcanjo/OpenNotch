@@ -11,6 +11,8 @@ struct BrowserState: Decodable {
     var playing = false
     /// Id da aba no navegador (ausente em versões antigas da extensão).
     var tab: Int?
+    /// Posição da reprodução, em segundos (para sincronizar a letra).
+    var position: Double?
 }
 
 /// Servidor HTTP mínimo, só em 127.0.0.1, que recebe da extensão do navegador a música

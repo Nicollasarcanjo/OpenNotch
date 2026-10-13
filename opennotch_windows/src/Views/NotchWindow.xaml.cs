@@ -33,7 +33,8 @@ public partial class NotchWindow : Window
     private bool _hovering;
 
     public bool IsOpen { get; private set; }
-    public event Action? SettingsRequested;
+    /// <summary>Pede a janela de configurações; o texto é o painel a mostrar (ou null).</summary>
+    public event Action<string?>? SettingsRequested;
 
     public NotchWindow(System.Windows.Forms.Screen screen)
     {
@@ -42,7 +43,12 @@ public partial class NotchWindow : Window
         var s = Settings.Current;
         _tabs =
         [
-            new(NotchTab.Home, "", Loc.T("Início"), () => true, () => new HomeView()),
+            new(NotchTab.Home, "", Loc.T("Início"), () => true, () =>
+            {
+                var home = new HomeView();
+                home.CustomizeRequested += () => SettingsRequested?.Invoke("home");
+                return home;
+            }),
             new(NotchTab.Agents, "", Loc.T("Agentes de IA"), () => s.ModAgents, () => new AgentsView()),
             new(NotchTab.Apps, "", Loc.T("Apps abertos"), () => s.ModApps, () => new AppsView()),
             new(NotchTab.Mixer, "\uE767", Loc.T("Volume por app"), () => s.ModMixer, () => new MixerView()),
@@ -70,6 +76,8 @@ public partial class NotchWindow : Window
         _services.Agents.PropertyChanged += OnChanged;
         _services.Timers.PropertyChanged += OnChanged;
         _services.Downloads.PropertyChanged += OnChanged;
+        _services.Capture.Recorder.PropertyChanged += OnChanged;
+        _services.Lyrics.PropertyChanged += OnChanged;
         Closed += (_, _) =>
         {
             Settings.Current.PropertyChanged -= OnChanged;
@@ -77,6 +85,8 @@ public partial class NotchWindow : Window
             _services.Agents.PropertyChanged -= OnChanged;
             _services.Timers.PropertyChanged -= OnChanged;
             _services.Downloads.PropertyChanged -= OnChanged;
+            _services.Capture.Recorder.PropertyChanged -= OnChanged;
+            _services.Lyrics.PropertyChanged -= OnChanged;
         };
         BuildTabs();
         UpdateEars();
@@ -280,33 +290,58 @@ public partial class NotchWindow : Window
         var timer = settings.ModTimers && _services.Timers.IsRunning;
         var agents = settings.ModAgents ? _services.Agents.WorkingCount : 0;
         var downloading = settings.ModDownloads && _services.Downloads.Downloading;
-        var indicators = settings.ShowClosedIndicators && (music || timer || agents > 0 || downloading);
+        // Gravando, o tempo aparece sempre (mesmo com o notch minimizado), para dar para ver e parar.
+        var recorder = _services.Capture.Recorder;
+        var showIndicators = recorder.IsBusy
+            || settings.ShowClosedIndicators && (music || timer || agents > 0 || downloading);
 
-        EarArtwork.Source = music ? _services.Music.Artwork : null;
-        EarText.Text = timer ? _services.Timers.Display
+        // Letra da música: o notch minimizado vira uma faixa com o verso atual.
+        var lyric = music && settings.LyricsEnabled && !recorder.IsBusy ? _services.Lyrics.Line : "";
+        LyricStyle.Apply(LyricLine);
+        LyricLine.Text = lyric;
+        LyricLine.Visibility = lyric.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
+        var indicators = showIndicators || lyric.Length > 0;
+
+        EarArtwork.Source = music && !recorder.IsBusy && showIndicators ? _services.Music.Artwork : null;
+        EarText.Foreground = recorder.IsBusy ? System.Windows.Media.Brushes.Tomato
+            : new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(0xFF, 0x9F, 0x0A));
+        EarText.Text = recorder.IsRecording ? "● " + recorder.Elapsed
+            : recorder.IsEncoding ? "…"
+            : timer ? _services.Timers.Display
             : agents > 0 ? $"● {agents}"
             : downloading ? "↓" : "";
+        if (!showIndicators) EarText.Text = "";
         ClosedView.Visibility = indicators ? Visibility.Visible : Visibility.Collapsed;
         Shell.CornerRadius = indicators ? new CornerRadius(0, 0, 12, 12) : new CornerRadius(0, 0, 4, 4);
         Shell.BeginAnimation(OpacityProperty, Fade(indicators ? 1 : 0.6, animated ? 200 : 0));
-        Resize(indicators ? WithIndicators : Minimized, animated ? 260 : 0,
-               new CubicEase { EasingMode = EasingMode.EaseInOut });
+        var size = indicators ? WithIndicators : Minimized;
+        if (lyric.Length > 0)
+        {
+            // Largura para caber o verso (mais as pontas, se os indicadores estiverem ligados).
+            var wanted = LyricLine.TextWidth + (showIndicators ? 120 : 36);
+            size = new Size(Math.Clamp(wanted, showIndicators ? WithIndicators.Width : 120, 620), WithIndicators.Height);
+        }
+        Resize(size, animated ? 260 : 0, new CubicEase { EasingMode = EasingMode.EaseInOut });
     }
 
     // MARK: Arrastar arquivos
 
     private void OnDragEnter(object sender, DragEventArgs e)
     {
-        if (!e.Data.GetDataPresent(DataFormats.FileDrop) || !Settings.Current.ModTray) return;
-        Open(NotchTab.Files);
+        if (!e.Data.GetDataPresent(DataFormats.FileDrop)) return;
+        Open(Settings.Current.ModTray ? NotchTab.Files : NotchTab.Home);
     }
 
     private void OnDrop(object sender, DragEventArgs e)
     {
-        if (!Settings.Current.ModTray || e.Data.GetData(DataFormats.FileDrop) is not string[] files) return;
-        _services.Tray.Add(files);
-        Select(NotchTab.Files);
+        if (e.Data.GetData(DataFormats.FileDrop) is not string[] files) return;
+        // Apps e atalhos soltos no notch viram atalhos na tela inicial; os outros arquivos vão para a bandeja.
+        var apps = files.Where(f => System.IO.Path.GetExtension(f).ToLowerInvariant() is ".exe" or ".lnk").ToList();
+        var others = files.Except(apps).ToList();
+        foreach (var app in apps) Settings.Current.AddHomeApp(app);
+        if (others.Count > 0 && Settings.Current.ModTray) _services.Tray.Add(others);
+        Select(apps.Count > 0 && others.Count == 0 ? NotchTab.Home : NotchTab.Files);
     }
 
-    private void OnGear(object sender, RoutedEventArgs e) => SettingsRequested?.Invoke();
+    private void OnGear(object sender, RoutedEventArgs e) => SettingsRequested?.Invoke(null);
 }

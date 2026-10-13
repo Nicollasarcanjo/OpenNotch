@@ -15,6 +15,8 @@ final class Prefs: ObservableObject {
         case modMusic, modCalendar, modAgents, modApps, modMixer, modCapture, modTray, modDownloads, downloadsNotify, modClipboard, modTimers, modNotes, modSystem
         // Música
         case musicSpotify, musicAppleMusic, musicBrowser, musicEars
+        // Letra da música
+        case lyricsEnabled, lyricsFont, lyricsSize, lyricsBold, lyricsColor, lyricsOutline, lyricsOutlineColor, lyricsOutlineWidth
         // Agentes de IA
         case agentsClaude, agentsCodex, agentsAntigravity, agentsNotify, agentsNotifySeconds
         case agentsSound, agentsEar, agentsClaudeWindow, agentsCustom, agentsHideIdleHours
@@ -38,7 +40,9 @@ final class Prefs: ObservableObject {
         .displayAllScreens: true, .onboardingDone: false, .updateAutoCheck: true, .language: "", .launchAtLoginConfigured: false,
         .modMusic: true, .modCalendar: true, .modAgents: true, .modApps: true, .modMixer: true, .modCapture: true, .modTray: true, .modDownloads: true, .downloadsNotify: true, .modClipboard: true,
         .modTimers: true, .modNotes: true, .modSystem: true,
-        .musicSpotify: true, .musicAppleMusic: true, .musicBrowser: true, .musicEars: true,
+        .musicSpotify: true, .musicAppleMusic: true, .musicBrowser: true,
+        .lyricsEnabled: true, .lyricsFont: "system", .lyricsSize: 12.0, .lyricsBold: true, .lyricsColor: "#FFFFFF",
+        .lyricsOutline: false, .lyricsOutlineColor: "#000000", .lyricsOutlineWidth: 1.0, .musicEars: true,
         .agentsClaude: true, .agentsCodex: true, .agentsAntigravity: true, .agentsNotify: true,
         .agentsNotifySeconds: 6.0, .agentsSound: true, .agentsEar: true, .agentsClaudeWindow: 200_000,
         .agentsCustom: "[]", .agentsHideIdleHours: 12,

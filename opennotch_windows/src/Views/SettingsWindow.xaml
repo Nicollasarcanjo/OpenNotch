@@ -117,6 +117,11 @@
                                 <TextBlock DockPanel.Dock="Right" Style="{StaticResource RowValue}" Text="Ctrl + Alt + S" />
                                 <TextBlock Style="{StaticResource RowLabel}" Text="{l:T 'Abrir Captura de tela'}" />
                             </DockPanel>
+                            <Border Style="{StaticResource Divider}" />
+                            <DockPanel Style="{StaticResource Row}">
+                                <TextBlock DockPanel.Dock="Right" Style="{StaticResource RowValue}" Text="Ctrl + Alt + R" />
+                                <TextBlock Style="{StaticResource RowLabel}" Text="{l:T 'Gravar uma área / parar a gravação'}" />
+                            </DockPanel>
                         </StackPanel>
                     </Border>
                     <TextBlock Style="{StaticResource Footer}"
@@ -146,6 +151,11 @@
                             <DockPanel Style="{StaticResource Row}">
                                 <CheckBox DockPanel.Dock="Right" Style="{StaticResource Switch}" IsChecked="{Binding AgentsCodex}" />
                                 <TextBlock Style="{StaticResource RowLabel}" Text="Codex" />
+                            </DockPanel>
+                            <Border Style="{StaticResource Divider}" />
+                            <DockPanel Style="{StaticResource Row}">
+                                <CheckBox DockPanel.Dock="Right" Style="{StaticResource Switch}" IsChecked="{Binding AgentsAntigravity}" />
+                                <TextBlock Style="{StaticResource RowLabel}" Text="{l:T 'Antigravity (detecção aproximada)'}" />
                             </DockPanel>
                             <Border Style="{StaticResource Divider}" />
                             <DockPanel Style="{StaticResource Row}">
@@ -187,6 +197,178 @@
                             </DockPanel>
                         </StackPanel>
                     </Border>
+                    <TextBlock Style="{StaticResource Footer}" Text="" />
+                    <TextBlock Style="{StaticResource SectionTitle}" Text="{l:T 'Outras ferramentas'}" />
+                    <Border Style="{StaticResource Section}">
+                        <StackPanel>
+                            <StackPanel x:Name="CustomRows" />
+                            <DockPanel Style="{StaticResource Row}">
+                                <Button Style="{StaticResource Push}" Content="{l:T 'Adicionar ferramenta'}" Click="OnAddCustom" />
+                            </DockPanel>
+                        </StackPanel>
+                    </Border>
+                    <TextBlock Style="{StaticResource Footer}"
+                               Text="{l:T 'Para ferramentas sem suporte nativo, o OpenNotch acha os processos pelo nome e usa o consumo de CPU para estimar quando estão trabalhando.'}" />
+                
+                </StackPanel>
+
+                <!-- Tela inicial -->
+                <StackPanel x:Name="PaneHome" Visibility="Collapsed">
+                    <TextBlock Style="{StaticResource SectionTitle}" Text="{l:T 'Blocos, da esquerda para a direita'}" />
+                    <Border Style="{StaticResource Section}">
+                        <StackPanel x:Name="BlockRows" />
+                    </Border>
+                    <WrapPanel x:Name="BlockAdd" Margin="0,0,0,6" />
+                    <TextBlock Style="{StaticResource Footer}"
+                               Text="{l:T 'Se os blocos não couberem na largura do notch, a tela inicial rola para o lado.'}" />
+
+                    <TextBlock Style="{StaticResource SectionTitle}" Text="{l:T 'Atalhos de apps'}" />
+                    <Border Style="{StaticResource Section}">
+                        <StackPanel>
+                            <StackPanel x:Name="AppRows" />
+                            <DockPanel Style="{StaticResource Row}">
+                                <Button Style="{StaticResource Push}" Content="{l:T 'Adicionar app…'}" Click="OnAddApp" />
+                            </DockPanel>
+                        </StackPanel>
+                    </Border>
+                    <TextBlock Style="{StaticResource Footer}"
+                               Text="{l:T 'Também dá para arrastar um programa ou atalho e soltar em cima do notch.'}" />
+
+                    <TextBlock Style="{StaticResource SectionTitle}" Text="GIF" />
+                    <Border Style="{StaticResource Section}">
+                        <DockPanel Style="{StaticResource Row}">
+                            <Button DockPanel.Dock="Right" Style="{StaticResource Push}" Content="{l:T 'Remover'}" Margin="8,0,0,0"
+                                    Click="OnRemoveGif" />
+                            <Button DockPanel.Dock="Right" Style="{StaticResource Push}" Content="{l:T 'Escolher GIF…'}" Click="OnChooseGif" />
+                            <TextBlock x:Name="GifName" Style="{StaticResource RowValue}" TextTrimming="CharacterEllipsis" />
+                        </DockPanel>
+                    </Border>
+                    <TextBlock Style="{StaticResource Footer}" Text="" />
+
+                    <TextBlock Style="{StaticResource SectionTitle}" Text="{l:T 'Sequência de imagens'}" />
+                    <Border Style="{StaticResource Section}">
+                        <StackPanel>
+                            <DockPanel Style="{StaticResource Row}">
+                                <Button DockPanel.Dock="Right" Style="{StaticResource Push}" Content="{l:T 'Remover todas'}"
+                                        Margin="8,0,0,0" Click="OnRemoveSlides" />
+                                <Button DockPanel.Dock="Right" Style="{StaticResource Push}" Content="{l:T 'Escolher imagens…'}"
+                                        Click="OnChooseSlides" />
+                                <TextBlock x:Name="SlidesCount" Style="{StaticResource RowValue}" />
+                            </DockPanel>
+                            <Border Style="{StaticResource Divider}" />
+                            <DockPanel Style="{StaticResource Row}">
+                                <TextBlock DockPanel.Dock="Right" Style="{StaticResource RowValue}" Width="52" TextAlignment="Right"
+                                           Text="{Binding HomeSlideInterval, StringFormat='{}{0:0} s'}" />
+                                <Slider DockPanel.Dock="Right" Width="180" Minimum="1" Maximum="60" TickFrequency="1"
+                                        IsSnapToTickEnabled="True" Value="{Binding HomeSlideInterval}" />
+                                <TextBlock Style="{StaticResource RowLabel}" Text="{l:T 'Trocar a cada'}" />
+                            </DockPanel>
+                            <Border Style="{StaticResource Divider}" />
+                            <DockPanel Style="{StaticResource Row}">
+                                <TextBlock DockPanel.Dock="Right" Style="{StaticResource RowValue}" Width="52" TextAlignment="Right"
+                                           Text="{Binding HomeMediaWidth, StringFormat='{}{0:0}'}" />
+                                <Slider DockPanel.Dock="Right" Width="180" Minimum="100" Maximum="420" TickFrequency="10"
+                                        IsSnapToTickEnabled="True" Value="{Binding HomeMediaWidth}" />
+                                <TextBlock Style="{StaticResource RowLabel}" Text="{l:T 'Largura do GIF e das imagens'}" />
+                            </DockPanel>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+
+                <!-- Extensão do navegador -->
+                <StackPanel x:Name="PaneExtension" Visibility="Collapsed">
+                    <TextBlock Style="{StaticResource SectionTitle}" Text="{l:T 'Volume por aba'}" />
+                    <Border Style="{StaticResource Section}">
+                        <StackPanel>
+                            <DockPanel Style="{StaticResource Row}">
+                                <TextBlock Style="{StaticResource RowValue}" TextWrapping="Wrap" MaxWidth="480"
+                                           Text="{l:T 'Com a extensão, cada aba do navegador com áudio ganha um controle de volume próprio na aba Volume por app. A música em si já aparece no notch sem ela.'}" />
+                            </DockPanel>
+                            <Border Style="{StaticResource Divider}" />
+                            <DockPanel Style="{StaticResource Row}">
+                                <Button Style="{StaticResource Prominent}" Content="{l:T 'Baixar extensão'}" Click="OnDownloadExtension" />
+                                <TextBlock x:Name="ExtensionMessage" Style="{StaticResource RowValue}" Margin="12,0,0,0" />
+                            </DockPanel>
+                            <Border Style="{StaticResource Divider}" />
+                            <DockPanel Style="{StaticResource Row}">
+                                <TextBlock x:Name="ExtensionStatus" DockPanel.Dock="Right" Style="{StaticResource RowValue}" />
+                                <TextBlock Style="{StaticResource RowLabel}" Text="{l:T 'Situação'}" />
+                            </DockPanel>
+                        </StackPanel>
+                    </Border>
+                    <TextBlock Style="{StaticResource Footer}" Text="" />
+
+                    <TextBlock Style="{StaticResource SectionTitle}" Text="{l:T 'Como instalar'}" />
+                    <Border Style="{StaticResource Section}">
+                        <StackPanel x:Name="ExtensionSteps" />
+                    </Border>
+                    <TextBlock Style="{StaticResource Footer}"
+                               Text="{l:T 'A extensão só conversa com o OpenNotch neste computador e só envia dados enquanto há som tocando na aba.'}" />
+                </StackPanel>
+
+                <!-- Letra da música -->
+                <StackPanel x:Name="PaneLyrics" Visibility="Collapsed">
+                    <TextBlock Style="{StaticResource SectionTitle}" Text="{l:T 'Letra da música'}" />
+                    <Border Style="{StaticResource Section}">
+                        <StackPanel>
+                            <DockPanel Style="{StaticResource Row}">
+                                <CheckBox DockPanel.Dock="Right" Style="{StaticResource Switch}" IsChecked="{Binding LyricsEnabled}" />
+                                <TextBlock Style="{StaticResource RowLabel}" Text="{l:T 'Mostrar a letra com o notch fechado'}" />
+                            </DockPanel>
+                            <Border Style="{StaticResource Divider}" />
+                            <DockPanel Style="{StaticResource Row}">
+                                <Border DockPanel.Dock="Right" Background="Black" CornerRadius="12" Padding="14,5">
+                                    <l:OutlinedText x:Name="LyricPreview" />
+                                </Border>
+                                <TextBlock Style="{StaticResource RowLabel}" Text="{l:T 'Prévia'}" />
+                            </DockPanel>
+                            <Border Style="{StaticResource Divider}" />
+                            <DockPanel Style="{StaticResource Row}">
+                                <Border DockPanel.Dock="Right" Background="#3A3A3C" CornerRadius="7">
+                                    <StackPanel x:Name="LyricFontChoice" Orientation="Horizontal" />
+                                </Border>
+                                <TextBlock Style="{StaticResource RowLabel}" Text="{l:T 'Fonte'}" />
+                            </DockPanel>
+                            <Border Style="{StaticResource Divider}" />
+                            <DockPanel Style="{StaticResource Row}">
+                                <TextBlock DockPanel.Dock="Right" Style="{StaticResource RowValue}" Width="52" TextAlignment="Right"
+                                           Text="{Binding LyricsSize, StringFormat='{}{0:0} pt'}" />
+                                <Slider DockPanel.Dock="Right" Width="180" Minimum="10" Maximum="18" TickFrequency="1"
+                                        IsSnapToTickEnabled="True" Value="{Binding LyricsSize}" />
+                                <TextBlock Style="{StaticResource RowLabel}" Text="{l:T 'Tamanho'}" />
+                            </DockPanel>
+                            <Border Style="{StaticResource Divider}" />
+                            <DockPanel Style="{StaticResource Row}">
+                                <CheckBox DockPanel.Dock="Right" Style="{StaticResource Switch}" IsChecked="{Binding LyricsBold}" />
+                                <TextBlock Style="{StaticResource RowLabel}" Text="{l:T 'Negrito'}" />
+                            </DockPanel>
+                            <Border Style="{StaticResource Divider}" />
+                            <DockPanel Style="{StaticResource Row}">
+                                <StackPanel x:Name="LyricColors" DockPanel.Dock="Right" Orientation="Horizontal" />
+                                <TextBlock Style="{StaticResource RowLabel}" Text="{l:T 'Cor do texto'}" />
+                            </DockPanel>
+                            <Border Style="{StaticResource Divider}" />
+                            <DockPanel Style="{StaticResource Row}">
+                                <CheckBox DockPanel.Dock="Right" Style="{StaticResource Switch}" IsChecked="{Binding LyricsOutline}" />
+                                <TextBlock Style="{StaticResource RowLabel}" Text="{l:T 'Borda no texto'}" />
+                            </DockPanel>
+                            <Border Style="{StaticResource Divider}" />
+                            <DockPanel Style="{StaticResource Row}">
+                                <StackPanel x:Name="LyricOutlineColors" DockPanel.Dock="Right" Orientation="Horizontal" />
+                                <TextBlock Style="{StaticResource RowLabel}" Text="{l:T 'Cor da borda'}" />
+                            </DockPanel>
+                            <Border Style="{StaticResource Divider}" />
+                            <DockPanel Style="{StaticResource Row}">
+                                <TextBlock DockPanel.Dock="Right" Style="{StaticResource RowValue}" Width="52" TextAlignment="Right"
+                                           Text="{Binding LyricsOutlineWidth, StringFormat='{}{0:0.0} pt'}" />
+                                <Slider DockPanel.Dock="Right" Width="180" Minimum="0.5" Maximum="3" TickFrequency="0.5"
+                                        IsSnapToTickEnabled="True" Value="{Binding LyricsOutlineWidth}" />
+                                <TextBlock Style="{StaticResource RowLabel}" Text="{l:T 'Espessura da borda'}" />
+                            </DockPanel>
+                        </StackPanel>
+                    </Border>
+                    <TextBlock Style="{StaticResource Footer}"
+                               Text="{l:T 'O verso que está sendo cantado aparece no notch fechado. A letra vem do LRCLIB (lrclib.net); para buscá-la, o app envia a esse serviço o título, o artista e o álbum da faixa. Nem toda música tem letra sincronizada.'}" />
                 </StackPanel>
 
                 <!-- Captura de tela -->
@@ -215,6 +397,8 @@
                     </Border>
                     <TextBlock Style="{StaticResource Footer}" Text="" />
 
+                    <TextBlock Style="{StaticResource Footer}"
+                               Text="{l:T 'A gravação de tela no Windows é simples: cerca de 8 quadros por segundo, sem áudio e até 3 minutos.'}" />
                     <Border Style="{StaticResource Section}">
                         <DockPanel Style="{StaticResource Row}">
                             <CheckBox DockPanel.Dock="Right" Style="{StaticResource Switch}" IsChecked="{Binding CaptureShowNotch}" />

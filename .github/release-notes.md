@@ -1,10 +1,19 @@
 ## Novidades
 
-Esta versão é sobre o **Windows**; a versão macOS não mudou.
+**macOS e Windows**
 
-- **Janela de configurações refeita**, no mesmo desenho da versão macOS: tema escuro, barra lateral com os painéis (Geral, Atalhos, Módulos, Agentes de IA, Captura de tela, Textos, Timers e Sobre), seções em cartões e interruptores no lugar das caixas de seleção.
-- Novas opções que antes só existiam no arquivo de preferências: espera para abrir e fechar, tempo do aviso de agente, janela de contexto do Claude, sessões ociosas, itens do histórico e capturas na galeria.
-- A tela de boas-vindas ganhou o mesmo visual e pode ser reaberta em Configurações › Sobre.
+- **Letra da música no notch fechado**: o verso que está sendo cantado aparece acompanhando a música. Dá para ligar ou desligar e escolher fonte, tamanho, cor e borda do texto nas configurações. Funciona nas músicas que têm letra sincronizada no LRCLIB.
+
+**Windows** (o que faltava em relação ao macOS)
+
+- **Tela inicial personalizável**: escolha e ordene os blocos (música, relógio, calendário, atalhos de apps, GIF, sequência de imagens, resumo do sistema e do timer). Arraste um programa ou atalho até o notch para criar um atalho.
+- **Gravação de tela**, da tela toda ou de uma área, com Ctrl + Alt + R. É uma primeira versão: cerca de 8 quadros por segundo, sem áudio e até 3 minutos.
+- **Anotar prints**: seta, retângulo, texto e borrar.
+- **Agentes de IA**: Antigravity e ferramentas cadastradas por você.
+- **Volume por aba do navegador**, com a extensão (Configurações › Extensão do navegador).
+- Painéis novos nas configurações: Tela inicial, Letra da música e Extensão do navegador.
+
+A extensão do navegador foi atualizada (0.3.0); quem já usa precisa baixar de novo e recarregar.
 
 ## Qual arquivo baixar
 

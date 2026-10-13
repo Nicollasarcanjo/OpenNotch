@@ -5,34 +5,64 @@
     <Grid>
         <StackPanel x:Name="Empty" VerticalAlignment="Center" HorizontalAlignment="Center">
             <TextBlock Text="{l:T 'Nenhum app tocando som'}" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center" />
-            <TextBlock Text="{l:T 'Os apps com áudio aparecem aqui, cada um com o seu volume.'}"
+            <TextBlock Text="{l:T 'Os apps e as abas com áudio aparecem aqui, cada um com o seu volume.'}"
                        Foreground="{StaticResource Dim}" HorizontalAlignment="Center" />
         </StackPanel>
         <ScrollViewer VerticalScrollBarVisibility="Auto">
-            <ItemsControl ItemsSource="{Binding Apps}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Border Background="{StaticResource Card}" CornerRadius="7" Padding="9,5" Margin="0,0,0,4">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="26" />
-                                    <ColumnDefinition Width="170" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="42" />
-                                </Grid.ColumnDefinitions>
-                                <Image Source="{Binding Icon}" Width="18" Height="18" HorizontalAlignment="Left" />
-                                <TextBlock Grid.Column="1" Text="{Binding Name}" FontWeight="Medium"
-                                           VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
-                                <!-- O controle muda só o volume deste app, não o do sistema. -->
-                                <Slider Grid.Column="2" Minimum="0" Maximum="1" VerticalAlignment="Center"
-                                        Value="{Binding Volume, Mode=TwoWay}" Focusable="False" />
-                                <TextBlock Grid.Column="3" Text="{Binding Percent}" FontSize="11" TextAlignment="Right"
-                                           VerticalAlignment="Center" />
-                            </Grid>
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+            <StackPanel>
+                <ItemsControl ItemsSource="{Binding Apps}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="{StaticResource Card}" CornerRadius="7" Padding="9,5" Margin="0,0,0,4">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="26" />
+                                        <ColumnDefinition Width="170" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="42" />
+                                    </Grid.ColumnDefinitions>
+                                    <Image Source="{Binding Icon}" Width="18" Height="18" HorizontalAlignment="Left" />
+                                    <TextBlock Grid.Column="1" Text="{Binding Name}" FontWeight="Medium"
+                                               VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                    <!-- O controle muda só o volume deste app, não o do sistema. -->
+                                    <Slider Grid.Column="2" Minimum="0" Maximum="1" VerticalAlignment="Center"
+                                            Value="{Binding Volume, Mode=TwoWay}" />
+                                    <TextBlock Grid.Column="3" Text="{Binding Percent}" FontSize="11" TextAlignment="Right"
+                                               VerticalAlignment="Center" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <TextBlock x:Name="TabsTitle" Text="{l:T 'Abas do navegador'}" FontSize="10" FontWeight="SemiBold"
+                           Foreground="{StaticResource Dim}" Margin="0,4,0,4" />
+                <ItemsControl ItemsSource="{Binding Tabs}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="{StaticResource Card}" CornerRadius="7" Padding="9,5" Margin="0,0,0,4">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="26" />
+                                        <ColumnDefinition Width="170" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="42" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Style="{StaticResource Glyph}" Text="&#xE774;" Foreground="{StaticResource Dim}" />
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Title}" FontWeight="Medium" TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Text="{Binding Site}" FontSize="9" Foreground="{StaticResource Dim}"
+                                                   TextTrimming="CharacterEllipsis" />
+                                    </StackPanel>
+                                    <Slider Grid.Column="2" Minimum="0" Maximum="1" VerticalAlignment="Center"
+                                            Value="{Binding Volume, Mode=TwoWay}" />
+                                    <TextBlock Grid.Column="3" Text="{Binding Percent}" FontSize="11" TextAlignment="Right"
+                                               VerticalAlignment="Center" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
         </ScrollViewer>
     </Grid>
 </UserControl>

@@ -37,6 +37,8 @@
       album: (meta && meta.album) || "",
       artwork: art || "",
       playing: isPlaying(),
+      // Posição da reprodução, para o OpenNotch sincronizar a letra.
+      position: media() ? media().currentTime : null,
     };
   };
 

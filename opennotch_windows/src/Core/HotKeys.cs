@@ -3,7 +3,7 @@ using System.Windows.Interop;
 
 namespace OpenNotch;
 
-public enum Shortcut { ToggleNotch = 1, Texts, Capture }
+public enum Shortcut { ToggleNotch = 1, Texts, Capture, RecordRegion }
 
 /// <summary>Atalhos globais. As mesmas combinações da versão macOS, com Ctrl + Alt no lugar de ⌃⌥.</summary>
 public sealed class HotKeys
@@ -17,6 +17,7 @@ public sealed class HotKeys
         [Shortcut.ToggleNotch] = Key.N,
         [Shortcut.Texts] = Key.V,
         [Shortcut.Capture] = Key.S,
+        [Shortcut.RecordRegion] = Key.R,
     };
 
     public HotKeys(HwndSource source)

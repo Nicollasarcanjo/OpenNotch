@@ -52,6 +52,7 @@ final class MusicManager: ObservableObject {
     private var artworkKey = ""
     let bridge = BrowserBridge()
     private var browserArtwork = ""
+    private var browserPosition: (value: Double, at: Date)?
     private var lastBrowserBeat = Date.distantPast
     private var browserTimer: Timer?
 
@@ -108,6 +109,7 @@ final class MusicManager: ObservableObject {
         if player != .browser, isPlaying || !state.playing { return }
         lastBrowserBeat = Date()
         bridge.commandTab = state.tab
+        browserPosition = state.position.map { ($0, Date()) }
         browserArtwork = state.artwork
         apply(player: .browser, playing: state.playing, title: state.title,
               artist: state.artist, album: state.album.isEmpty ? state.site : state.album)
@@ -171,6 +173,22 @@ final class MusicManager: ObservableObject {
                 completion(result)
                 if result == true { self.refresh() }
             }
+        }
+    }
+
+    /// Posição atual da faixa, em segundos (nil se o player não informar). Usada para sincronizar a letra.
+    func fetchPosition(completion: @escaping (Double?) -> Void) {
+        guard let player else {
+            completion(nil)
+            return
+        }
+        if player == .browser {
+            completion(browserPosition.map { $0.value + (isPlaying ? Date().timeIntervalSince($0.at) : 0) })
+            return
+        }
+        queue.async { [weak self] in
+            let value = self?.run("tell application \"\(player.rawValue)\" to return player position")?.doubleValue
+            DispatchQueue.main.async { completion(value) }
         }
     }
 

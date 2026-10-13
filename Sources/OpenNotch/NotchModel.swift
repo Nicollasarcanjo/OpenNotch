@@ -56,6 +56,9 @@ final class NotchModel: ObservableObject {
     static let openSize = CGSize(width: 640, height: 224)
     static let earWidth: CGFloat = 52
     static let closedTopRadius: CGFloat = 6
+    /// Linha da letra da música, embaixo do notch fechado.
+    static let lyricRowHeight: CGFloat = 26
+    static let lyricMaxWidth: CGFloat = 480
 
     @Published var isOpen = false
     @Published var tab: NotchTab = .home

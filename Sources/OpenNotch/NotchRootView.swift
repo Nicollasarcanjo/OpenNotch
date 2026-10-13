@@ -10,6 +10,7 @@ struct NotchRootView: View {
     @EnvironmentObject var capture: CaptureManager
     @EnvironmentObject var hud: HUDMonitor
     @EnvironmentObject var downloads: DownloadsMonitor
+    @EnvironmentObject var lyrics: LyricsManager
     @EnvironmentObject var prefs: Prefs
     @State private var dropTargeted = false
 
@@ -22,11 +23,23 @@ struct NotchRootView: View {
                  download: prefs.bool(.modDownloads) ? downloads.activeFraction : nil)
     }
 
+    /// Verso a mostrar com o notch fechado (vazio = sem linha de letra).
+    private var lyric: String {
+        prefs.bool(.modMusic) && prefs.bool(.lyricsEnabled) && music.isPlaying ? lyrics.line : ""
+    }
+
     private var size: CGSize {
         if model.isOpen { return NotchModel.openSize }
         let extra = ears.visible ? 2 * NotchModel.earWidth : 0
-        return CGSize(width: model.notchSize.width + 2 * NotchModel.closedTopRadius + extra,
-                      height: model.notchSize.height)
+        var size = CGSize(width: model.notchSize.width + 2 * NotchModel.closedTopRadius + extra,
+                          height: model.notchSize.height)
+        if !lyric.isEmpty {
+            // O notch cresce para baixo e, se preciso, para os lados, até caber o verso.
+            let wanted = LyricStyle.current.width(of: lyric) + 36
+            size.width = max(size.width, min(wanted, NotchModel.lyricMaxWidth))
+            size.height += NotchModel.lyricRowHeight
+        }
+        return size
     }
 
     private var shape: NotchShape {
@@ -40,7 +53,7 @@ struct NotchRootView: View {
                 NotchOpenView()
                     .transition(.opacity.combined(with: .scale(scale: 0.92, anchor: .top)))
             } else {
-                NotchClosedView(ears: ears)
+                NotchClosedView(ears: ears, lyric: lyric)
                     .transition(.opacity)
             }
         }
@@ -58,6 +71,7 @@ struct NotchRootView: View {
             if targeted { model.open(tab: prefs.bool(.modTray) ? .tray : .home) }
         }
         .animation(.spring(response: 0.35, dampingFraction: 0.85), value: ears)
+        .animation(.spring(response: 0.4, dampingFraction: 0.85), value: lyric)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .preferredColorScheme(.dark)
     }
@@ -97,22 +111,33 @@ struct EarState: Equatable {
 /// Estado fechado: só as "orelhas" ao lado do notch físico.
 struct NotchClosedView: View {
     let ears: EarState
+    var lyric = ""
     @EnvironmentObject var model: NotchModel
     @EnvironmentObject var music: MusicManager
     @EnvironmentObject var timers: TimerManager
     @EnvironmentObject var capture: CaptureManager
 
     var body: some View {
-        HStack(spacing: 0) {
-            if ears.visible {
-                leftEar.frame(width: NotchModel.earWidth)
+        VStack(spacing: 0) {
+            HStack(spacing: 0) {
+                if ears.visible {
+                    leftEar.frame(width: NotchModel.earWidth)
+                }
+                Color.clear.frame(width: model.notchSize.width)
+                if ears.visible {
+                    rightEar.frame(width: NotchModel.earWidth)
+                }
             }
-            Color.clear.frame(width: model.notchSize.width)
-            if ears.visible {
-                rightEar.frame(width: NotchModel.earWidth)
+            .frame(height: model.notchSize.height)
+            if !lyric.isEmpty {
+                // O verso fica embaixo do notch físico; trocar de verso faz uma transição suave.
+                LyricText(text: lyric, style: .current)
+                    .padding(.horizontal, 14)
+                    .frame(height: NotchModel.lyricRowHeight, alignment: .center)
+                    .id(lyric)
+                    .transition(.opacity.combined(with: .move(edge: .bottom)))
             }
         }
-        .frame(height: model.notchSize.height)
     }
 
     // Esquerda: volume/brilho > gravando > capa da música > agentes > timer.

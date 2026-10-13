@@ -21,6 +21,10 @@
   <ItemGroup>
     <Resource Include="Resources\AppIcon.ico" />
     <ApplicationDefinition Include="src\App.xaml" />
+    <!-- A extensão do navegador é a mesma da versão macOS; ela vai dentro do executável. -->
+    <EmbeddedResource Include="..\Extension\manifest.json" LogicalName="Extension.manifest.json" />
+    <EmbeddedResource Include="..\Extension\background.js" LogicalName="Extension.background.js" />
+    <EmbeddedResource Include="..\Extension\content.js" LogicalName="Extension.content.js" />
     <Page Remove="src\App.xaml" />
     <!-- Com Windows Forms ligado, vários nomes passam a existir em dois lugares; aqui valem os do WPF. -->
     <Using Remove="System.Windows.Forms" />

@@ -30,6 +30,23 @@ public sealed class MusicManager : Observable
     public bool HasSession { get => _hasSession; private set => Set(ref _hasSession, value); }
     public ImageSource? Artwork { get => _artwork; private set => Set(ref _artwork, value); }
 
+    private (TimeSpan position, DateTimeOffset at)? _timeline;
+
+    /// <summary>
+    /// Posição atual da faixa, em segundos (nil se o player não informar). O Windows só atualiza
+    /// a posição de vez em quando, então entre uma atualização e outra ela é estimada pelo relógio.
+    /// </summary>
+    public double? CurrentPosition
+    {
+        get
+        {
+            if (_timeline is not { } timeline) return null;
+            var seconds = timeline.position.TotalSeconds;
+            if (IsPlaying) seconds += (DateTimeOffset.Now - timeline.at).TotalSeconds;
+            return seconds;
+        }
+    }
+
     public MusicManager()
     {
         _timer.Tick += async (_, _) => await Refresh();
@@ -58,6 +75,10 @@ public sealed class MusicManager : Observable
             Album = properties.AlbumTitle ?? "";
             Source = FriendlyName(_session.SourceAppUserModelId);
             IsPlaying = playback?.PlaybackStatus == GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing;
+            var timeline = _session.GetTimelineProperties();
+            // Players que não informam a posição devolvem tudo zerado.
+            _timeline = timeline != null && timeline.EndTime > TimeSpan.Zero
+                ? (timeline.Position, timeline.LastUpdatedTime) : null;
 
             var key = $"{Title}|{Artist}|{Album}";
             if (key != _artworkKey)

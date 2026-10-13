@@ -24,6 +24,7 @@ final class Services {
     let downloads = DownloadsMonitor()
     let updater = Updater()
     lazy var mixer = AudioMixer(bridge: music.bridge)
+    lazy var lyrics = LyricsManager(music: music)
 }
 
 /// O notch de uma tela: a janela e o estado aberto/fechado dela.
@@ -62,6 +63,7 @@ final class ScreenNotch {
             .environmentObject(services.downloads)
             .environmentObject(services.updater)
             .environmentObject(services.mixer)
+            .environmentObject(services.lyrics)
             .environmentObject(Prefs.shared)
         let host = NSHostingView(rootView: root)
         host.sizingOptions = []
@@ -103,8 +105,10 @@ final class ScreenNotch {
     private func frame(open: Bool) -> NSRect {
         let size = open
             ? NotchModel.openSize
-            : CGSize(width: model.notchSize.width + 2 * (NotchModel.earWidth + NotchModel.closedTopRadius),
-                     height: model.notchSize.height)
+            // Fechada, a janela já tem espaço para a linha da letra, que aparece embaixo do notch.
+            : CGSize(width: max(model.notchSize.width + 2 * (NotchModel.earWidth + NotchModel.closedTopRadius),
+                                NotchModel.lyricMaxWidth + 24),
+                     height: model.notchSize.height + NotchModel.lyricRowHeight)
         return NSRect(x: screen.frame.midX - size.width / 2,
                       y: screen.frame.maxY - size.height,
                       width: size.width, height: size.height)

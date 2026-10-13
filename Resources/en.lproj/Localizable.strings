@@ -337,6 +337,22 @@
 "O volume por app precisa do macOS 14.2 ou mais recente." = "Per-app volume needs macOS 14.2 or later.";
 "Libere “Gravação de Tela e Áudio do Sistema” para o OpenNotch poder ajustar o volume dos apps." = "Allow “Screen & System Audio Recording” so OpenNotch can adjust app volumes.";
 
+"Letra da música" = "Song lyrics";
+"Mostrar a letra com o notch fechado" = "Show lyrics on the closed notch";
+"Prévia" = "Preview";
+"Um verso de exemplo" = "A sample line";
+"Fonte" = "Font";
+"Padrão" = "Default";
+"Arredondada" = "Rounded";
+"Serifada" = "Serif";
+"Monoespaçada" = "Monospaced";
+"Negrito" = "Bold";
+"Cor do texto" = "Text color";
+"Borda no texto" = "Text outline";
+"Cor da borda" = "Outline color";
+"Espessura da borda" = "Outline thickness";
+"O verso que está sendo cantado aparece embaixo do notch. A letra vem do LRCLIB (lrclib.net); para buscá-la, o app envia a esse serviço o título, o artista e o álbum da faixa. Nem toda música tem letra sincronizada." = "The line being sung shows below the notch. Lyrics come from LRCLIB (lrclib.net); to fetch them, the app sends that service the track's title, artist and album. Not every song has synced lyrics.";
+
 /* Usadas só na versão Windows */
 "Dê play em qualquer player ou no navegador." = "Press play in any player or in the browser.";
 "Sessões do Claude Code e do Codex aparecem aqui." = "Claude Code and Codex sessions show up here.";
@@ -360,3 +376,16 @@
 "Itens guardados" = "Items kept";
 "Senhas copiadas de gerenciadores de senha ficam de fora do histórico." = "Passwords copied from password managers are left out of the history.";
 "O arquivo exportado leva as opções. Anotações, histórico de copiados e capturas não entram." = "The exported file carries the options. Notes, copied history and captures are not included.";
+"Processando vídeo…" = "Processing video…";
+"Escolher imagens…" = "Choose images…";
+"Também dá para arrastar um programa ou atalho e soltar em cima do notch." = "You can also drag a program or shortcut and drop it on the notch.";
+"Para ferramentas sem suporte nativo, o OpenNotch acha os processos pelo nome e usa o consumo de CPU para estimar quando estão trabalhando." = "For tools without native support, OpenNotch finds the processes by name and uses CPU usage to estimate when they are working.";
+"Volume por aba" = "Per-tab volume";
+"Com a extensão, cada aba do navegador com áudio ganha um controle de volume próprio na aba Volume por app. A música em si já aparece no notch sem ela." = "With the extension, each browser tab with audio gets its own volume control in the Per-app volume tab. Music itself already shows on the notch without it.";
+"A extensão só conversa com o OpenNotch neste computador e só envia dados enquanto há som tocando na aba." = "The extension only talks to OpenNotch on this computer and only sends data while the tab is playing sound.";
+"Clique com o botão direito no .zip e escolha “Extrair tudo”. Vai aparecer a pasta OpenNotch-Extensao." = "Right-click the .zip and choose “Extract All”. The OpenNotch-Extensao folder will appear.";
+"Recarregue a aba onde o som está tocando." = "Reload the tab where the sound is playing.";
+"Conectada" = "Connected";
+"Nenhuma aba tocando som" = "No tab is playing sound";
+"A gravação de tela no Windows é simples: cerca de 8 quadros por segundo, sem áudio e até 3 minutos." = "Screen recording on Windows is basic: about 8 frames per second, no audio and up to 3 minutes.";
+"O verso que está sendo cantado aparece no notch fechado. A letra vem do LRCLIB (lrclib.net); para buscá-la, o app envia a esse serviço o título, o artista e o álbum da faixa. Nem toda música tem letra sincronizada." = "The line being sung shows on the closed notch. Lyrics come from LRCLIB (lrclib.net); to fetch them, the app sends that service the track's title, artist and album. Not every song has synced lyrics.";

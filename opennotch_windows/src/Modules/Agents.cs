@@ -50,6 +50,8 @@ public sealed class AgentMonitor : Observable
     private readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromSeconds(3) };
     private readonly ClaudeScanner _claude = new();
     private readonly CodexScanner _codex = new();
+    private readonly AntigravityScanner _antigravity = new();
+    private readonly CustomScanner _custom = new();
     private Dictionary<string, AgentFinish> _lastWorking = [];
     private bool _scanning, _first = true;
 
@@ -73,6 +75,8 @@ public sealed class AgentMonitor : Observable
         _scanning = true;
         var useClaude = settings.AgentsClaude;
         var useCodex = settings.AgentsCodex;
+        var useAntigravity = settings.AgentsAntigravity;
+        var customAgents = settings.CustomAgents.ToList();
         var window = Math.Max(settings.AgentsClaudeWindow, 1);
         var hideAfter = TimeSpan.FromHours(settings.AgentsHideIdleHours);
 
@@ -84,6 +88,8 @@ public sealed class AgentMonitor : Observable
                 var list = new List<AgentProvider>();
                 if (useClaude) list.Add(_claude.Scan(window));
                 if (useCodex) list.Add(_codex.Scan());
+                if (useAntigravity) list.AddRange(_antigravity.Scan());
+                list.AddRange(_custom.Scan(customAgents));
                 return list.Select(provider => new AgentProvider
                 {
                     Id = provider.Id,
@@ -433,5 +439,161 @@ internal sealed class CodexScanner
             return new AgentLimit(label, 0);
         }
         return new AgentLimit(label, used);
+    }
+}
+
+/// <summary>
+/// O Antigravity não expõe estado legível, então a detecção é aproximada:
+/// "trabalhando" enquanto os arquivos de conversa estão sendo gravados.
+/// </summary>
+internal sealed class AntigravityScanner
+{
+    private static readonly TimeSpan ActiveWindow = TimeSpan.FromSeconds(25);
+    private static readonly (string Id, string Name, string Folder, string Process)[] Variants =
+    [
+        ("antigravity", "Antigravity", "antigravity", "Antigravity"),
+        ("antigravity-ide", "Antigravity IDE", "antigravity-ide", "Antigravity IDE"),
+    ];
+
+    public List<AgentProvider> Scan()
+    {
+        var result = new List<AgentProvider>();
+        foreach (var variant in Variants)
+        {
+            if (!IsRunning(variant.Process)) continue;
+            var root = Path.Combine(Paths.Home, ".gemini", variant.Folder);
+            var latest = new[] { "conversations", "brain" }.Select(dir => Newest(Path.Combine(root, dir))).Max();
+            result.Add(new AgentProvider
+            {
+                Id = variant.Id,
+                Name = variant.Name + " · " + Loc.T("aprox."),
+                Sessions =
+                [
+                    new AgentSession
+                    {
+                        Id = variant.Id,
+                        Title = Loc.T("Agente"),
+                        Working = latest is { } changed && DateTime.Now - changed < ActiveWindow,
+                        Updated = latest ?? DateTime.MinValue,
+                    },
+                ],
+            });
+        }
+        return result;
+    }
+
+    private static bool IsRunning(string name)
+    {
+        try
+        {
+            var processes = Process.GetProcessesByName(name);
+            foreach (var process in processes) process.Dispose();
+            return processes.Length > 0;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private static DateTime? Newest(string dir)
+    {
+        try
+        {
+            if (!Directory.Exists(dir)) return null;
+            DateTime? newest = null;
+            foreach (var file in Directory.EnumerateFiles(dir, "*", SearchOption.AllDirectories).Take(2000))
+            {
+                var time = File.GetLastWriteTime(file);
+                if (newest == null || time > newest) newest = time;
+            }
+            return newest;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+}
+
+/// <summary>
+/// Ferramentas cadastradas pelo usuário: junta os processos pelo nome e usa o consumo de CPU
+/// como sinal de atividade. (No macOS também separa por pasta; o Windows não informa a pasta
+/// de outro processo de forma simples.)
+/// </summary>
+internal sealed class CustomScanner
+{
+    private const double BusyThreshold = 8;                     // % de CPU
+    private static readonly TimeSpan MinBusy = TimeSpan.FromSeconds(9);
+    private Dictionary<int, TimeSpan> _lastCpu = [];
+    private DateTime _lastSample = DateTime.UtcNow;
+    private readonly Dictionary<string, DateTime> _busySince = [];
+
+    public List<AgentProvider> Scan(List<CustomAgent> agents)
+    {
+        var valid = agents.Where(a => !string.IsNullOrWhiteSpace(a.Match)).ToList();
+        if (valid.Count == 0)
+        {
+            _lastCpu = [];
+            return [];
+        }
+        var now = DateTime.UtcNow;
+        var elapsed = Math.Max((now - _lastSample).TotalSeconds, 0.5);
+        _lastSample = now;
+        var cores = Math.Max(Environment.ProcessorCount, 1);
+        var current = new Dictionary<int, TimeSpan>();
+        var result = new List<AgentProvider>();
+        Process[] processes;
+        try { processes = Process.GetProcesses(); }
+        catch { return []; }
+
+        foreach (var agent in valid)
+        {
+            double percent = 0;
+            var found = false;
+            foreach (var process in processes)
+            {
+                try
+                {
+                    if (!process.ProcessName.Contains(agent.Match.Trim(), StringComparison.OrdinalIgnoreCase)) continue;
+                    found = true;
+                    var total = process.TotalProcessorTime;
+                    current[process.Id] = total;
+                    if (_lastCpu.TryGetValue(process.Id, out var before))
+                    {
+                        percent += Math.Max((total - before).TotalSeconds, 0) / elapsed * 100 / cores;
+                    }
+                }
+                catch
+                {
+                    // processo protegido ou que acabou de fechar
+                }
+            }
+            if (!found) continue;
+            var key = agent.Match.ToLowerInvariant();
+            if (percent >= BusyThreshold) _busySince.TryAdd(key, DateTime.Now);
+            else _busySince.Remove(key);
+            var name = string.IsNullOrWhiteSpace(agent.Name) ? agent.Match : agent.Name;
+            result.Add(new AgentProvider
+            {
+                Id = "custom-" + key,
+                Name = name + " · " + Loc.T("aprox."),
+                Sessions =
+                [
+                    new AgentSession
+                    {
+                        Id = key,
+                        Title = name,
+                        // Só conta como "trabalhando" depois de alguns segundos seguidos de CPU alta.
+                        Working = _busySince.TryGetValue(key, out var since) && DateTime.Now - since >= MinBusy,
+                        Usage = Math.Min(percent / 100, 1),
+                        Updated = DateTime.Now,
+                    },
+                ],
+            });
+        }
+        foreach (var process in processes) process.Dispose();
+        _lastCpu = current;
+        return result;
     }
 }

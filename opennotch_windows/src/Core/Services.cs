@@ -8,6 +8,7 @@ public sealed class Services
     public MusicManager Music { get; } = new();
     public AgentMonitor Agents { get; } = new();
     public AppMonitor Apps { get; } = new();
+    public BrowserBridge Bridge { get; } = new();
     public AudioMixer Mixer { get; } = new();
     public CaptureManager Capture { get; } = new();
     public NotesStore Notes { get; } = new();
@@ -17,4 +18,10 @@ public sealed class Services
     public TimerManager Timers { get; } = new();
     public SystemMonitor System { get; } = new();
     public Updater Updater { get; } = new();
+    public LyricsManager Lyrics { get; }
+
+    private Services()
+    {
+        Lyrics = new LyricsManager(Music);
+    }
 }

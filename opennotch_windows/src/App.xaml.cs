@@ -42,6 +42,7 @@ public partial class App : Application
         _hotKeys.Pressed += OnShortcut;
         _hotKeys.SetEnabled(Settings.Current.HotkeysEnabled);
 
+        _services.Bridge.Start();
         _services.Agents.Finished += OnAgentFinished;
         _services.Capture.BeforeCapture += CloseAll;
         _services.Capture.Captured += _ =>
@@ -119,7 +120,7 @@ public partial class App : Application
         foreach (var screen in screens)
         {
             var notch = new NotchWindow(screen);
-            notch.SettingsRequested += ShowSettings;
+            notch.SettingsRequested += pane => ShowSettings(pane);
             notch.Show();
             _notches.Add(notch);
         }
@@ -151,6 +152,9 @@ public partial class App : Application
             case Shortcut.Capture:
                 Active?.OpenFromKeyboard(NotchTab.Capture);
                 break;
+            case Shortcut.RecordRegion:
+                if (Settings.Current.ModCapture) _services.Capture.ToggleRecording(region: true);
+                break;
         }
     }
 
@@ -166,7 +170,7 @@ public partial class App : Application
         notch.Flash(NotchTab.Agents, Math.Max(settings.AgentsNotifySeconds, 2));
     }
 
-    private void ShowSettings()
+    private void ShowSettings(string? pane = null)
     {
         CloseAll();
         if (_settings == null)
@@ -174,6 +178,7 @@ public partial class App : Application
             _settings = new SettingsWindow();
             _settings.Closed += (_, _) => _settings = null;
         }
+        if (pane != null) _settings.Select(pane);
         _settings.Show();
         _settings.Activate();
     }
@@ -192,7 +197,7 @@ public partial class App : Application
         }
         var menu = new System.Windows.Forms.ContextMenuStrip();
         menu.Items.Add(Loc.T("Abrir OpenNotch"), null, (_, _) => Active?.OpenFromKeyboard(null));
-        menu.Items.Add(Loc.T("Configurações…"), null, (_, _) => ShowSettings());
+        menu.Items.Add(Loc.T("Configurações…"), null, (_, _) => ShowSettings(null));
         menu.Items.Add(new System.Windows.Forms.ToolStripSeparator());
         menu.Items.Add(Loc.T("Sair"), null, (_, _) => Shutdown());
         _trayIcon = new System.Windows.Forms.NotifyIcon
@@ -202,6 +207,6 @@ public partial class App : Application
             Visible = true,
             ContextMenuStrip = menu,
         };
-        _trayIcon.DoubleClick += (_, _) => ShowSettings();
+        _trayIcon.DoubleClick += (_, _) => ShowSettings(null);
     }
 }

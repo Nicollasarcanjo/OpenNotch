@@ -4,16 +4,19 @@
              xmlns:l="clr-namespace:OpenNotch">
     <DockPanel>
         <DockPanel DockPanel.Dock="Top" LastChildFill="False" Margin="0,0,0,8">
-            <Button Style="{StaticResource Chip}" Click="OnFull" Margin="0,0,8,0" Content="{l:T 'Tela toda'}" />
-            <Button Style="{StaticResource Chip}" Click="OnRegion" Content="{l:T 'Área'}" />
+            <Button x:Name="FullButton" Style="{StaticResource Chip}" Click="OnFull" Margin="0,0,8,0" Content="{l:T 'Tela toda'}" />
+            <Button x:Name="RegionButton" Style="{StaticResource Chip}" Click="OnRegion" Margin="0,0,8,0" Content="{l:T 'Área'}" />
+            <Button x:Name="RecordButton" Style="{StaticResource Chip}" Click="OnRecord" Margin="0,0,8,0" />
+            <Button x:Name="RecordRegionButton" Style="{StaticResource Chip}" Click="OnRecordRegion"
+                    Content="{l:T 'Gravar área'}" />
             <Button DockPanel.Dock="Right" Style="{StaticResource Flat}" Click="OnFolder"
                     ToolTip="{l:T 'Abrir a pasta das capturas'}">
                 <TextBlock Style="{StaticResource Glyph}" Text="&#xE8B7;" />
             </Button>
         </DockPanel>
         <Grid>
-            <TextBlock x:Name="Empty" Text="{l:T 'Seus últimos prints aparecem aqui.'}" Foreground="{StaticResource Dim}"
-                       HorizontalAlignment="Center" VerticalAlignment="Center" />
+            <TextBlock x:Name="Empty" Text="{l:T 'Seus últimos prints e gravações aparecem aqui.'}"
+                       Foreground="{StaticResource Dim}" HorizontalAlignment="Center" VerticalAlignment="Center" />
             <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
                 <ItemsControl ItemsSource="{Binding Items}">
                     <ItemsControl.ItemsPanel>
@@ -30,7 +33,18 @@
                                 <Border.Clip>
                                     <RectangleGeometry Rect="0,0,150,96" RadiusX="9" RadiusY="9" />
                                 </Border.Clip>
-                                <Image Source="{Binding Thumbnail}" Stretch="UniformToFill" />
+                                <Grid>
+                                    <Image Source="{Binding Thumbnail}" Stretch="UniformToFill" />
+                                    <TextBlock Style="{StaticResource Glyph}" Text="&#xE768;" FontSize="26"
+                                               HorizontalAlignment="Center"
+                                               Visibility="{Binding IsVideo, Converter={StaticResource Visible}}" />
+                                    <Button Style="{StaticResource Flat}" Padding="5" HorizontalAlignment="Right"
+                                            VerticalAlignment="Top" Margin="3" Background="#99000000" Click="OnAnnotate"
+                                            ToolTip="{l:T 'Anotar: seta, retângulo, texto e borrar'}"
+                                            Visibility="{Binding IsImage, Converter={StaticResource Visible}}">
+                                        <TextBlock Style="{StaticResource Glyph}" Text="&#xE70F;" FontSize="11" />
+                                    </Button>
+                                </Grid>
                             </Border>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>

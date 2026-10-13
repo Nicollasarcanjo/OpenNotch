@@ -530,6 +530,63 @@ private struct MusicPane: View {
             Toggle("Mostrar capa e barrinhas enquanto toca", isOn: prefs.boolBinding(.musicEars))
         }
         .disabled(!prefs.bool(.modMusic))
+        LyricsSettings()
+    }
+}
+
+/// Opções da letra no notch fechado: ligar, fonte, tamanho, cor e borda.
+private struct LyricsSettings: View {
+    @EnvironmentObject var prefs: Prefs
+
+    private func text(_ key: Prefs.Key) -> Binding<String> {
+        Binding(get: { prefs.string(key) }, set: { prefs.set($0, for: key) })
+    }
+
+    var body: some View {
+        Section {
+            Toggle("Mostrar a letra com o notch fechado", isOn: prefs.boolBinding(.lyricsEnabled))
+            if prefs.bool(.lyricsEnabled) {
+                LabeledContent("Prévia") {
+                    LyricText(text: L("Um verso de exemplo"), style: .current)
+                        .padding(.horizontal, 12).padding(.vertical, 5)
+                        .background(Color.black, in: Capsule())
+                }
+                Picker("Fonte", selection: text(.lyricsFont)) {
+                    Text("Padrão").tag("system")
+                    Text("Arredondada").tag("rounded")
+                    Text("Serifada").tag("serif")
+                    Text("Monoespaçada").tag("mono")
+                }
+                LabeledSlider("Tamanho", value: prefs.doubleBinding(.lyricsSize), range: 10...18, step: 1, unit: "pt")
+                Toggle("Negrito", isOn: prefs.boolBinding(.lyricsBold))
+                LabeledContent("Cor do texto") { ColorSwatches(selection: text(.lyricsColor)) }
+                Toggle("Borda no texto", isOn: prefs.boolBinding(.lyricsOutline))
+                if prefs.bool(.lyricsOutline) {
+                    LabeledContent("Cor da borda") { ColorSwatches(selection: text(.lyricsOutlineColor)) }
+                    LabeledSlider("Espessura da borda", value: prefs.doubleBinding(.lyricsOutlineWidth),
+                                  range: 0.5...3, step: 0.5, unit: "pt")
+                }
+            }
+        } header: {
+            Text("Letra da música")
+        } footer: {
+            Text("O verso que está sendo cantado aparece embaixo do notch. A letra vem do LRCLIB (lrclib.net); para buscá-la, o app envia a esse serviço o título, o artista e o álbum da faixa. Nem toda música tem letra sincronizada.")
+        }
+    }
+}
+
+private struct ColorSwatches: View {
+    @Binding var selection: String
+
+    var body: some View {
+        HStack(spacing: 6) {
+            ForEach(LyricStyle.palette, id: \.self) { hex in
+                Circle().fill(LyricStyle.color(hex)).frame(width: 18, height: 18)
+                    .overlay(Circle().stroke(Color.primary.opacity(selection == hex ? 0.9 : 0.3),
+                                             lineWidth: selection == hex ? 2 : 1))
+                    .onTapGesture { selection = hex }
+            }
+        }
     }
 }
 

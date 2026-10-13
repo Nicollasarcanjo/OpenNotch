@@ -7,6 +7,12 @@ namespace OpenNotch;
 /// Preferências do app, guardadas em %APPDATA%\OpenNotch\settings.json.
 /// Os nomes seguem os da versão macOS (Prefs.swift) sempre que o recurso existe nas duas.
 /// </summary>
+public sealed class CustomAgent
+{
+    public string Name { get; set; } = "";
+    public string Match { get; set; } = "";
+}
+
 public sealed class Settings : Observable
 {
     public static Settings Current { get; } = Load();
@@ -48,6 +54,21 @@ public sealed class Settings : Observable
     private bool _onboardingDone;
     public bool OnboardingDone { get => _onboardingDone; set => Change(ref _onboardingDone, value); }
 
+    // Tela inicial
+    private List<string> _homeBlocks = ["music", "clock"];
+    /// <summary>Blocos da tela inicial, da esquerda para a direita (ver HomeBlock).</summary>
+    public List<string> HomeBlocks { get => _homeBlocks; set => Change(ref _homeBlocks, value); }
+    private List<string> _homeApps = [];
+    public List<string> HomeApps { get => _homeApps; set => Change(ref _homeApps, value); }
+    private string _homeGif = "";
+    public string HomeGif { get => _homeGif; set => Change(ref _homeGif, value); }
+    private List<string> _homeSlides = [];
+    public List<string> HomeSlides { get => _homeSlides; set => Change(ref _homeSlides, value); }
+    private double _homeSlideInterval = 5;
+    public double HomeSlideInterval { get => _homeSlideInterval; set => Change(ref _homeSlideInterval, value); }
+    private double _homeMediaWidth = 190;
+    public double HomeMediaWidth { get => _homeMediaWidth; set => Change(ref _homeMediaWidth, value); }
+
     // Módulos
     private bool _modMusic = true;
     public bool ModMusic { get => _modMusic; set => Change(ref _modMusic, value); }
@@ -72,11 +93,34 @@ public sealed class Settings : Observable
     private bool _modSystem = true;
     public bool ModSystem { get => _modSystem; set => Change(ref _modSystem, value); }
 
+    // Letra da música
+    private bool _lyricsEnabled = true;
+    public bool LyricsEnabled { get => _lyricsEnabled; set => Change(ref _lyricsEnabled, value); }
+    private string _lyricsFont = "system";
+    public string LyricsFont { get => _lyricsFont; set => Change(ref _lyricsFont, value); }
+    private double _lyricsSize = 12;
+    public double LyricsSize { get => _lyricsSize; set => Change(ref _lyricsSize, value); }
+    private bool _lyricsBold = true;
+    public bool LyricsBold { get => _lyricsBold; set => Change(ref _lyricsBold, value); }
+    private string _lyricsColor = "#FFFFFF";
+    public string LyricsColor { get => _lyricsColor; set => Change(ref _lyricsColor, value); }
+    private bool _lyricsOutline;
+    public bool LyricsOutline { get => _lyricsOutline; set => Change(ref _lyricsOutline, value); }
+    private string _lyricsOutlineColor = "#000000";
+    public string LyricsOutlineColor { get => _lyricsOutlineColor; set => Change(ref _lyricsOutlineColor, value); }
+    private double _lyricsOutlineWidth = 1;
+    public double LyricsOutlineWidth { get => _lyricsOutlineWidth; set => Change(ref _lyricsOutlineWidth, value); }
+
     // Agentes de IA
     private bool _agentsClaude = true;
     public bool AgentsClaude { get => _agentsClaude; set => Change(ref _agentsClaude, value); }
     private bool _agentsCodex = true;
     public bool AgentsCodex { get => _agentsCodex; set => Change(ref _agentsCodex, value); }
+    private bool _agentsAntigravity = true;
+    public bool AgentsAntigravity { get => _agentsAntigravity; set => Change(ref _agentsAntigravity, value); }
+    private List<CustomAgent> _customAgents = [];
+    /// <summary>Ferramentas cadastradas pelo usuário, detectadas pelo nome do processo.</summary>
+    public List<CustomAgent> CustomAgents { get => _customAgents; set => Change(ref _customAgents, value); }
     private bool _agentsNotify = true;
     public bool AgentsNotify { get => _agentsNotify; set => Change(ref _agentsNotify, value); }
     private double _agentsNotifySeconds = 6;
@@ -149,6 +193,13 @@ public sealed class Settings : Observable
     {
         try { File.WriteAllText(FilePath, JsonSerializer.Serialize(this, Json)); }
         catch { /* disco cheio ou pasta bloqueada: as preferências valem só nesta execução */ }
+    }
+
+    /// <summary>Adiciona um atalho de app e garante que o bloco de atalhos esteja na tela inicial.</summary>
+    public void AddHomeApp(string path)
+    {
+        if (!HomeApps.Contains(path, StringComparer.OrdinalIgnoreCase)) HomeApps = [.. HomeApps, path];
+        if (!HomeBlocks.Contains("apps")) HomeBlocks = [.. HomeBlocks, "apps"];
     }
 
     public string Export() => JsonSerializer.Serialize(this, Json);

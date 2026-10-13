@@ -41,16 +41,17 @@ Não deixe uma versão "para depois" sem registrar. A tabela é a fonte da verda
 | Um painel por monitor | Sim | Sim | |
 | Indicadores com o painel fechado | Sim | Opcional | No Windows o padrão é ficar minimizado (um risco no topo), porque lá não há notch físico e a barra ocuparia espaço; a opção "Mostrar indicadores com o notch fechado" liga os indicadores |
 | Música: mostrar e controlar | Sim | Sim | macOS: Spotify, Apple Music e extensão de navegador. Windows: controles de mídia do sistema, que já cobrem os navegadores |
-| Extensão de navegador | Sim | Não precisa | |
+| Letra da música no notch fechado (fonte, cor e borda configuráveis) | Sim | Sim | Mesma fonte (LRCLIB) e mesmas opções. Posição da faixa: AppleScript/extensão no macOS, controles de mídia no Windows |
+| Extensão de navegador | Sim | Sim | Mesma extensão. No macOS traz a música e o volume por aba; no Windows só o volume por aba, porque a música já vem do sistema |
 | Agentes de IA: Claude Code e Codex | Sim | Sim | Mesma leitura de arquivos |
-| Agentes de IA: Antigravity e ferramentas personalizadas | Sim | Não | A fazer |
+| Agentes de IA: Antigravity e ferramentas personalizadas | Sim | Sim | No Windows as ferramentas personalizadas não são separadas por pasta |
 | Aviso quando um agente termina | Sim | Sim | |
 | Apps abertos com CPU, GPU e memória | Sim | Sim | Agrupamento: macOS por app responsável; Windows por nome do executável |
 | Volume por app | Sim | Sim | macOS: process taps do CoreAudio (14.2+). Windows: sessões de áudio do sistema |
-| Volume por aba do navegador | Sim | Não | Depende da extensão, que o Windows ainda não usa |
+| Volume por aba do navegador | Sim | Sim | Pela extensão |
 | Print de tela toda e de área | Sim | Sim | |
-| Gravação de tela | Sim | Não | A fazer (Windows.Graphics.Capture) |
-| Anotar print | Sim | Não | A fazer |
+| Gravação de tela (toda e área) | Sim | Parcial | Windows: quadro a quadro, ~8 fps, sem áudio, até 3 min. Melhoria possível: Windows.Graphics.Capture |
+| Anotar print | Sim | Sim | |
 | Opção de aparecer ou não em capturas de tela | Sim | Sim | Padrão: não aparece. Windows usa SetWindowDisplayAffinity |
 | Galeria com os prints do sistema | Sim | Sim | Windows: pasta Imagens\Screenshots |
 | Anotações, histórico de copiados e busca | Sim | Sim | |
@@ -58,10 +59,10 @@ Não deixe uma versão "para depois" sem registrar. A tabela é a fonte da verda
 | Downloads | Sim | Parcial | Windows mostra o tamanho baixado, sem porcentagem |
 | Timers | Sim | Sim | |
 | Monitor do sistema | Sim | Sim | |
-| Tela inicial personalizável (blocos, GIF, imagens, atalhos) | Sim | Não | Windows tem música e relógio fixos |
-| Calendário | Sim | Não | A fazer |
+| Tela inicial personalizável (blocos, GIF, imagens, atalhos) | Sim | Sim | Mesmos blocos e mesmos ids |
+| Calendário | Sim | Parcial | Windows mostra o mês com o dia de hoje; os eventos não, porque a API de agenda do Windows exige app empacotado |
 | Indicador de volume e brilho | Sim | Não | O Windows já tem o próprio |
-| Atalhos globais | Sim | Sim | macOS ⌃⌥ + tecla; Windows Ctrl + Alt + tecla. Sem "gravar área" no Windows |
+| Atalhos globais | Sim | Sim | macOS ⌃⌥ + tecla; Windows Ctrl + Alt + tecla |
 | Configurações, com liga/desliga por módulo | Sim | Sim | Mesmo desenho (barra lateral e seções em cartões). Windows tem menos painéis, porque tem menos recursos |
 | Português e inglês | Sim | Sim | Mesma tabela de frases |
 | Exportar e importar configurações | Sim | Sim | Os arquivos não são intercambiáveis entre sistemas |

@@ -1,6 +1,7 @@
 <Window x:Class="OpenNotch.NotchWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:l="clr-namespace:OpenNotch"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent" Topmost="True"
         ShowInTaskbar="False" ResizeMode="NoResize" ShowActivated="False"
         Width="700" Height="250" AllowDrop="True" Title="OpenNotch">
@@ -24,6 +25,9 @@
                     </Grid.ColumnDefinitions>
                     <Image x:Name="EarArtwork" Width="18" Height="18" HorizontalAlignment="Left" Margin="12,0,0,0"
                            Stretch="UniformToFill" />
+                    <!-- Verso da música, no centro; a capa e o indicador ficam nas pontas. -->
+                    <l:OutlinedText x:Name="LyricLine" Grid.ColumnSpan="2" HorizontalAlignment="Center"
+                                    VerticalAlignment="Center" />
                     <TextBlock x:Name="EarText" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center"
                                Margin="0,0,12,0" FontSize="11" FontWeight="SemiBold" Foreground="#FF9F0A" />
                 </Grid>

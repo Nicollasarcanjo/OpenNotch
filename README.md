@@ -40,17 +40,20 @@ As funcionalidades e as imagens abaixo descrevem a versão macOS, que é a mais 
 | Recurso | macOS | Windows |
 |---|---|---|
 | Música (mostrar e controlar) | Sim | Sim, incluindo navegadores, sem extensão |
-| Agentes de IA (Claude Code e Codex) | Sim | Sim |
+| Letra da música no notch fechado, com fonte, cor e borda | Sim | Sim |
+| Tela inicial personalizável (blocos, GIF, imagens, atalhos de apps) | Sim | Sim |
+| Agentes de IA (Claude Code, Codex, Antigravity e ferramentas cadastradas) | Sim | Sim |
 | Apps abertos com CPU, GPU e memória | Sim | Sim |
-| Print de tela toda e de área | Sim | Sim |
-| Gravação de tela e anotação de prints | Sim | Ainda não |
-| Anotações, textos copiados e busca | Sim | Sim |
 | Volume por app | Sim | Sim |
-| Volume por aba do navegador | Sim, com a extensão | Ainda não |
+| Volume por aba do navegador | Sim, com a extensão | Sim, com a extensão |
+| Print de tela toda e de área, e anotação de prints | Sim | Sim |
+| Gravação de tela (toda e área) | Sim | Sim, mais simples: cerca de 8 quadros por segundo, sem áudio, até 3 minutos |
+| Anotações, textos copiados e busca | Sim | Sim |
 | Bandeja de arquivos | Sim | Sim |
 | Downloads | Sim | Sim, sem porcentagem |
 | Timers e monitor do sistema | Sim | Sim |
-| Tela inicial personalizável e calendário | Sim | Ainda não |
+| Calendário | Data e eventos de hoje | Mês com o dia de hoje, sem eventos |
+| Indicador de volume e brilho | Sim | Não (o Windows já tem o dele) |
 | Vários monitores, atalhos, idiomas, exportar configurações | Sim | Sim |
 
 No Windows não existe notch físico, então o painel fica **minimizado** quando fechado: só um risco discreto no centro do topo da tela, que abre ao passar o mouse. Quem preferir ver a capa da música, o timer e os agentes sem abrir pode ligar "Mostrar indicadores com o notch fechado" nas configurações.
@@ -81,6 +84,7 @@ A primeira aba é uma fileira de blocos que você escolhe e ordena em Configura�
 - Spotify e Apple Music: título, artista, álbum, capa e botões de voltar, tocar/pausar e avançar.
 - Música do navegador (YouTube, YouTube Music, Spotify Web, SoundCloud, Deezer, Tidal, Amazon Music, Apple Music web) por meio de uma extensão para Brave, Chrome e Edge. O passo a passo e o download ficam em Configurações › Extensão do navegador.
 - Com o notch fechado, a capa e barrinhas animadas aparecem ao lado dele.
+- **Letra da música**: com o notch fechado, o verso que está sendo cantado aparece embaixo dele, acompanhando a música. Dá para ligar ou desligar e escolher a fonte, o tamanho, a cor e a borda do texto em Configurações › Música (no Windows, Configurações › Letra da música). Só aparece em músicas que têm letra sincronizada disponível.
 
 ### Agentes de IA
 
@@ -194,6 +198,7 @@ Também há:
 
 | Versão | O que mudou |
 |---|---|
+| 0.5.0 | Letra da música no notch fechado (macOS e Windows). Windows ganha o que faltava: tela inicial personalizável, gravação de tela, anotação de prints, Antigravity e ferramentas cadastradas, volume por aba e calendário |
 | 0.4.2 | Windows: janela de configurações refeita no desenho da versão macOS (barra lateral, seções em cartões, interruptores) |
 | 0.4.1 | Windows: notch minimizado quando fechado, animações novas, controles com a aparência da versão macOS e tela de boas-vindas |
 | 0.4.0 | Volume por app e por aba, opção de aparecer em capturas, e o app passa a abrir junto com o sistema por padrão |
@@ -233,7 +238,7 @@ Dá para compilar a versão Windows a partir do macOS ou do Linux (só não para
 
 ### Publicar
 
-Para publicar uma versão, atualize o arquivo `VERSION` e envie uma tag (`git tag v0.4.2 && git push origin v0.4.2`). O GitHub Actions compila as duas versões e cria a release com `OpenNotch-macOS.zip` e `OpenNotch-Windows.zip`. O texto da release vem de `.github/release-notes.md`.
+Para publicar uma versão, atualize o arquivo `VERSION` e envie uma tag (`git tag v0.5.0 && git push origin v0.5.0`). O GitHub Actions compila as duas versões e cria a release com `OpenNotch-macOS.zip` e `OpenNotch-Windows.zip`. O texto da release vem de `.github/release-notes.md`.
 
 Para uma versão notarizada (que abre em qualquer Mac sem aviso), é preciso uma conta paga do Apple Developer Program; o passo a passo está em `Scripts/notarize.sh`.
 
@@ -266,17 +271,19 @@ O macOS pede cada uma na primeira vez que o recurso é usado:
 - Nada é enviado para servidores do OpenNotch; ele não tem servidores.
 - O histórico de textos copiados e as anotações ficam só neste Mac, em `~/Library/Application Support/OpenNotch`.
 - A extensão do navegador conversa apenas com o app, em `127.0.0.1`.
+- Para mostrar a letra da música, o app envia o título, o artista e o álbum da faixa ao LRCLIB (lrclib.net), um banco aberto de letras. Desligar "Mostrar a letra com o notch fechado" interrompe essas consultas. As letras pertencem aos seus autores; o OpenNotch só as exibe, sem guardar.
 - Para buscar a capa de uma música quando a Automação não está liberada, o app consulta os serviços públicos do Spotify (pelo id da faixa) e do iTunes (por título e artista).
 
 ## Limitações conhecidas
 
+- A letra depende de a música ter letra sincronizada no LRCLIB e de o player informar a posição da faixa; em alguns players do Windows e em algumas abas de navegador ela pode não aparecer ou sair fora de tempo.
 - A capa é sempre estática: as capas animadas do Spotify (Canvas) e do Apple Music não são expostas aos outros apps.
 - O uso do limite do plano do Claude não é mostrado, porque não fica em nenhum arquivo local.
 - A detecção do Antigravity é aproximada e pode avisar "terminou" numa pausa longa do agente.
 - O indicador de volume e brilho aparece junto com o aviso padrão do macOS, sem substituí-lo.
 - Widgets do macOS não podem ser embutidos; os blocos da tela inicial são do próprio app.
 - A extensão do navegador ainda não suporta Safari nem Firefox, e é instalada manualmente.
-- A versão Windows ainda não tem gravação de tela, anotação de prints, tela inicial personalizável nem calendário.
+- Na versão Windows, a gravação de tela é mais simples (sem áudio, cerca de 8 quadros por segundo, até 3 minutos), o calendário não mostra eventos e os downloads não mostram porcentagem.
 - O app ainda não é notarizado; por isso o macOS pede a liberação manual na primeira abertura.
 - A atualização não é automática: o app avisa e a instalação é manual.
 - A gravação de tela pega só o monitor principal.
