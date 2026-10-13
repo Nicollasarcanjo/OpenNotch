@@ -189,6 +189,15 @@ Não existe suíte de testes automatizados. Enquanto não existir, "funciona" si
 
 Os dois apps saem sem assinatura reconhecida pelo sistema: o macOS e o Windows mostram um aviso na primeira abertura. As instruções para o usuário estão nas notas da release; mantenha-as lá.
 
+## Microsoft Store
+
+A versão Windows também é empacotada como MSIX para a Microsoft Store (`opennotch_windows/Package`). O passo a passo está em [docs/microsoft-store.md](docs/microsoft-store.md).
+
+- O mesmo código roda avulso e empacotado. Diferenças de comportamento passam por `Packaged.IsPackaged`; não espalhe verificações de "estou na loja?" pelos módulos.
+- Recurso novo que precise de uma capacidade do Windows deve declará-la em `AppxManifest.xml` e explicar o motivo no comentário ao lado.
+- Mudou o que o app lê, grava ou envia para fora? Atualize o [PRIVACY.md](PRIVACY.md) no mesmo PR: a loja exige que a política descreva o comportamento real.
+- O CI monta o pacote a cada push (isso valida o manifesto); a release o anexa como `OpenNotch-Store.msix`.
+
 ## O que não fazer
 
 - Copiar código, ícones, textos ou a marca de outros apps de notch. Tudo aqui é escrito do zero.

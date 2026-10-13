@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Manifesto do pacote MSIX (Microsoft Store). Os valores entre __ são preenchidos por build-msix.ps1:
+     a identidade vem do Partner Center (página "Identidade do produto") e a versão vem do arquivo VERSION. -->
+<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+         xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+         xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
+         xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+         IgnorableNamespaces="uap desktop rescap">
+
+  <Identity Name="__IDENTITY_NAME__" Publisher="__PUBLISHER__" Version="__VERSION__" ProcessorArchitecture="x64" />
+
+  <Properties>
+    <DisplayName>OpenNotch</DisplayName>
+    <PublisherDisplayName>__PUBLISHER_DISPLAY__</PublisherDisplayName>
+    <Logo>Assets\StoreLogo.png</Logo>
+  </Properties>
+
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.19041.0" MaxVersionTested="10.0.26100.0" />
+  </Dependencies>
+
+  <Resources>
+    <Resource Language="pt-BR" />
+    <Resource Language="en-US" />
+  </Resources>
+
+  <Applications>
+    <Application Id="OpenNotch" Executable="OpenNotch.exe" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements DisplayName="OpenNotch"
+                          Description="Painel no topo da tela com música, agentes de IA, apps abertos, captura de tela e mais."
+                          BackgroundColor="transparent"
+                          Square150x150Logo="Assets\Square150x150Logo.png"
+                          Square44x44Logo="Assets\Square44x44Logo.png">
+        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" />
+      </uap:VisualElements>
+      <Extensions>
+        <!-- Abrir junto com o Windows. Num app empacotado isso é uma tarefa de inicialização,
+             que o usuário também pode desligar no Gerenciador de Tarefas. -->
+        <desktop:Extension Category="windows.startupTask" Executable="OpenNotch.exe"
+                           EntryPoint="Windows.FullTrustApplication">
+          <desktop:StartupTask TaskId="OpenNotchStartup" Enabled="false" DisplayName="OpenNotch" />
+        </desktop:Extension>
+      </Extensions>
+    </Application>
+  </Applications>
+
+  <Capabilities>
+    <!-- Capa de música, letras e (fora da loja) aviso de versão nova. -->
+    <Capability Name="internetClient" />
+    <!-- App de desktop comum: lê arquivos de outras ferramentas, lista e encerra processos,
+         ajusta o volume de outros apps e captura a tela. -->
+    <rescap:Capability Name="runFullTrust" />
+  </Capabilities>
+</Package>

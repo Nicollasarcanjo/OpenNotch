@@ -469,13 +469,13 @@
                                 <TextBlock Style="{StaticResource RowLabel}" Text="{l:T 'Situação'}" />
                             </DockPanel>
                             <Border Style="{StaticResource Divider}" />
-                            <DockPanel Style="{StaticResource Row}">
+                            <DockPanel x:Name="UpdateButtons" Style="{StaticResource Row}">
                                 <Button Style="{StaticResource Push}" Content="{l:T 'Verificar agora'}" Click="OnCheckUpdate" />
                                 <Button x:Name="DownloadButton" Style="{StaticResource Prominent}" Margin="8,0,0,0"
                                         Content="{l:T 'Abrir página de download'}" Click="OnDownload" Visibility="Collapsed" />
                             </DockPanel>
                             <Border Style="{StaticResource Divider}" />
-                            <DockPanel Style="{StaticResource Row}">
+                            <DockPanel x:Name="AutoUpdateRow" Style="{StaticResource Row}">
                                 <CheckBox DockPanel.Dock="Right" Style="{StaticResource Switch}" IsChecked="{Binding UpdateAutoCheck}" />
                                 <TextBlock Style="{StaticResource RowLabel}" Text="{l:T 'Verificar atualizações automaticamente'}" />
                             </DockPanel>

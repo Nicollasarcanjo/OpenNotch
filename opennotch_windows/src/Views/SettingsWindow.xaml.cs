@@ -13,7 +13,6 @@ namespace OpenNotch;
 /// </summary>
 public partial class SettingsWindow : Window
 {
-    private const string RunKey = @"Software\Microsoft\Windows\CurrentVersion\Run";
     private readonly Updater _updater = Services.Instance.Updater;
     private readonly List<(string Id, string Glyph, string Title, FrameworkElement[] Panes)> _panes;
     private readonly System.Windows.Threading.DispatcherTimer _statusTimer = new() { Interval = TimeSpan.FromSeconds(2) };
@@ -66,9 +65,11 @@ public partial class SettingsWindow : Window
         Closed += (_, _) => _statusTimer.Stop();
 
         VersionText.Text = Updater.Current;
-        using (var key = Registry.CurrentUser.OpenSubKey(RunKey))
+        LoadStartup();
+        if (Packaged.IsPackaged)
         {
-            Startup.IsChecked = key?.GetValue("OpenNotch") != null;
+            // Pela loja não há o que verificar: as atualizações chegam por ela.
+            UpdateButtons.Visibility = AutoUpdateRow.Visibility = Visibility.Collapsed;
         }
         _updater.PropertyChanged += (_, _) => ShowUpdate();
         ShowUpdate();
@@ -380,17 +381,14 @@ public partial class SettingsWindow : Window
 
     private void ShowUpdate()
     {
-        UpdateStatus.Text = _updater.Status;
+        UpdateStatus.Text = Packaged.IsPackaged ? Loc.T("Atualizado pela Microsoft Store") : _updater.Status;
         DownloadButton.Visibility = _updater.Available ? Visibility.Visible : Visibility.Collapsed;
     }
 
-    private void OnStartup(object sender, RoutedEventArgs e)
-    {
-        using var key = Registry.CurrentUser.OpenSubKey(RunKey, writable: true);
-        if (key == null) return;
-        if (Startup.IsChecked == true && Environment.ProcessPath is { } path) key.SetValue("OpenNotch", $"\"{path}\"");
-        else key.DeleteValue("OpenNotch", throwOnMissingValue: false);
-    }
+    private async void LoadStartup() => Startup.IsChecked = await AutoStart.IsEnabled();
+
+    private async void OnStartup(object sender, RoutedEventArgs e) =>
+        Startup.IsChecked = await AutoStart.Set(Startup.IsChecked == true);
 
     private async void OnCheckUpdate(object sender, RoutedEventArgs e) => await _updater.Check();
     private void OnDownload(object sender, RoutedEventArgs e) => _updater.OpenDownloadPage();

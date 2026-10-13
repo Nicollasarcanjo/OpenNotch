@@ -390,3 +390,4 @@
 "A gravação de tela no Windows é simples: cerca de 8 quadros por segundo, sem áudio e até 3 minutos." = "Screen recording on Windows is basic: about 8 frames per second, no audio and up to 3 minutes.";
 "O verso que está sendo cantado aparece no notch fechado. A letra vem do LRCLIB (lrclib.net); para buscá-la, o app envia a esse serviço o título, o artista e o álbum da faixa. Nem toda música tem letra sincronizada." = "The line being sung shows on the closed notch. Lyrics come from LRCLIB (lrclib.net); to fetch them, the app sends that service the track's title, artist and album. Not every song has synced lyrics.";
 "Esconder ociosas após" = "Hide idle after";
+"Atualizado pela Microsoft Store" = "Updated through the Microsoft Store";

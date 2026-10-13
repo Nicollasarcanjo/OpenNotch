@@ -281,6 +281,8 @@ O macOS pede cada uma na primeira vez que o recurso é usado:
 
 ## Privacidade
 
+A política completa está em [PRIVACY.md](PRIVACY.md). Em resumo:
+
 - Nada é enviado para servidores do OpenNotch; ele não tem servidores.
 - O histórico de textos copiados e as anotações ficam só neste Mac, em `~/Library/Application Support/OpenNotch`.
 - A extensão do navegador conversa apenas com o app, em `127.0.0.1`.

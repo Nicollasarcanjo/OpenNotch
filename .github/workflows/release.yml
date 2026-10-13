@@ -56,8 +56,18 @@ jobs:
         shell: pwsh
         run: Compress-Archive -Path out/OpenNotch.exe -DestinationPath OpenNotch-Windows.zip
 
+      # Pacote para enviar à Microsoft Store. A identidade vem das variáveis do repositório
+      # (Settings › Secrets and variables › Actions › Variables); sem elas sai um pacote de teste.
+      - name: Montar o pacote da Microsoft Store
+        shell: pwsh
+        env:
+          MSIX_IDENTITY_NAME: ${{ vars.MSIX_IDENTITY_NAME }}
+          MSIX_PUBLISHER: ${{ vars.MSIX_PUBLISHER }}
+          MSIX_PUBLISHER_DISPLAY: ${{ vars.MSIX_PUBLISHER_DISPLAY }}
+        run: ./opennotch_windows/Package/build-msix.ps1 -Version ($env:GITHUB_REF_NAME -replace '^v', '')
+
       - name: Anexar à release
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release upload "$GITHUB_REF_NAME" OpenNotch-Windows.zip
+        run: gh release upload "$GITHUB_REF_NAME" OpenNotch-Windows.zip OpenNotch-Store.msix

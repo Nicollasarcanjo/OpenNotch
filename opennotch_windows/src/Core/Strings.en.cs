@@ -64,6 +64,7 @@ internal static class Strings
         ["Atalhos de captura do macOS"] = "macOS capture shortcuts",
         ["Atalhos do OpenNotch"] = "OpenNotch shortcuts",
         ["Ativar atalhos do OpenNotch"] = "Enable OpenNotch shortcuts",
+        ["Atualizado pela Microsoft Store"] = "Updated through the Microsoft Store",
         ["Atualização"] = "Refresh",
         ["Atualização disponível"] = "Update available",
         ["Atualizações"] = "Updates",

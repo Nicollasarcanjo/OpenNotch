@@ -21,6 +21,9 @@ jobs:
         with:
           dotnet-version: "10.0.x"
       - run: dotnet build opennotch_windows/OpenNotch.Windows.csproj -c Release
+      - name: Montar o pacote MSIX (valida o manifesto)
+        shell: pwsh
+        run: ./opennotch_windows/Package/build-msix.ps1 -Version 0.0.1
 
   traducoes:
     runs-on: ubuntu-latest

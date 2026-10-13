@@ -94,7 +94,9 @@ public sealed class Settings : Observable
     public bool ModSystem { get => _modSystem; set => Change(ref _modSystem, value); }
 
     // Letra da música
-    private bool _lyricsEnabled = true;
+    // Na versão da loja a letra vem desligada: ela exibe conteúdo de um serviço de terceiros,
+    // e a decisão de usá-lo fica com o usuário.
+    private bool _lyricsEnabled = !Packaged.IsPackaged;
     public bool LyricsEnabled { get => _lyricsEnabled; set => Change(ref _lyricsEnabled, value); }
     private string _lyricsFont = "system";
     public string LyricsFont { get => _lyricsFont; set => Change(ref _lyricsFont, value); }

@@ -1,5 +1,4 @@
 using System.Windows;
-using Microsoft.Win32;
 
 namespace OpenNotch;
 
@@ -9,8 +8,6 @@ namespace OpenNotch;
 /// </summary>
 public partial class OnboardingWindow : Window
 {
-    private const string RunKey = @"Software\Microsoft\Windows\CurrentVersion\Run";
-
     public OnboardingWindow()
     {
         InitializeComponent();
@@ -30,27 +27,16 @@ public partial class OnboardingWindow : Window
         {
             // sem o ícone, a tela abre só com o texto
         }
-        using var key = Registry.CurrentUser.OpenSubKey(RunKey);
-        Startup.IsChecked = key?.GetValue("OpenNotch") != null;
+        LoadStartup();
         SourceInitialized += (_, _) =>
             Native.UseDarkTitleBar(new System.Windows.Interop.WindowInteropHelper(this).Handle);
     }
 
-    private void OnDone(object sender, RoutedEventArgs e)
+    private async void LoadStartup() => Startup.IsChecked = await AutoStart.IsEnabled();
+
+    private async void OnDone(object sender, RoutedEventArgs e)
     {
-        try
-        {
-            using var key = Registry.CurrentUser.OpenSubKey(RunKey, writable: true);
-            if (key != null)
-            {
-                if (Startup.IsChecked == true && Environment.ProcessPath is { } path) key.SetValue("OpenNotch", $"\"{path}\"");
-                else key.DeleteValue("OpenNotch", throwOnMissingValue: false);
-            }
-        }
-        catch
-        {
-            // sem acesso ao registro: a opção pode ser mudada depois nas configurações
-        }
+        await AutoStart.Set(Startup.IsChecked == true);
         Settings.Current.OnboardingDone = true;
         Close();
     }

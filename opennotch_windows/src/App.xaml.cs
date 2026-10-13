@@ -71,7 +71,8 @@ public partial class App : Application
         }
         if (!Settings.Current.OnboardingDone) new OnboardingWindow().Show();
 
-        if (Settings.Current.UpdateAutoCheck)
+        // Pela loja, quem atualiza o app é a própria loja.
+        if (Settings.Current.UpdateAutoCheck && !Packaged.IsPackaged)
         {
             var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(8) };
             timer.Tick += async (_, _) => { timer.Stop(); await _services.Updater.Check(); };
@@ -83,19 +84,11 @@ public partial class App : Application
     /// O OpenNotch vem configurado para abrir junto com o Windows. Isso é feito uma única vez:
     /// se o usuário desligar depois nas configurações, a escolha dele é respeitada.
     /// </summary>
-    private static void EnableStartupOnce()
+    private static async void EnableStartupOnce()
     {
         if (Settings.Current.StartupConfigured) return;
         Settings.Current.StartupConfigured = true;
-        try
-        {
-            using var key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", writable: true);
-            if (key != null && Environment.ProcessPath is { } path) key.SetValue("OpenNotch", $"\"{path}\"");
-        }
-        catch
-        {
-            // sem acesso ao registro: o app só não abre sozinho
-        }
+        await AutoStart.Set(true);
     }
 
     protected override void OnExit(ExitEventArgs e)
