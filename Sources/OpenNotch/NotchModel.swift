@@ -69,6 +69,10 @@ final class NotchModel: ObservableObject {
     @Published var keepOpen = false
     /// Aviso mostrado na aba de agentes quando uma tarefa termina.
     @Published var banner: String?
+    /// Há um app em tela cheia nesta tela: o notch não reage ao mouse (ver ScreenNotch.updateFullscreen).
+    var passThrough = false
+    /// Em tela cheia com o modo "esconder", avisos não abrem o notch.
+    var blocksFlash = false
 
     var onOpenChange: ((Bool) -> Void)?
     var onOpenSettings: ((SettingsPane?) -> Void)?
@@ -81,6 +85,7 @@ final class NotchModel: ObservableObject {
     }
 
     func hover(_ inside: Bool) {
+        let inside = inside && !passThrough
         isHovering = inside
         pending?.cancel()
         let prefs = Prefs.shared
@@ -112,6 +117,7 @@ final class NotchModel: ObservableObject {
 
     /// Abre sozinho por alguns segundos (ex.: um agente terminou) e fecha se ninguém interagir.
     func flash(tab: NotchTab, seconds: TimeInterval) {
+        guard !blocksFlash else { return }
         let wasOpen = isOpen
         open(tab: tab)
         guard !wasOpen else { return }   // já estava em uso: não fecha na cara do usuário

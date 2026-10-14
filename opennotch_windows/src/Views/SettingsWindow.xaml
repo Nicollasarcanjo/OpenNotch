@@ -64,6 +64,18 @@
                     <TextBlock Style="{StaticResource Footer}"
                                Text="{l:T 'Desligado, o notch fica minimizado no topo da tela e só aparece ao passar o mouse.'}" />
 
+                    <TextBlock Style="{StaticResource SectionTitle}" Text="{l:T 'Apps em tela cheia'}" />
+                    <Border Style="{StaticResource Section}">
+                        <DockPanel Style="{StaticResource Row}">
+                            <Border DockPanel.Dock="Right" Background="#3A3A3C" CornerRadius="7">
+                                <StackPanel x:Name="FullscreenChoice" Orientation="Horizontal" />
+                            </Border>
+                            <TextBlock Style="{StaticResource RowLabel}" Text="{l:T 'Notch sobre a tela cheia'}" />
+                        </DockPanel>
+                    </Border>
+                    <TextBlock Style="{StaticResource Footer}"
+                               Text="{l:T 'Em uso: aparece só com letra ou avisos e não recebe cliques, para não tirar o foco de jogos e vídeos.'}" />
+
                     <TextBlock Style="{StaticResource SectionTitle}" Text="{l:T 'Monitores'}" />
                     <Border Style="{StaticResource Section}">
                         <DockPanel Style="{StaticResource Row}">

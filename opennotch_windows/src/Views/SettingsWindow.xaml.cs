@@ -355,6 +355,8 @@ public partial class SettingsWindow : Window
             settings.Language = value;
             LanguageNote.Visibility = Visibility.Visible;
         }, (Loc.T("Igual ao do sistema"), ""), ("Português", "pt-BR"), ("English", "en"));
+        Choice(FullscreenChoice, settings.FullscreenMode, value => settings.FullscreenMode = value,
+            (Loc.T("Em uso"), "passive"), (Loc.T("Esconder"), "hidden"), (Loc.T("Normal"), "normal"));
         Choice(ClaudeWindowChoice, settings.AgentsClaudeWindow, value => settings.AgentsClaudeWindow = value,
             (Loc.T("200 mil tokens"), 200_000), (Loc.T("1 milhão de tokens"), 1_000_000));
         Choice(HideIdleChoice, settings.AgentsHideIdleHours, value => settings.AgentsHideIdleHours = value,

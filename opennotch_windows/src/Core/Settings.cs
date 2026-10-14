@@ -38,6 +38,12 @@ public sealed class Settings : Observable
     public double HoverDelay { get => _hoverDelay; set => Change(ref _hoverDelay, value); }
     private double _closeDelay = 0.35;
     public double CloseDelay { get => _closeDelay; set => Change(ref _closeDelay, value); }
+    private string _fullscreenMode = "passive";
+    /// <summary>
+    /// Com um app em tela cheia: "passive" mostra o notch só quando está em uso (letra, avisos),
+    /// sem receber mouse nem clique; "hidden" esconde; "normal" funciona como fora da tela cheia.
+    /// </summary>
+    public string FullscreenMode { get => _fullscreenMode; set => Change(ref _fullscreenMode, value); }
     private bool _displayAllScreens = true;
     public bool DisplayAllScreens { get => _displayAllScreens; set => Change(ref _displayAllScreens, value); }
     private bool _showClosedIndicators;

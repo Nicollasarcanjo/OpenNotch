@@ -32,9 +32,12 @@ final class ScreenNotch {
     let model = NotchModel()
     let panel: NotchPanel
     private(set) var screen: NSScreen
+    private let services: Services
+    private(set) var isFullscreen = false
 
     init(screen: NSScreen, services: Services) {
         self.screen = screen
+        self.services = services
         panel = NotchPanel(contentRect: .zero, styleMask: [.borderless, .nonactivatingPanel],
                            backing: .buffered, defer: false)
         panel.isOpaque = false
@@ -78,6 +81,28 @@ final class ScreenNotch {
     /// Configurações › Captura de tela faz ele aparecer.
     func applyCaptureVisibility() {
         panel.sharingType = Prefs.shared.bool(.captureShowNotch) ? .readOnly : .none
+    }
+
+    /// Com um jogo ou vídeo em tela cheia, o notch não pode tomar o clique nem abrir ao passar
+    /// o mouse. No modo "em uso" ele só aparece quando tem algo a mostrar (letra, aviso, gravação).
+    func updateFullscreen(_ fullscreen: Bool) {
+        let mode = Prefs.shared.string(.fullscreenMode)
+        let active = fullscreen && mode != "normal"
+        if active != isFullscreen {
+            isFullscreen = active
+            model.passThrough = active
+            panel.ignoresMouseEvents = active
+            if active, model.isOpen { model.close() }
+        }
+        model.blocksFlash = active && mode == "hidden"
+        let prefs = Prefs.shared
+        let inUse = model.isOpen
+            || services.capture.recordingSince != nil
+            || prefs.bool(.modMusic) && prefs.bool(.lyricsEnabled) && services.music.isPlaying && !services.lyrics.line.isEmpty
+        let alpha: CGFloat = !active || mode == "passive" && inUse ? 1 : 0
+        if panel.alphaValue != alpha {
+            NSAnimationContext.runAnimationGroup { $0.duration = 0.18; panel.animator().alphaValue = alpha }
+        }
     }
 
     func update(screen: NSScreen) {
@@ -137,6 +162,7 @@ final class NotchController {
     private var prefsObserver: AnyCancellable?
     private var showOnAllScreens = Prefs.shared.bool(.displayAllScreens)
     private var clickMonitor: Any?
+    private var fullscreenTimer: Timer?
     private lazy var settings = SettingsWindowController(services: services)
     private lazy var onboarding = OnboardingWindowController(services: services)
 
@@ -182,6 +208,11 @@ final class NotchController {
             }
         }
         rebuild()
+        if !Demo.enabled {
+            let timer = Timer(timeInterval: 0.5, repeats: true) { [weak self] _ in self?.checkFullscreen() }
+            RunLoop.main.add(timer, forMode: .common)
+            fullscreenTimer = timer
+        }
 
         if !Prefs.shared.bool(.onboardingDone), !Demo.enabled {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { [weak self] in self?.onboarding.show() }
@@ -209,6 +240,33 @@ final class NotchController {
         }
         while notches.count > screens.count {
             notches.removeLast().close()
+        }
+    }
+
+    /// Telas em que o app da frente tem uma janela do tamanho da tela inteira (tela cheia nativa,
+    /// jogos e players sem borda). Só lê posição e dono das janelas, o que não exige permissão.
+    private func checkFullscreen() {
+        guard let front = NSWorkspace.shared.frontmostApplication,
+              front.processIdentifier != ProcessInfo.processInfo.processIdentifier,
+              let list = CGWindowListCopyWindowInfo([.optionOnScreenOnly, .excludeDesktopElements], kCGNullWindowID)
+                as? [[String: Any]] else {
+            notches.forEach { $0.updateFullscreen(false) }
+            return
+        }
+        let primaryHeight = NSScreen.screens.first?.frame.height ?? 0
+        let frontFrames: [CGRect] = list.compactMap { info in
+            guard (info[kCGWindowOwnerPID as String] as? pid_t) == front.processIdentifier,
+                  (info[kCGWindowLayer as String] as? Int) == 0,
+                  let dict = info[kCGWindowBounds as String] as? NSDictionary,
+                  let rect = CGRect(dictionaryRepresentation: dict) else { return nil }
+            return rect
+        }
+        for notch in notches {
+            // As janelas vêm com origem no canto superior esquerdo da tela principal.
+            let f = notch.screen.frame
+            let screenRect = CGRect(x: f.minX, y: primaryHeight - f.maxY, width: f.width, height: f.height)
+            let covers = frontFrames.contains { $0.insetBy(dx: -1, dy: -1).contains(screenRect) }
+            notch.updateFullscreen(covers)
         }
     }
 

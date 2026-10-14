@@ -10,7 +10,7 @@ final class Prefs: ObservableObject {
         case homeBlocks, homeApps, homeGif, homeSlides, homeSlideInterval, homeMediaWidth
         // Geral
         case hoverOpens, hoverDelay, closeDelay, showMenuBarIcon, hotkeysEnabled, hudVolume, hudBrightness
-        case displayAllScreens, onboardingDone, updateAutoCheck, language, launchAtLoginConfigured
+        case fullscreenMode, displayAllScreens, onboardingDone, updateAutoCheck, language, launchAtLoginConfigured
         // Módulos (abas)
         case modMusic, modCalendar, modAgents, modApps, modMixer, modCapture, modTray, modDownloads, downloadsNotify, modClipboard, modTimers, modNotes, modSystem
         // Música
@@ -37,7 +37,7 @@ final class Prefs: ObservableObject {
 
     private static let defaults: [Key: Any] = [
         .hoverOpens: true, .hoverDelay: 0.12, .closeDelay: 0.35, .showMenuBarIcon: true, .hotkeysEnabled: true, .hudVolume: true, .hudBrightness: true,
-        .displayAllScreens: true, .onboardingDone: false, .updateAutoCheck: true, .language: "", .launchAtLoginConfigured: false,
+        .fullscreenMode: "passive", .displayAllScreens: true, .onboardingDone: false, .updateAutoCheck: true, .language: "", .launchAtLoginConfigured: false,
         .modMusic: true, .modCalendar: true, .modAgents: true, .modApps: true, .modMixer: true, .modCapture: true, .modTray: true, .modDownloads: true, .downloadsNotify: true, .modClipboard: true,
         .modTimers: true, .modNotes: true, .modSystem: true,
         .musicSpotify: true, .musicAppleMusic: true, .musicBrowser: true,

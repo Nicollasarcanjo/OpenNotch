@@ -49,6 +49,58 @@ internal static partial class Native
     [DllImport("user32.dll")]
     public static extern bool SetWindowDisplayAffinity(IntPtr hWnd, uint affinity);
 
+    // MARK: Tela cheia
+
+    public const int WS_EX_TRANSPARENT = 0x00000020, WS_EX_NOACTIVATE = 0x08000000;
+    private const uint SWP_NOSIZE = 0x0001, SWP_NOMOVE = 0x0002, SWP_NOACTIVATE = 0x0010, SWP_NOOWNERZORDER = 0x0200;
+    private static readonly IntPtr HWND_TOPMOST = new(-1);
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct Rect { public int Left, Top, Right, Bottom; }
+
+    [DllImport("user32.dll")]
+    private static extern IntPtr GetForegroundWindow();
+
+    [DllImport("user32.dll")]
+    private static extern bool GetWindowRect(IntPtr hWnd, out Rect rect);
+
+    [DllImport("user32.dll")]
+    private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
+
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+    private static extern int GetClassName(IntPtr hWnd, System.Text.StringBuilder name, int size);
+
+    [DllImport("user32.dll")]
+    private static extern bool SetWindowPos(IntPtr hWnd, IntPtr after, int x, int y, int width, int height, uint flags);
+
+    [DllImport("shell32.dll")]
+    private static extern int SHQueryUserNotificationState(out int state);
+
+    /// <summary>
+    /// A janela em primeiro plano ocupa a tela inteira (jogo, vídeo, apresentação)? A área de
+    /// trabalho e as janelas do próprio OpenNotch não contam.
+    /// </summary>
+    public static bool IsFullscreenOn(System.Drawing.Rectangle screen)
+    {
+        var window = GetForegroundWindow();
+        if (window == IntPtr.Zero) return false;
+        GetWindowThreadProcessId(window, out var pid);
+        if (pid == Environment.ProcessId) return false;
+        var name = new System.Text.StringBuilder(64);
+        GetClassName(window, name, name.Capacity);
+        if (name.ToString() is "Progman" or "WorkerW" or "Shell_TrayWnd") return false;
+        if (GetWindowRect(window, out var r)
+            && r.Left <= screen.Left && r.Top <= screen.Top && r.Right >= screen.Right && r.Bottom >= screen.Bottom)
+            return true;
+        // Tela cheia exclusiva (Direct3D): o tamanho da janela pode não bater com o da tela.
+        return SHQueryUserNotificationState(out var state) == 0 && state == 3 /* QUNS_RUNNING_D3D_FULL_SCREEN */
+            && System.Windows.Forms.Screen.FromHandle(window).Bounds == screen;
+    }
+
+    /// <summary>Recoloca a janela acima das outras "sempre visíveis" sem tirar o foco do app atual.</summary>
+    public static void KeepOnTop(IntPtr handle) =>
+        SetWindowPos(handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE | SWP_NOOWNERZORDER);
+
     [DllImport("kernel32.dll")]
     public static extern bool GetSystemTimes(out long idle, out long kernel, out long user);
 

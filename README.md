@@ -192,6 +192,10 @@ Ao mudar o volume ou o brilho, um indicador aparece ao lado do notch.
 
 O painel aparece em todos os monitores conectados, cada um com o seu estado aberto ou fechado. Dá para deixar só na tela do MacBook.
 
+### Apps em tela cheia
+
+Com um jogo, vídeo ou apresentação em tela cheia, o notch não abre ao passar o mouse e não recebe cliques, para não tirar o foco do app (clicar nele minimizaria um jogo, por exemplo). Por padrão ele só aparece por cima quando está em uso: letra da música, aviso de agente ou gravação. Nas configurações dá para escolher entre **Em uso**, **Esconder** e **Normal**.
+
 ### Configurações
 
 <img src="docs/screenshots/configuracoes.png" width="560" alt="Janela de configurações no painel Módulos">
@@ -210,6 +214,7 @@ Também há:
 
 | Versão | O que mudou |
 |---|---|
+| 0.5.4 | Apps em tela cheia: o notch não abre nem recebe clique por cima de jogos e vídeos, e aparece só quando está em uso (letra, avisos). Corrige jogo minimizado ao clicar no topo da tela no Windows |
 | 0.5.3 | Novo nome na Microsoft Store: "OpenNotch - Notch for Windows" |
 | 0.5.2 | Pacote para a Microsoft Store e política de privacidade |
 | 0.5.1 | A letra passa a ficar na mesma linha do notch, sem abrir espaço embaixo. Windows: ajustes de aparência e imagens no README |
@@ -253,7 +258,7 @@ Dá para compilar a versão Windows a partir do macOS ou do Linux (só não para
 
 ### Publicar
 
-Para publicar uma versão, atualize o arquivo `VERSION` e envie uma tag (`git tag v0.5.3 && git push origin v0.5.3`). O GitHub Actions compila as duas versões e cria a release com `OpenNotch-macOS.zip` e `OpenNotch-Windows.zip`. O texto da release vem de `.github/release-notes.md`.
+Para publicar uma versão, atualize o arquivo `VERSION` e envie uma tag (`git tag v0.5.4 && git push origin v0.5.4`). O GitHub Actions compila as duas versões e cria a release com `OpenNotch-macOS.zip` e `OpenNotch-Windows.zip`. O texto da release vem de `.github/release-notes.md`.
 
 Para uma versão notarizada (que abre em qualquer Mac sem aviso), é preciso uma conta paga do Apple Developer Program; o passo a passo está em `Scripts/notarize.sh`.
 
@@ -301,6 +306,7 @@ A política completa está em [PRIVACY.md](PRIVACY.md). Em resumo:
 - Widgets do macOS não podem ser embutidos; os blocos da tela inicial são do próprio app.
 - A extensão do navegador ainda não suporta Safari nem Firefox, e é instalada manualmente.
 - Na versão Windows, a gravação de tela é mais simples (sem áudio, cerca de 8 quadros por segundo, até 3 minutos), o calendário não mostra eventos e os downloads não mostram porcentagem.
+- Jogos em tela cheia exclusiva (não "janela sem borda") desenham por cima de tudo no Windows; nesse modo o notch não aparece, mas também não atrapalha o clique.
 - O app ainda não é notarizado; por isso o macOS pede a liberação manual na primeira abertura.
 - A atualização não é automática: o app avisa e a instalação é manual.
 - A gravação de tela pega só o monitor principal.

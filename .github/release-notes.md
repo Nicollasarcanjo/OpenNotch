@@ -1,6 +1,7 @@
 ## Novidades
 
-- Pacote da Microsoft Store (`OpenNotch-Store.msix`) com o novo nome na loja: **OpenNotch - Notch for Windows**. Esse arquivo é só para o envio à loja; para instalar, use os arquivos da tabela abaixo.
+- Apps em tela cheia: o notch não abre ao passar o mouse nem recebe cliques por cima de jogos e vídeos (no Windows, clicar nele podia minimizar o jogo). Por padrão ele só aparece quando está em uso, com a letra da música ou um aviso. A opção fica em Configurações › Geral › Apps em tela cheia (Em uso, Esconder ou Normal).
+- Pacote da Microsoft Store (`OpenNotch-Store.msix`) com o nome **OpenNotch - Notch for Windows**. Esse arquivo é só para o envio à loja; para instalar, use os arquivos da tabela abaixo.
 
 ## Qual arquivo baixar
 

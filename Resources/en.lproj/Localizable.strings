@@ -185,6 +185,12 @@
 "Mostrar capa e barrinhas enquanto toca" = "Show artwork and bars while playing";
 "Mostrar cliques do mouse no vídeo" = "Show mouse clicks in the video";
 "Mostrar em todos os monitores" = "Show on all displays";
+"Apps em tela cheia" = "Full-screen apps";
+"Notch sobre a tela cheia" = "Notch over full screen";
+"Em uso" = "When in use";
+"Esconder" = "Hide";
+"Normal" = "Normal";
+"Em uso: aparece só com letra ou avisos e não recebe cliques, para não tirar o foco de jogos e vídeos." = "When in use: shows only for lyrics or alerts and ignores clicks, so it never takes focus away from games and videos.";
 "Mostrar eventos do calendário" = "Show calendar events";
 "Mostrar no Finder" = "Show in Finder";
 "Mostrar no notch a música do navegador" = "Show browser music on the notch";

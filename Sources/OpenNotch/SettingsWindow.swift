@@ -184,6 +184,19 @@ private struct GeneralPane: View {
                           range: 0.1...2, step: 0.05, unit: "s")
         }
         Section {
+            Picker("Notch sobre a tela cheia", selection: Binding(get: { prefs.string(.fullscreenMode) },
+                                                                  set: { prefs.set($0, for: .fullscreenMode) })) {
+                Text("Em uso").tag("passive")
+                Text("Esconder").tag("hidden")
+                Text("Normal").tag("normal")
+            }
+            .pickerStyle(.segmented)
+        } header: {
+            Text("Apps em tela cheia")
+        } footer: {
+            Text("Em uso: aparece só com letra ou avisos e não recebe cliques, para não tirar o foco de jogos e vídeos.")
+        }
+        Section {
             Toggle("Mostrar o volume ao mudar", isOn: prefs.boolBinding(.hudVolume))
             Toggle("Mostrar o brilho ao mudar", isOn: prefs.boolBinding(.hudBrightness))
         } header: {

@@ -29,8 +29,14 @@ public partial class NotchWindow : Window
     private readonly List<TabInfo> _tabs;
     private readonly Dictionary<NotchTab, UserControl> _views = [];
     private readonly DispatcherTimer _openTimer = new(), _closeTimer = new(), _flashTimer = new();
+    private readonly DispatcherTimer _fullscreenTimer = new() { Interval = TimeSpan.FromMilliseconds(500) };
     private NotchTab _tab = NotchTab.Home;
     private bool _hovering;
+    /// <summary>Há um app em tela cheia nesta tela e o modo de tela cheia não é "normal".</summary>
+    private bool _fullscreen;
+    /// <summary>O notch fechado está mostrando algo (letra, gravação, indicadores).</summary>
+    private bool _inUse;
+    private IntPtr _handle;
 
     public bool IsOpen { get; private set; }
     /// <summary>Pede a janela de configurações; o texto é o painel a mostrar (ou null).</summary>
@@ -62,6 +68,7 @@ public partial class NotchWindow : Window
         _openTimer.Tick += (_, _) => { _openTimer.Stop(); Open(); };
         _closeTimer.Tick += (_, _) => { _closeTimer.Stop(); if (!_hovering && !IsTyping) Close(animated: true); };
         _flashTimer.Tick += (_, _) => { _flashTimer.Stop(); if (!_hovering && !IsTyping) Close(animated: true); };
+        _fullscreenTimer.Tick += (_, _) => CheckFullscreen();
 
         Root.MouseEnter += (_, _) => Hover(true);
         Root.MouseLeave += (_, _) => Hover(false);
@@ -80,6 +87,7 @@ public partial class NotchWindow : Window
         _services.Lyrics.PropertyChanged += OnChanged;
         Closed += (_, _) =>
         {
+            _fullscreenTimer.Stop();
             Settings.Current.PropertyChanged -= OnChanged;
             _services.Music.PropertyChanged -= OnChanged;
             _services.Agents.PropertyChanged -= OnChanged;
@@ -96,10 +104,11 @@ public partial class NotchWindow : Window
 
     private void OnSourceInitialized(object? sender, EventArgs e)
     {
-        var handle = new WindowInteropHelper(this).Handle;
+        var handle = _handle = new WindowInteropHelper(this).Handle;
         // Janela de ferramenta: não aparece no Alt+Tab nem na barra de tarefas.
         var style = Native.GetWindowLongPtr(handle, Native.GWL_EXSTYLE).ToInt64();
         Native.SetWindowLongPtr(handle, Native.GWL_EXSTYLE, new IntPtr(style | Native.WS_EX_TOOLWINDOW));
+        if (!Demo.Enabled) _fullscreenTimer.Start();
 
         ApplyCaptureVisibility();
 
@@ -127,6 +136,7 @@ public partial class NotchWindow : Window
         if (sender is Settings)
         {
             if (e.PropertyName == nameof(Settings.CaptureShowNotch)) ApplyCaptureVisibility();
+            if (e.PropertyName == nameof(Settings.FullscreenMode)) CheckFullscreen();
             BuildTabs();
         }
         UpdateEars();
@@ -179,6 +189,7 @@ public partial class NotchWindow : Window
 
     private void Hover(bool inside)
     {
+        if (_fullscreen) inside = false;   // em tela cheia o notch não reage ao mouse
         _hovering = inside;
         _openTimer.Stop();
         _closeTimer.Stop();
@@ -201,6 +212,7 @@ public partial class NotchWindow : Window
         if (tab is { } wanted) Select(wanted);
         if (IsOpen) return;
         IsOpen = true;
+        ApplyFullscreenVisibility();
         ClosedView.Visibility = Visibility.Collapsed;
         OpenView.Visibility = Visibility.Visible;
         ShowTab();
@@ -257,6 +269,7 @@ public partial class NotchWindow : Window
     /// <summary>Abre sozinho por alguns segundos (ex.: um agente terminou) e fecha se ninguém interagir.</summary>
     public void Flash(NotchTab tab, double seconds)
     {
+        if (_fullscreen && Settings.Current.FullscreenMode == "hidden") return;
         var wasOpen = IsOpen;
         Open(tab);
         if (wasOpen) return;   // já estava em uso: não fecha na cara do usuário
@@ -266,6 +279,8 @@ public partial class NotchWindow : Window
 
     public void OpenFromKeyboard(NotchTab? tab)
     {
+        // Ativar a janela tiraria o foco do jogo ou vídeo em tela cheia (e às vezes o minimiza).
+        if (_fullscreen) return;
         Open(tab);
         Activate();
     }
@@ -302,6 +317,8 @@ public partial class NotchWindow : Window
         LyricLine.Text = lyric;
         LyricLine.Visibility = lyric.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
         var indicators = showIndicators || lyric.Length > 0;
+        _inUse = indicators;
+        ApplyFullscreenVisibility();
 
         // Com a letra, a capa da música aparece sempre: o verso fica entre ela e o indicador da direita.
         EarArtwork.Source = music && !recorder.IsBusy && (showIndicators || lyric.Length > 0) ? _services.Music.Artwork : null;
@@ -325,6 +342,44 @@ public partial class NotchWindow : Window
                             Math.Max(WithIndicators.Height, LyricLine.TextHeight + 8));
         }
         Resize(size, animated ? 260 : 0, new CubicEase { EasingMode = EasingMode.EaseInOut });
+    }
+
+    // MARK: Tela cheia
+
+    /// <summary>
+    /// Com um jogo ou vídeo em tela cheia, o notch não pode roubar o clique: clicar nele ativaria
+    /// esta janela e o jogo perderia o foco (ou seria minimizado). Por isso ele passa a ignorar
+    /// o mouse e só aparece quando tem algo a mostrar.
+    /// </summary>
+    private void CheckFullscreen()
+    {
+        if (_handle == IntPtr.Zero) return;
+        var fullscreen = Settings.Current.FullscreenMode != "normal" && Native.IsFullscreenOn(_screen.Bounds);
+        if (fullscreen != _fullscreen)
+        {
+            _fullscreen = fullscreen;
+            var style = Native.GetWindowLongPtr(_handle, Native.GWL_EXSTYLE).ToInt64();
+            const long passThrough = Native.WS_EX_TRANSPARENT | Native.WS_EX_NOACTIVATE;
+            Native.SetWindowLongPtr(_handle, Native.GWL_EXSTYLE,
+                new IntPtr(fullscreen ? style | passThrough : style & ~passThrough));
+            if (fullscreen)
+            {
+                _hovering = false;
+                _openTimer.Stop();
+                if (IsOpen && !_flashTimer.IsEnabled) Close(animated: false);
+            }
+            ApplyFullscreenVisibility();
+        }
+        // Jogos em janela sem borda ficam por cima; o notch volta para a frente enquanto aparece.
+        if (_fullscreen && Root.Opacity > 0) Native.KeepOnTop(_handle);
+    }
+
+    private void ApplyFullscreenVisibility()
+    {
+        var visible = !_fullscreen
+            || Settings.Current.FullscreenMode == "passive" && (IsOpen || _inUse);
+        Root.BeginAnimation(OpacityProperty, Fade(visible ? 1 : 0, 180));
+        if (visible && _fullscreen) Native.KeepOnTop(_handle);
     }
 
     // MARK: Arrastar arquivos

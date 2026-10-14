@@ -39,6 +39,7 @@ Não deixe uma versão "para depois" sem registrar. A tabela é a fonte da verda
 |---|---|---|---|
 | Painel no topo, abre ao passar o mouse | Sim | Sim | |
 | Um painel por monitor | Sim | Sim | |
+| Modo tela cheia (sem mouse/clique, só aparece em uso) | Sim | Sim | Detecção: janela do app da frente do tamanho da tela. Windows também usa o estado de tela cheia exclusiva (D3D), em que nada aparece por cima |
 | Indicadores com o painel fechado | Sim | Opcional | No Windows o padrão é ficar minimizado (um risco no topo), porque lá não há notch físico e a barra ocuparia espaço; a opção "Mostrar indicadores com o notch fechado" liga os indicadores |
 | Música: mostrar e controlar | Sim | Sim | macOS: Spotify, Apple Music e extensão de navegador. Windows: controles de mídia do sistema, que já cobrem os navegadores |
 | Letra da música no notch fechado (fonte, cor e borda configuráveis) | Sim | Sim | Mesma fonte (LRCLIB) e mesmas opções. Posição da faixa: AppleScript/extensão no macOS, controles de mídia no Windows |
