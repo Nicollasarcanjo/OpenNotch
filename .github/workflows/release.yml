@@ -65,7 +65,7 @@ jobs:
           MSIX_IDENTITY_NAME: ${{ vars.MSIX_IDENTITY_NAME || 'nicollasarc.MacBookNotch-OpenNotch' }}
           MSIX_PUBLISHER: ${{ vars.MSIX_PUBLISHER || 'CN=493F6A5E-BA93-485B-AD4B-A32C77FBDD39' }}
           MSIX_PUBLISHER_DISPLAY: ${{ vars.MSIX_PUBLISHER_DISPLAY || 'nicollasarc' }}
-          MSIX_DISPLAY_NAME: ${{ vars.MSIX_DISPLAY_NAME || 'MacBook Notch - OpenNotch' }}
+          MSIX_DISPLAY_NAME: ${{ vars.MSIX_DISPLAY_NAME || 'OpenNotch - Notch for Windows' }}
         run: ./opennotch_windows/Package/build-msix.ps1 -Version ($env:GITHUB_REF_NAME -replace '^v', '')
 
       - name: Anexar à release

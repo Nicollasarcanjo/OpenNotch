@@ -210,6 +210,7 @@ Também há:
 
 | Versão | O que mudou |
 |---|---|
+| 0.5.3 | Novo nome na Microsoft Store: "OpenNotch - Notch for Windows" |
 | 0.5.2 | Pacote para a Microsoft Store e política de privacidade |
 | 0.5.1 | A letra passa a ficar na mesma linha do notch, sem abrir espaço embaixo. Windows: ajustes de aparência e imagens no README |
 | 0.5.0 | Letra da música no notch fechado (macOS e Windows). Windows ganha o que faltava: tela inicial personalizável, gravação de tela, anotação de prints, Antigravity e ferramentas cadastradas, volume por aba e calendário |
@@ -252,7 +253,7 @@ Dá para compilar a versão Windows a partir do macOS ou do Linux (só não para
 
 ### Publicar
 
-Para publicar uma versão, atualize o arquivo `VERSION` e envie uma tag (`git tag v0.5.2 && git push origin v0.5.2`). O GitHub Actions compila as duas versões e cria a release com `OpenNotch-macOS.zip` e `OpenNotch-Windows.zip`. O texto da release vem de `.github/release-notes.md`.
+Para publicar uma versão, atualize o arquivo `VERSION` e envie uma tag (`git tag v0.5.3 && git push origin v0.5.3`). O GitHub Actions compila as duas versões e cria a release com `OpenNotch-macOS.zip` e `OpenNotch-Windows.zip`. O texto da release vem de `.github/release-notes.md`.
 
 Para uma versão notarizada (que abre em qualquer Mac sem aviso), é preciso uma conta paga do Apple Developer Program; o passo a passo está em `Scripts/notarize.sh`.
 

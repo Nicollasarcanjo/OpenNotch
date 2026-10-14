@@ -14,7 +14,7 @@ O pacote da loja é o `OpenNotch-Store.msix`, gerado junto com cada release. Est
    | `MSIX_PUBLISHER` | Package/Identity/Publisher (começa com `CN=`) |
    | `MSIX_PUBLISHER_DISPLAY` | Package/Properties/PublisherDisplayName |
 
-   Os valores atuais do produto já estão como padrão em `.github/workflows/release.yml`; as variáveis só são necessárias se a identidade mudar. Há também `MSIX_DISPLAY_NAME`, que precisa ser exatamente um dos nomes reservados para o produto (hoje, "MacBook Notch - OpenNotch").
+   Os valores atuais do produto já estão como padrão em `.github/workflows/release.yml`; as variáveis só são necessárias se a identidade mudar. Há também `MSIX_DISPLAY_NAME`, que precisa ser exatamente um dos nomes reservados para o produto (hoje, "OpenNotch - Notch for Windows").
 4. **Política de privacidade**: use o endereço público de [PRIVACY.md](../PRIVACY.md):
    `https://github.com/Nicollasarcanjo/OpenNotch/blob/main/PRIVACY.md`
 

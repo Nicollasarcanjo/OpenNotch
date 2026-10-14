@@ -1,7 +1,6 @@
 ## Novidades
 
-- Primeira versão com o pacote da Microsoft Store (`OpenNotch-Store.msix`). Esse arquivo é só para o envio à loja; para instalar, use os arquivos da tabela abaixo.
-- Windows: abrir com o sistema, atualização e letra da música se adaptam quando o app vem da loja.
+- Pacote da Microsoft Store (`OpenNotch-Store.msix`) com o novo nome na loja: **OpenNotch - Notch for Windows**. Esse arquivo é só para o envio à loja; para instalar, use os arquivos da tabela abaixo.
 
 ## Qual arquivo baixar
 
